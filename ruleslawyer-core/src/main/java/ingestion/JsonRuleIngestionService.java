@@ -23,13 +23,15 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 public class JsonRuleIngestionService {
-    
+
     public static List<AbstractRule> getRules() {
         try {
             List<AbstractRule> rules = new ArrayList<>();
             rules.addAll(getFlattenedRules("/CR-parsed.json", CR));
+            //rules.addAll(getRules("/CRG-parsed.json", CR)); TODO
             rules.addAll(getRules("/JAR-parsed.json", JAR));
             rules.addAll(getRules("/IPG-parsed.json", IPG));
+            rules.addAll(getRules("/MTR-parsed.json", MTR));
             return rules;
         } catch (IOException ignored) {
             System.exit(-1);

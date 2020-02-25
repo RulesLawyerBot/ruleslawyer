@@ -2,6 +2,7 @@ package chat_platform;
 
 import contract.rules.AbstractRule;
 import contract.rules.RuleHeader;
+import org.junit.Ignore;
 import org.junit.Test;
 import utils.TestUtils;
 
@@ -68,6 +69,7 @@ public class RulePrinterServiceTest {
         assertThat(rulePrinterService.printRule(cheatingRule), is(expectedOutput));
     }
 
+    @Ignore
     @Test
     public void printMultipleRules_ExpectPrintedInOrder() {
         rulePrinterService = new RulePrinterService(DISCORD);
