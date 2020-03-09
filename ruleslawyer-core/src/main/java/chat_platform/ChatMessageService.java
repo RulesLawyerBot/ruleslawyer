@@ -6,35 +6,51 @@ import contract.RuleSource;
 import contract.SearchResult;
 import contract.rules.AbstractRule;
 import contract.searchRequests.RuleSearchRequest;
+import contract.searchRequests.SearchRequest;
 import contract.searchRequests.builder.RuleSearchRequestBuilder;
 import repository.SearchRepository;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static contract.searchRequests.builder.RuleSearchRequestBuilder.aRuleSearchRequest;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 public class ChatMessageService {
 
     private RequestSource requestSource;
     private SearchRepository<AbstractRule> searchRepository;
     private RulePrinterService rulePrinterService;
+    private HelpMessageService helpMessageService;
 
-    public static final String HASMORE_MESSSAGE = "There are more results! To get them, filter by putting more words in the query. Pagination is currently in development (you have any idea how hard that is?)";
+    private static final String HASMORE_MESSSAGE = "There are more results! To get them, filter by putting more words in the query. Pagination is currently in development (you have any idea how hard that is?)";
+    private static final String NO_RESULTS_MESSAGE = "No results found :( If you believe this to be an error, please let me know at {{help|about}}. Otherwise, make sure you spelled everything correctly.";
 
     public ChatMessageService(RequestSource requestSource, SearchRepository<AbstractRule> searchRepository) {
         this.requestSource = requestSource;
         this.searchRepository = searchRepository;
         this.rulePrinterService = new RulePrinterService(requestSource);
+        this.helpMessageService = new HelpMessageService();
     }
 
     public List<String> processMessage(String message) {
         String query = getQuery(message).trim();
         if (query.length() == 0) {
             return emptyList();
+        }
+
+        if (query.startsWith("help")) {
+            if (query.equals("help")) {
+                return singletonList(helpMessageService.getHelpFile());
+            }
+            else {
+                return singletonList(helpMessageService.getHelpFile(query.substring(5)));
+            }
         }
 
         RuleSearchRequest searchRequest = getSearchRequest(query);
@@ -45,6 +61,8 @@ public class ChatMessageService {
         if (result.hasMore()) {
             return asList(HASMORE_MESSSAGE, result.getResult());
         } else {
+            if (result.getResult() == null || result.getResult().length() == 0)
+                return singletonList(NO_RESULTS_MESSAGE);
             return singletonList(result.getResult());
         }
     }
@@ -65,10 +83,16 @@ public class ChatMessageService {
         commands = commands.subList(1, commands.size());
 
         if(keywords.startsWith("\"") && keywords.endsWith("\"")) {
-            ruleSearchRequest.setKeywords(singletonList(keywords.substring(1, keywords.length()-1)));
+            ruleSearchRequest.setKeywords(
+                    singletonList(keywords.substring(1, keywords.length()-1).toLowerCase())
+            );
         }
         else {
-            ruleSearchRequest.setKeywords(asList(keywords.split(" ")));
+            ruleSearchRequest.setKeywords(
+                    stream(keywords.split(" "))
+                            .map(String::toLowerCase)
+                            .collect(toList())
+            );
         }
 
         commands.forEach(

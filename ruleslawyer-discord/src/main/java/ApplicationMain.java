@@ -3,14 +3,16 @@ import contract.rules.AbstractRule;
 import ingestion.JsonRuleIngestionService;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
-import org.javacord.api.entity.emoji.Emoji;
-import org.javacord.api.entity.message.Message;
+import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
+import org.javacord.api.event.server.ServerJoinEvent;
 import repository.SearchRepository;
 
 import java.util.List;
+import java.util.Optional;
 
+import static chat_platform.HelpMessageService.MAIN_HELP;
 import static contract.RequestSource.DISCORD;
 
 public class ApplicationMain {
@@ -38,6 +40,13 @@ public class ApplicationMain {
 
         api.addReactionAddListener(ApplicationMain::handleReactionAddEvent);
 
+        api.addServerJoinListener(ApplicationMain::handleServerJoinEvent);
+
+    }
+
+    private static void handleServerJoinEvent(ServerJoinEvent event) {
+        Optional<TextChannel> generalChannel = ServerJoinHelpService.getChannelToSendMessage(event);
+        generalChannel.ifPresent(channel -> channel.sendMessage(MAIN_HELP));
     }
 
     private static void handleReactionAddEvent(ReactionAddEvent event) {

@@ -54,12 +54,12 @@ public abstract class AbstractRule implements Searchable {
                 keywords.stream()
                         .filter(keyword -> !this.text.toLowerCase().contains(keyword.toLowerCase()))
                         .filter(keyword -> {
-                            try {
-                                return this.getRuleSource() != RuleSource.valueOf(keyword.toUpperCase());
-                            } catch (IllegalArgumentException ex) {
-                                return true;
+                                try {
+                                    return this.getRuleSource() != RuleSource.valueOf(keyword.toUpperCase());
+                                } catch (IllegalArgumentException ex) {
+                                    return true;
+                                }
                             }
-                        }
                         )
                         .collect(toList());
         if (missingKeywords.size() == 0)
