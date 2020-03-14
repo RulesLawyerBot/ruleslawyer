@@ -22,7 +22,7 @@ public class ApplicationMain {
 
     public static void main(String[] args) {
 
-        String discordToken = args[0]; //dev token
+        String discordToken = args[0];
         messageDeletionService = new MessageDeletionService();
 
         DiscordApi api = new DiscordApiBuilder()

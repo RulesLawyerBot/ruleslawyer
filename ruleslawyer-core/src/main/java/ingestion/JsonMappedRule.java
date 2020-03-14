@@ -11,7 +11,7 @@ public class JsonMappedRule {
     private List<JsonMappedRule> subRules;
 
     public JsonMappedRule(@JsonProperty("text") String text, @JsonProperty("subRules") List<JsonMappedRule> subRules) {
-        this.text = text;
+        this.text = text.replace(" EOL ", "\n");
         this.subRules = subRules;
     }
 

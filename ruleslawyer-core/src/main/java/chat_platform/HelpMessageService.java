@@ -35,22 +35,22 @@ public class HelpMessageService {
     private static final String HELP_ADD = "Add **RulesLawyer** to your own server by using this link: https://discordapp.com/oauth2/authorize?client_id=590184543684788253&scope=bot&permissions=346112";
 
     private static final String HELP_DEV = "**RulesLawyer patch notes**\n" +
-            "\n" +
-            "Last updated: v1.1.0 3/10/2020\n" +
-            "\n" +
+            "Current rules version: Theros Beyond Death\n" +
+            "**Last updated: v1.2 3/14/20**\n" +
+            "Fixed: Unintended behavior in certain edge cases when RulesLawyer tries to print a rule that exceeds Discord's character limit.\n" +
+            "Fixed: Parsing bugs where end-of-line characters sometimes print improperly.\n" +
+            "Added messaging to tell you how the bot interpreted your query.\n" +
+            "Reworked query parsing to be more idiot-proof.\n" +
+            "**Previous patch**\n" +
             "Updated help files and changed messaging. Use {{help}} to see them!\n" +
-            "\n" +
             "Added a routine where RulesLawyer will immediately display the main help file upon joining a server.\n" +
-            "\n" +
-            "Fixed a bug where sometimes the search algorithm would improperly coerce case sensitivity, thereby returning less results than wanted.\n" +
-            "\n" +
-            "Fixed some parsing issues with unprintable characters.\n" +
-            "\n" +
-            "**Known issues**\n" +
-            "\n" +
-            "Unintended behavior in certain edge cases when the bot tries to print a rule that exceeds Discord's character limit.\n" +
-            "\n" +
-            "Some issues with the parser for the current version of the Magic Tournament Rules.";
+            "Fixed: Sometimes the search algorithm would improperly coerce case sensitivity, thereby returning less results than wanted.\n" +
+            "Fixed: Some parsing issues with unprintable characters.\n" +
+            "**Future development and known issues**\n" +
+            "Some issues with the parser for the current version of the Magic Tournament Rules.\n" +
+            "Some other parsing issues with unprintable characters. Blame WOTC for using weird symbols!\n" +
+            "Improve results when the query isn't specific enough.\n" +
+            "Pagination (its obnoxious)";
 
     private static final String NOT_FOUND = "I don't have that help file. Use {{help}} for the main help file.";
 

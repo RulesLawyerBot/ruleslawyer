@@ -57,13 +57,13 @@ public class ChatMessageService {
 
         List<SearchResult<AbstractRule>> searchResults = searchRepository.getSearchResult(searchRequest);
 
-        RuleSearchResult result = rulePrinterService.getOutputFromRawResults(searchResults);
+        RuleSearchResult result = rulePrinterService.getOutputFromRawResults(searchResults, searchRequest);
         if (result.hasMore()) {
-            return asList(HASMORE_MESSSAGE, result.getResult());
+            return asList(result.getQueryInfo() + "\n" + HASMORE_MESSSAGE, result.getResult());
         } else {
             if (result.getResult() == null || result.getResult().length() == 0)
                 return singletonList(NO_RESULTS_MESSAGE);
-            return singletonList(result.getResult());
+            return asList(result.getQueryInfo(), result.getResult());
         }
     }
 
@@ -79,21 +79,6 @@ public class ChatMessageService {
         RuleSearchRequestBuilder ruleSearchRequest = aRuleSearchRequest();
 
         List<String> commands = asList(query.split("\\|"));
-        String keywords = commands.get(0);
-        commands = commands.subList(1, commands.size());
-
-        if(keywords.startsWith("\"") && keywords.endsWith("\"")) {
-            ruleSearchRequest.setKeywords(
-                    singletonList(keywords.substring(1, keywords.length()-1).toLowerCase())
-            );
-        }
-        else {
-            ruleSearchRequest.setKeywords(
-                    stream(keywords.split(" "))
-                            .map(String::toLowerCase)
-                            .collect(toList())
-            );
-        }
 
         commands.forEach(
                 command -> {
@@ -101,16 +86,29 @@ public class ChatMessageService {
                         try {
                             ruleSearchRequest.setPageNumber(parseInt(command.substring(1)));
                         } catch (NumberFormatException ignored) {
+                            ruleSearchRequest.appendKeywords(getKeywordsFromSubquery(command));
                         }
                     } else {
                         try {
                             ruleSearchRequest.setRuleSource(RuleSource.valueOf(command.toUpperCase()));
                         } catch (IllegalArgumentException ignored) {
+                            ruleSearchRequest.appendKeywords(getKeywordsFromSubquery(command));
                         }
                     }
                 }
         );
 
         return ruleSearchRequest.build();
+    }
+
+    private List<String> getKeywordsFromSubquery(String subquery) {
+        if (subquery.startsWith("\"") && subquery.endsWith("\"")) {
+            return singletonList(subquery.substring(1, subquery.length()-1).toLowerCase());
+        }
+        else {
+            return stream(subquery.split(" "))
+                    .map(String::toLowerCase)
+                    .collect(toList());
+        }
     }
 }

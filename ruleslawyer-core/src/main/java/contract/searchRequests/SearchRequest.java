@@ -12,7 +12,7 @@ public abstract class SearchRequest<T extends Searchable> {
         return keywords;
     }
 
-    private Integer getPageNumber() {
+    public Integer getPageNumber() {
         return pageNumber;
     }
 

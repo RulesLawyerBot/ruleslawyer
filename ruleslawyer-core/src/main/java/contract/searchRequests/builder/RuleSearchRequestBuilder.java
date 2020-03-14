@@ -3,6 +3,7 @@ package contract.searchRequests.builder;
 import contract.RuleSource;
 import contract.searchRequests.RuleSearchRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static contract.RuleSource.ANY;
@@ -20,6 +21,7 @@ public class RuleSearchRequestBuilder {
     private RuleSearchRequestBuilder() {
         ruleSource = ANY;
         pageNumber = 0;
+        keywords = new ArrayList<>();
     }
 
     public RuleSearchRequestBuilder setRuleSource(RuleSource ruleSource) {
@@ -27,8 +29,8 @@ public class RuleSearchRequestBuilder {
         return this;
     }
 
-    public RuleSearchRequestBuilder setKeywords(List<String> keywords) {
-        this.keywords = keywords;
+    public RuleSearchRequestBuilder appendKeywords(List<String> keywords) {
+        this.keywords.addAll(keywords);
         return this;
     }
 

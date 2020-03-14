@@ -7,6 +7,7 @@ import contract.rules.AbstractRule;
 import contract.rules.Rule;
 import contract.rules.RuleHeader;
 import contract.rules.RuleSubheader;
+import contract.searchRequests.RuleSearchRequest;
 import exception.NotYetImplementedException;
 
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import java.util.List;
 
 import static contract.RequestSource.DISCORD;
 import static contract.RequestSource.SLACK;
+import static contract.RuleSource.ANY;
+import static java.lang.String.join;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
@@ -38,21 +41,27 @@ public class RulePrinterService {
         }
     }
 
-    public RuleSearchResult getOutputFromRawResults(List<SearchResult<AbstractRule>> searchResults) {
+    public RuleSearchResult getOutputFromRawResults(List<SearchResult<AbstractRule>> searchResults, RuleSearchRequest ruleSearchRequest) {
         List<AbstractRule> returnedResults = new ArrayList<>();
+
+        String queryInfo = printRequest(ruleSearchRequest);
 
         while (true) {
             String output = printRules(returnedResults);
             if (output.length() > maxMessageLength) {
                 if (returnedResults.size() == 1) {
-                    return new RuleSearchResult(output.substring(0, 2000), true); //TODO
+                    List<SearchResult<AbstractRule>> subResults = returnedResults.get(0).getSubRules()
+                            .stream()
+                            .map(elem -> new SearchResult<>(elem, 0))
+                            .collect(toList());
+                    return getOutputFromRawResults(subResults, ruleSearchRequest);
                 } else {
                     returnedResults.remove(returnedResults.size() - 1);
-                    return new RuleSearchResult(printRules(returnedResults), true);
+                    return new RuleSearchResult(queryInfo, printRules(returnedResults), true);
                 }
             }
             if (returnedResults.size() == searchResults.size()) {
-                return new RuleSearchResult(output, false);
+                return new RuleSearchResult(queryInfo, output, false);
             } else {
                 returnedResults.add(searchResults.get(returnedResults.size()).getEntry());
             }
@@ -144,5 +153,16 @@ public class RulePrinterService {
 
     public String printRule(Rule rule) {
         return "```" + rule.getText() + "```";
+    }
+
+    private String printRequest(RuleSearchRequest ruleSearchRequest) {
+        String baseString = "Search keywords: \"" + join("\" \"", ruleSearchRequest.getKeywords()) + "\"";
+        if (ruleSearchRequest.getPageNumber() != 0) {
+            baseString += "\nPage number: " + ruleSearchRequest.getPageNumber();
+        }
+        if (ruleSearchRequest.getRuleSource() != ANY) {
+            baseString += "\nDisplaying results filtered to: " + ruleSearchRequest.getRuleSource();
+        }
+        return baseString;
     }
 }
