@@ -36,16 +36,13 @@ public class HelpMessageService {
 
     private static final String HELP_DEV = "**RulesLawyer patch notes**\n" +
             "Current rules version: Theros Beyond Death\n" +
-            "**Last updated: v1.2 3/14/20**\n" +
+            "**Last updated: v1.3.1 3/16/20**\n" +
+            "Hotfix: Calling help files is no longer case sensitive.\n" +
+            "**Previous patch**\n" +
             "Fixed: Unintended behavior in certain edge cases when RulesLawyer tries to print a rule that exceeds Discord's character limit.\n" +
             "Fixed: Parsing bugs where end-of-line characters sometimes print improperly.\n" +
             "Added messaging to tell you how the bot interpreted your query.\n" +
             "Reworked query parsing to be more idiot-proof.\n" +
-            "**Previous patch**\n" +
-            "Updated help files and changed messaging. Use {{help}} to see them!\n" +
-            "Added a routine where RulesLawyer will immediately display the main help file upon joining a server.\n" +
-            "Fixed: Sometimes the search algorithm would improperly coerce case sensitivity, thereby returning less results than wanted.\n" +
-            "Fixed: Some parsing issues with unprintable characters.\n" +
             "**Future development and known issues**\n" +
             "Some issues with the parser for the current version of the Magic Tournament Rules.\n" +
             "Some other parsing issues with unprintable characters. Blame WOTC for using weird symbols!\n" +

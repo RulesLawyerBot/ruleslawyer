@@ -72,7 +72,7 @@ public class ChatMessageService {
         int indexRight = message.indexOf("}}");
         if (indexLeft == -1 || indexRight == -1 || indexRight < indexLeft)
             return "";
-        return message.substring(indexLeft+2, indexRight);
+        return message.substring(indexLeft+2, indexRight).toLowerCase();
     }
 
     private RuleSearchRequest getSearchRequest(String query) {
