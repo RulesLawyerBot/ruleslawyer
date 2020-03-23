@@ -4,6 +4,7 @@ import ingestion.JsonRuleIngestionService;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
 import org.javacord.api.event.server.ServerJoinEvent;
@@ -19,6 +20,8 @@ public class ApplicationMain {
 
     private static ChatMessageService chatMessageService;
     private static MessageDeletionService messageDeletionService;
+    private static MessageLoggingService messageLoggingService;
+    private static AdministratorCommandsService administratorCommandsService;
 
     public static void main(String[] args) {
 
@@ -36,12 +39,18 @@ public class ApplicationMain {
             System.exit(-1);
         }
 
+        messageLoggingService = new MessageLoggingService(api);
+        administratorCommandsService = new AdministratorCommandsService(api);
+
+        api.updateActivity("Version 1.3.2 // THB");
+
         api.addMessageCreateListener(ApplicationMain::handleMessageCreateEvent);
 
         api.addReactionAddListener(ApplicationMain::handleReactionAddEvent);
 
         api.addServerJoinListener(ApplicationMain::handleServerJoinEvent);
 
+        System.out.println("up");
     }
 
     private static void handleServerJoinEvent(ServerJoinEvent event) {
@@ -56,13 +65,21 @@ public class ApplicationMain {
     }
 
     public static void handleMessageCreateEvent(MessageCreateEvent event) {
-        if (!event.getMessageAuthor().asUser().get().isBot()){
+        Optional<User> messageSender = event.getMessageAuthor().asUser();
+        if (messageSender.isPresent() && !messageSender.get().isBot()){
             List<String> output = chatMessageService.processMessage(event.getMessageContent());
+            if (output.size() != 0) {
+                messageLoggingService.logInput(event);
+            }
             output.forEach(message ->  {
                         event.getChannel().sendMessage(message);
+                        messageLoggingService.logOutput(message);
                         System.out.println(message);
                     }
             );
+        }
+        if (messageSender.isPresent() && messageSender.get().isBotOwner()) {
+            administratorCommandsService.processCommand(event.getMessage().getContent(), event.getChannel());
         }
         if (event.getMessageAuthor().isYourself()) {
             event.getMessage().addReaction("✅");

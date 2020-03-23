@@ -36,9 +36,12 @@ public class HelpMessageService {
 
     private static final String HELP_DEV = "**RulesLawyer patch notes**\n" +
             "Current rules version: Theros Beyond Death\n" +
-            "**Last updated: v1.3.1 3/16/20**\n" +
+            "**Last updated: v1.3.2 3/23/20**\n" +
+            "Back-end logging to help debug future problems. Don't worry, I'm not saving your non-query messages.\n" +
+            "Current bot version and rules update version is now displayed as user activity.\n" +
+            "**Previous update**\n" +
             "Hotfix: Calling help files is no longer case sensitive.\n" +
-            "**Previous patch**\n" +
+            "**Last patch**\n" +
             "Fixed: Unintended behavior in certain edge cases when RulesLawyer tries to print a rule that exceeds Discord's character limit.\n" +
             "Fixed: Parsing bugs where end-of-line characters sometimes print improperly.\n" +
             "Added messaging to tell you how the bot interpreted your query.\n" +
