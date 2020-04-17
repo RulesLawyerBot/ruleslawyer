@@ -23,6 +23,8 @@ public class ApplicationMain {
     private static MessageLoggingService messageLoggingService;
     private static AdministratorCommandsService administratorCommandsService;
 
+    private static final String CURRENT_VERSION = "Version 1.4.0 / IKO / {{help}}";
+
     public static void main(String[] args) {
 
         String discordToken = args[0];
@@ -42,7 +44,7 @@ public class ApplicationMain {
         messageLoggingService = new MessageLoggingService(api);
         administratorCommandsService = new AdministratorCommandsService(api);
 
-        api.updateActivity("Version 1.3.2 // THB");
+        api.updateActivity(CURRENT_VERSION);
 
         api.addMessageCreateListener(ApplicationMain::handleMessageCreateEvent);
 
@@ -54,6 +56,7 @@ public class ApplicationMain {
     }
 
     private static void handleServerJoinEvent(ServerJoinEvent event) {
+        messageLoggingService.logOutput("RulesLawyer was just added to " + event.getServer().getName());
         Optional<TextChannel> generalChannel = ServerJoinHelpService.getChannelToSendMessage(event);
         generalChannel.ifPresent(channel -> channel.sendMessage(MAIN_HELP));
     }
@@ -84,5 +87,6 @@ public class ApplicationMain {
         if (event.getMessageAuthor().isYourself()) {
             event.getMessage().addReaction("✅");
         }
+        event.getApi().updateActivity(CURRENT_VERSION);
     }
 }

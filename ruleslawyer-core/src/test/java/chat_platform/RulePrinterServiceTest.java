@@ -69,7 +69,6 @@ public class RulePrinterServiceTest {
         assertThat(rulePrinterService.printRule(cheatingRule), is(expectedOutput));
     }
 
-    @Ignore
     @Test
     public void printMultipleRules_ExpectPrintedInOrder() {
         rulePrinterService = new RulePrinterService(DISCORD);
@@ -91,7 +90,7 @@ public class RulePrinterServiceTest {
                 "D. A player notices that their opponent resolved only half of the triggered ability of Sword of Feast and Famine and decides not to call attention to the error.\n" +
                 "E. A player peeks at another player’s picks during the draft.\n" +
                 "F. A player adds cards to their Sealed Deck pool.\n" +
-                "G. A player realizes they have accidentally drawn an extra card, then fails to call a judge in order to avoid a penalty.```**613. Interaction of Continuous Effects**\n" +
+                "G. A player realizes they have accidentally drawn an extra card, then fails to call a judge in order to avoid a penalty.```**CR 613. Interaction of Continuous Effects**\n" +
                 "> 613.1 The values of an object’s characteristics are determined by starting with the actual object. For a card, that means the values of the characteristics printed on that card. For a token or a copy of a spell or card, that means the values of the characteristics defined by the effect that created it. Then all applicable continuous effects are applied in a series of layers in the following order:\n" +
                 "```613.1a Layer 1: Copy effects are applied. See rule 706, “Copying Objects.”\n" +
                 "613.1b Layer 2: Control-changing effects are applied.\n" +

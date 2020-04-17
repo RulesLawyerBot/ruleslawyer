@@ -1,5 +1,6 @@
 package chat_platform;
 
+import contract.RuleSearchResult;
 import contract.SearchResult;
 import contract.rules.AbstractRule;
 import contract.rules.Rule;

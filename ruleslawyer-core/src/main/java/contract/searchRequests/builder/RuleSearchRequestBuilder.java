@@ -18,6 +18,13 @@ public class RuleSearchRequestBuilder {
         return new RuleSearchRequestBuilder();
     }
 
+    public static RuleSearchRequestBuilder fromRuleSearchRequest(RuleSearchRequest ruleSearchRequest) {
+        return aRuleSearchRequest()
+                .setRuleSource(ruleSearchRequest.getRuleSource())
+                .setPageNumber(ruleSearchRequest.getPageNumber())
+                .appendKeywords(ruleSearchRequest.getKeywords());
+    }
+
     private RuleSearchRequestBuilder() {
         ruleSource = ANY;
         pageNumber = 0;

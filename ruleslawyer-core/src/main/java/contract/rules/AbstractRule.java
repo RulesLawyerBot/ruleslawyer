@@ -8,6 +8,7 @@ import exception.NotYetImplementedException;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.OptionalInt;
 
 import static contract.RuleSource.ANY;
 import static java.util.Arrays.asList;
@@ -73,20 +74,27 @@ public abstract class AbstractRule implements Searchable {
     @Override
     public Integer getRelevancy(List<String> keywords) {
         return keywords.stream()
-                .mapToInt(this::getRelevancyForKeyword)
+                .map(this::getRelevancyForKeyword)
+                .mapToInt(OptionalInt::getAsInt) //assert exists
                 .sum();
     }
 
-    private Integer getRelevancyForKeyword(String keyword) {
-        String fullCitation = getFullCitation().toLowerCase();
-        int count = fullCitation.split(keyword.toLowerCase()).length;
-        return fullCitation.indexOf(keyword) - (count-1) * fullCitation.length();
+    private OptionalInt getRelevancyForKeyword(String keyword) {
+        if (getParentText().toLowerCase().contains(keyword)) {
+            return OptionalInt.of(getParentText().toLowerCase().indexOf(keyword));
+        }
+        return subRules.stream()
+                .map(subRule -> subRule.getRelevancyForKeyword(keyword))
+                .filter(OptionalInt::isPresent)
+                .mapToInt(OptionalInt::getAsInt)
+                .map(i -> i + 10000)
+                .min();
     }
 
     private String getParentText() {
         if (parentRule != null)
             return parentRule.getParentText() + " " + text;
-        return this.text;
+        return text;
     }
 
     private String getFullCitation() {

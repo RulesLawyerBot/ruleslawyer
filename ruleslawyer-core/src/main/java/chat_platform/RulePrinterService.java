@@ -41,31 +41,52 @@ public class RulePrinterService {
         }
     }
 
+    //TODO testcase
     public RuleSearchResult getOutputFromRawResults(List<SearchResult<AbstractRule>> searchResults, RuleSearchRequest ruleSearchRequest) {
-        List<AbstractRule> returnedResults = new ArrayList<>();
-
-        String queryInfo = printRequest(ruleSearchRequest);
+        Integer page = ruleSearchRequest.getPageNumber();
 
         while (true) {
-            String output = printRules(returnedResults);
-            if (output.length() > maxMessageLength) {
-                if (returnedResults.size() == 1) {
-                    List<SearchResult<AbstractRule>> subResults = returnedResults.get(0).getSubRules()
+            List<AbstractRule> theseResults = getNextPageOfResults(searchResults);
+
+            if (searchResults.isEmpty()) {
+                return new RuleSearchResult(printRules(theseResults), false);
+            }
+            if (page == 0) {
+                return new RuleSearchResult(printRules(theseResults), true);
+            }
+            page--;
+        }
+    }
+
+    //note: modifies searchResults list
+    private List<AbstractRule> getNextPageOfResults(List<SearchResult<AbstractRule>> searchResults) {
+        List<AbstractRule> output = new ArrayList<>();
+
+        while (true) {
+            String outputString = printRules(output);
+            if (outputString.length() > maxMessageLength) {
+                if (output.size() == 1) {
+                    List<SearchResult<AbstractRule>> subResults = output.get(0).getSubRules()
                             .stream()
                             .map(elem -> new SearchResult<>(elem, 0))
                             .collect(toList());
-                    return getOutputFromRawResults(subResults, ruleSearchRequest);
+                    searchResults.remove(0);
+                    searchResults.addAll(0, subResults);
+                    return getNextPageOfResults(searchResults);
                 } else {
-                    returnedResults.remove(returnedResults.size() - 1);
-                    return new RuleSearchResult(queryInfo, printRules(returnedResults), true);
+                    output.remove(output.size()-1);
+                    searchResults.subList(0, output.size()).clear();
+                    return output;
                 }
             }
-            if (returnedResults.size() == searchResults.size()) {
-                return new RuleSearchResult(queryInfo, output, false);
+            if (output.size() == searchResults.size()) {
+                searchResults.clear();
+                return output;
             } else {
-                returnedResults.add(searchResults.get(returnedResults.size()).getEntry());
+                output.add(searchResults.get(output.size()).getEntry());
             }
         }
+
     }
 
     public String printRules(List<AbstractRule> rules) {
@@ -155,14 +176,24 @@ public class RulePrinterService {
         return "```" + rule.getText() + "```";
     }
 
-    private String printRequest(RuleSearchRequest ruleSearchRequest) {
+    public String printRequest(RuleSearchRequest ruleSearchRequest) {
         String baseString = "Search keywords: \"" + join("\" \"", ruleSearchRequest.getKeywords()) + "\"";
         if (ruleSearchRequest.getPageNumber() != 0) {
-            baseString += "\nPage number: " + ruleSearchRequest.getPageNumber();
+            baseString += " - Page number: " + ruleSearchRequest.getPageNumber();
         }
         if (ruleSearchRequest.getRuleSource() != ANY) {
-            baseString += "\nDisplaying results filtered to: " + ruleSearchRequest.getRuleSource();
+            baseString += " - Displaying results filtered to: " + ruleSearchRequest.getRuleSource();
         }
         return baseString;
+    }
+
+    public String printRequestToQuery(RuleSearchRequest ruleSearchRequest) {
+        String keywordsString = join("|", ruleSearchRequest.getKeywords());
+        String pageString = "p" + ruleSearchRequest.getPageNumber();
+        if (ruleSearchRequest.getRuleSource() == ANY) {
+            return "{{" + keywordsString + "|" + pageString + "}}";
+        }
+        return "{{" + keywordsString + "|" + ruleSearchRequest.getRuleSource().toString() + "|" + pageString + "}}";
+
     }
 }

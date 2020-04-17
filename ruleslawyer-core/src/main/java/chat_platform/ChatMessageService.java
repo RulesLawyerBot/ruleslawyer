@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static contract.searchRequests.builder.RuleSearchRequestBuilder.aRuleSearchRequest;
+import static contract.searchRequests.builder.RuleSearchRequestBuilder.fromRuleSearchRequest;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
@@ -28,7 +29,8 @@ public class ChatMessageService {
     private RulePrinterService rulePrinterService;
     private HelpMessageService helpMessageService;
 
-    private static final String HASMORE_MESSSAGE = "There are more results! To get them, filter by putting more words in the query. Pagination is currently in development (you have any idea how hard that is?)";
+    private static final String NEXTPAGE_MESSAGE = "To get the next page of results, use ";
+    private static final String NO_MORE_RESULTS_MESSAGE = "This is the final page of results.";
     private static final String NO_RESULTS_MESSAGE = "No results found :( If you believe this to be an error, please let me know at {{help|about}}. Otherwise, make sure you spelled everything correctly.";
 
     public ChatMessageService(RequestSource requestSource, SearchRepository<AbstractRule> searchRepository) {
@@ -45,25 +47,25 @@ public class ChatMessageService {
         }
 
         if (query.startsWith("help")) {
-            if (query.equals("help")) {
-                return singletonList(helpMessageService.getHelpFile());
-            }
-            else {
-                return singletonList(helpMessageService.getHelpFile(query.substring(5)));
-            }
+            return query.equals("help") ?
+                    singletonList(helpMessageService.getHelpFile()) :
+                    singletonList(helpMessageService.getHelpFile(query.substring(5)));
         }
 
         RuleSearchRequest searchRequest = getSearchRequest(query);
 
         List<SearchResult<AbstractRule>> searchResults = searchRepository.getSearchResult(searchRequest);
 
-        RuleSearchResult result = rulePrinterService.getOutputFromRawResults(searchResults, searchRequest);
-        if (result.hasMore()) {
-            return asList(result.getQueryInfo() + "\n" + HASMORE_MESSSAGE, result.getResult());
+        String queryInfo = rulePrinterService.printRequest(searchRequest);
+        RuleSearchResult searchResult = rulePrinterService. getOutputFromRawResults(searchResults, searchRequest);
+        if (searchResult.hasMore()) {
+            return asList(queryInfo + "\n" + NEXTPAGE_MESSAGE + getQueryStringForNextPage(searchRequest), searchResult.getResult());
+        } else if (searchResult.getResult().length() == 0) {
+            return singletonList(NO_RESULTS_MESSAGE);
+        } else if (searchRequest.getPageNumber() != 0) {
+            return asList(queryInfo + "\n" + NO_MORE_RESULTS_MESSAGE, searchResult.getResult());
         } else {
-            if (result.getResult() == null || result.getResult().length() == 0)
-                return singletonList(NO_RESULTS_MESSAGE);
-            return asList(result.getQueryInfo(), result.getResult());
+            return asList(queryInfo, searchResult.getResult());
         }
     }
 
@@ -110,5 +112,12 @@ public class ChatMessageService {
                     .map(String::toLowerCase)
                     .collect(toList());
         }
+    }
+
+    private String getQueryStringForNextPage(RuleSearchRequest ruleSearchRequest) {
+        RuleSearchRequest nextPage = fromRuleSearchRequest(ruleSearchRequest)
+                .setPageNumber(ruleSearchRequest.getPageNumber()+1)
+                .build();
+        return rulePrinterService.printRequestToQuery(nextPage);
     }
 }

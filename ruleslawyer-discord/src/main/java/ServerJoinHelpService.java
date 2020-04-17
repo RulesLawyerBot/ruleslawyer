@@ -8,9 +8,9 @@ import java.util.Optional;
 public class ServerJoinHelpService {
 
     public static Optional<TextChannel> getChannelToSendMessage(ServerJoinEvent event) {
-        List<ServerChannel> channels = event.getServer().getChannelsByNameIgnoreCase("general");
+        List<ServerChannel> generalChannels = event.getServer().getChannelsByNameIgnoreCase("general");
 
-        return channels.stream()
+        return generalChannels.stream()
                 .filter(channel -> TextChannel.class.isAssignableFrom(channel.getClass()))
                 .map(channel -> (TextChannel)channel)
                 .filter(TextChannel::canYouWrite)
