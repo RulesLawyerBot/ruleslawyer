@@ -12,6 +12,7 @@
     <modules>
         <module>ruleslawyer-discord</module>
         <module>ruleslawyer-core</module>
+        <module>ruleslawyer-android</module>
     </modules>
     <build>
         <plugins>

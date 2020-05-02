@@ -1,5 +1,5 @@
 package contract;
 
 public enum RequestSource {
-    DISCORD, SLACK
+    DISCORD, SLACK, ANDROID
 }
