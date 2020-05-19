@@ -7,7 +7,7 @@ import contract.rules.RuleSubheader;
 import static contract.RuleSource.CR;
 import static contract.RuleSource.IPG;
 
-public class TestUtils {
+public class RuleTestUtils {
 
     public static RuleHeader getSampleIPGRule() {
         RuleHeader cheatingRule = new RuleHeader("Unsporting Conduct - Cheating", IPG);

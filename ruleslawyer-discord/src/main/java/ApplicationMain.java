@@ -1,6 +1,6 @@
 import chat_platform.ChatMessageService;
 import contract.rules.AbstractRule;
-import ingestion.JsonRuleIngestionService;
+import ingestion.rule.JsonRuleIngestionService;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.channel.TextChannel;
@@ -36,7 +36,7 @@ public class ApplicationMain {
                 .join();
         try {
             List<AbstractRule> rules = JsonRuleIngestionService.getRules();
-            chatMessageService = new ChatMessageService(DISCORD, new SearchRepository<>(rules, DISCORD));
+            chatMessageService = new ChatMessageService(DISCORD, new SearchRepository<>(rules));
         } catch (Exception ignored) {
             System.exit(-1);
         }

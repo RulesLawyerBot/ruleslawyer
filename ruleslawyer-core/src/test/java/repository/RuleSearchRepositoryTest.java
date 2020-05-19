@@ -4,14 +4,11 @@ import contract.SearchResult;
 import contract.rules.AbstractRule;
 import contract.rules.RuleHeader;
 import contract.searchRequests.RuleSearchRequest;
-import org.junit.Ignore;
 import org.junit.Test;
-import repository.SearchRepository;
-import utils.TestUtils;
+import utils.RuleTestUtils;
 
 import java.util.List;
 
-import static contract.RequestSource.DISCORD;
 import static contract.RuleSource.CR;
 import static contract.RuleSource.IPG;
 import static java.util.Arrays.asList;
@@ -19,12 +16,11 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-@Ignore
-public class SearchRepositoryTest {
+public class RuleSearchRepositoryTest {
 
-    private RuleHeader cheatingRule = TestUtils.getSampleIPGRule();
-    private RuleHeader layersRule = TestUtils.getSampleCRRule();
-    private SearchRepository<AbstractRule> ruleSearchRepository = new SearchRepository<>(asList(cheatingRule, layersRule), DISCORD);
+    private RuleHeader cheatingRule = RuleTestUtils.getSampleIPGRule();
+    private RuleHeader layersRule = RuleTestUtils.getSampleCRRule();
+    private SearchRepository<AbstractRule> ruleSearchRepository = new SearchRepository<>(asList(cheatingRule, layersRule));
 
     @Test
     public void searchRules_IPG_EntireHeader_ExpectCorrectResults() {
@@ -43,8 +39,8 @@ public class SearchRepositoryTest {
         List<SearchResult<AbstractRule>> output = ruleSearchRepository.getSearchResult(ruleSearchRequest);
 
         assertThat(output.size(), is(2));
-        assertThat(output.get(0).getEntry().getText(), is("A person breaks a rule defined by the tournament documents, lies to a Tournament Official, or notices an offense committed in their (or a teammate’s) match and does not call attention to it."));
-        assertThat(output.get(1).getEntry().getText(), is("B. A player lies to a tournament official about what happened in a game to make their case stronger."));
+        assertThat(output.get(0).getEntry().getText(), is("B. A player lies to a tournament official about what happened in a game to make their case stronger."));
+        assertThat(output.get(1).getEntry().getText(), is("A person breaks a rule defined by the tournament documents, lies to a Tournament Official, or notices an offense committed in their (or a teammate’s) match and does not call attention to it."));
     }
 
     @Test

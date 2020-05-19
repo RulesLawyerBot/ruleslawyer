@@ -6,7 +6,7 @@
     <version>0.5.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>ruleslawyer-discord</artifactId>
+  <artifactId>ruleslawyer-android</artifactId>
   <version>0.5.0</version>
   <build>
     <plugins>
@@ -29,28 +29,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.1.0</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>ApplicationMain</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
-  <dependencies>
-    <dependency>
-      <groupId>org.javacord</groupId>
-      <artifactId>javacord</artifactId>
-      <version>3.0.5</version>
-      <type>pom</type>
-      <scope>compile</scope>
-    </dependency>
-  </dependencies>
 </project>

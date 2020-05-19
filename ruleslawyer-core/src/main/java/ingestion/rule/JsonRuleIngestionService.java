@@ -1,4 +1,4 @@
-package ingestion;
+package ingestion.rule;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +18,7 @@ import java.util.List;
 
 import static contract.RuleSource.*;
 import static java.lang.String.valueOf;
+import static java.nio.charset.StandardCharsets.*;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
@@ -57,7 +58,7 @@ public class JsonRuleIngestionService {
 
     private static List<JsonMappedRule> getJsonMappedRules(String filename) throws IOException {
         InputStream in = JsonRuleIngestionService.class.getResourceAsStream(filename);
-        BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+        BufferedReader br = new BufferedReader(new InputStreamReader(in, UTF_8));
         char[] buffer = new char[1000000];
         br.read(buffer);
         in.close();

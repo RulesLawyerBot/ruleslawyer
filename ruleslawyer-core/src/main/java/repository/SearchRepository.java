@@ -1,7 +1,6 @@
 package repository;
 
 import contract.SearchResult;
-import contract.RequestSource;
 import contract.Searchable;
 import contract.searchRequests.SearchRequest;
 import java.util.Collection;
@@ -12,11 +11,9 @@ import static java.util.stream.Collectors.toList;
 public class SearchRepository<T extends Searchable> {
 
     private List<T> searchSpace;
-    private RequestSource requestSource;
 
-    public SearchRepository(List<T> searchSpace, RequestSource requestSource) {
+    public SearchRepository(List<T> searchSpace) {
         this.searchSpace = searchSpace;
-        this.requestSource = requestSource;
     }
 
     public List<SearchResult<T>> getSearchResult(SearchRequest<T> searchRequest) {

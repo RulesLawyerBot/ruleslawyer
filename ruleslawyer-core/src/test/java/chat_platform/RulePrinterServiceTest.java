@@ -2,11 +2,9 @@ package chat_platform;
 
 import contract.rules.AbstractRule;
 import contract.rules.RuleHeader;
-import org.junit.Ignore;
 import org.junit.Test;
-import utils.TestUtils;
+import utils.RuleTestUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static contract.RequestSource.DISCORD;
@@ -17,8 +15,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RulePrinterServiceTest {
 
-    private RuleHeader cheatingRule = TestUtils.getSampleIPGRule();
-    private RuleHeader layersRule = TestUtils.getSampleCRRule();
+    private RuleHeader cheatingRule = RuleTestUtils.getSampleIPGRule();
+    private RuleHeader layersRule = RuleTestUtils.getSampleCRRule();
     private RulePrinterService rulePrinterService;
 
     @Test

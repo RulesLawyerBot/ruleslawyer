@@ -1,4 +1,4 @@
-package ingestion;
+package ingestion.rule;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -10,7 +10,10 @@ public class JsonMappedRule {
     private String text;
     private List<JsonMappedRule> subRules;
 
-    public JsonMappedRule(@JsonProperty("text") String text, @JsonProperty("subRules") List<JsonMappedRule> subRules) {
+    public JsonMappedRule(
+            @JsonProperty("text") String text,
+            @JsonProperty("subRules") List<JsonMappedRule> subRules
+    ) {
         this.text = text.replace(" EOL ", "\n");
         this.subRules = subRules;
     }
