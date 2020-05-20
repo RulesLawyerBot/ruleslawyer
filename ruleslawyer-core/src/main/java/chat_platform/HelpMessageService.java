@@ -37,8 +37,10 @@ public class HelpMessageService {
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
             "Current rules version: Ikoria, Lair of Behemoths\n" +
-            "--Last updated: v1.4.0 4/12/2020--\n" +
-            "Rules database updated for Ikoria." +
+            "--Last updated: v1.4.1 5/19/2020--\n" +
+            "Added Oathbreaker rules.\n" +
+            "--Last major update: v1.4.0 4/12/2020--\n" +
+            "Rules database updated for Ikoria.\n" +
             "Pagination is finally finished! Please let me know if there are any glaring bugs I may have missed.\n" +
             "Pagination is zero-indexed (e.g. first page is page 0). If this drives you crazy, I apologize.\n" +
             "Redesigned relevancy algorithm in light of some unintended results. (Read: Search results are more likely to return what you want them to)\n" +
@@ -46,6 +48,8 @@ public class HelpMessageService {
             "Some issues with the parser for the current version of the Magic Tournament Rules.\n" +
             "Some other parsing issues with unprintable characters. Blame WOTC for using weird symbols!\n" +
             "Fuzzy string matching?\n" +
+            "5/18 B&R announcement doesn't have a corresponding MTR yet, so its not updated.\n" +
+            "Major relevancy algorithm changes that aren't quite ready yet.\n" +
             "```";
 
     public static final String NOT_FOUND = "I don't have that help file. Use {{help}} for the main help file.";

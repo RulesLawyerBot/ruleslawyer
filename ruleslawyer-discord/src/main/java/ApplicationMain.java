@@ -23,7 +23,7 @@ public class ApplicationMain {
     private static MessageLoggingService messageLoggingService;
     private static AdministratorCommandsService administratorCommandsService;
 
-    private static final String CURRENT_VERSION = "Version 1.4.0 / IKO / {{help}}";
+    private static final String CURRENT_VERSION = "Version 1.4.1 / IKO / {{help}}";
 
     public static void main(String[] args) {
 
@@ -56,7 +56,7 @@ public class ApplicationMain {
     }
 
     private static void handleServerJoinEvent(ServerJoinEvent event) {
-        messageLoggingService.logOutput("RulesLawyer was just added to " + event.getServer().getName());
+        messageLoggingService.logOutput(":tada: RulesLawyer was just added to " + event.getServer().getName());
         Optional<TextChannel> generalChannel = ServerJoinHelpService.getChannelToSendMessage(event);
         generalChannel.ifPresent(channel -> channel.sendMessage(MAIN_HELP));
     }

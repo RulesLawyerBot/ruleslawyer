@@ -1,0 +1,57 @@
+906.1. In the Oathbreaker variant, each deck is led by a Planeswalker designated as that deck's Oathbreaker and an instant or sorcery designated as the Signature Spell. The Oathbreaker format was created by weirdcards.org. The Oathbreaker variant uses all the normal rules for a Magic game, with the following additions.
+
+906.2. An Oathbreaker game is a multiplayer game. The default setup is the Free-for-All variant with the attack multiple players option and without the limited range of influence option. See rule 806.
+
+906.3. Each deck has a Planeswalker designated as its "Oathbreaker". This designation is not a characteristic of the object represented by the card; rather, it is an attribute of the card itself. The card retains this designation even when it changes zones.
+
+906.3a Double-faced cards can be the Oathbreaker as long as the front face of the card has the type Planeswalker.
+
+906.3b If using the Partner mechanic, you may have two Oathbreakers. See rule 702.12
+
+906.3c Oathbreakers are subject to the "legend rule".
+
+906.4 Each deck has an instant or sorcery designated as a "Signature Spell". The Signature Spell must fall within the color identity of the Oathbreaker. This designation is an attribute of the card itself. The card retains this designation even when it changes zones.
+
+906.4a The signature spell may only be cast when its Oathbreaker is on the battlefield under its owner's control.
+
+906.4b When using the Partner mechanic, each Oathbreaker will have its own Signature Spell. Each Signature Spell is limited to its Oathbreaker’s color identity.
+
+906.5 The Oathbreaker variant uses color identity to determine what cards can be in a deck with a certain Oathbreaker. The color identity of a card is the color or colors of any mana symbols in that card's mana cost or rules text, plus any colors defined by its characteristic-defining abilities or color indicator.
+
+906.5a Color identity is established before the game begins.
+
+906.5b Reminder text is ignored when determining color identity.
+
+906.5c The back face of a double-faced card is included when determining a card's color identity.
+
+906.6 Each Oathbreaker deck is subject to the following deck construction rules.
+
+906.6a Each deck must contain exactly 60 cards, including the Oathbreaker and Signature Spell.
+
+906.6b Other than basic lands, each card must have a different English name.
+
+906.6c A card can be included in an Oathbreaker deck only if every color in it's color identity is also found in the color identity of the deck's Oathbreaker.
+
+906.6d A card with a basic land type may be included in an Oathbreaker deck only if each color of mana it could produce is included in the color identity of the deck's Oathbreaker.
+
+906.6e The deck must contain an Oathbreaker and a Signature Spell.
+
+906.6f The deck must contain cards that are vintage legal. It may not contain banned cards. A ban list is maintained at oathbreakermtg.org/banned-list.
+
+906.7 At the start of the game, each player puts their Oathbreaker and Signature Spell from their deck face up into the command zone. Then each player shuffles the remaining 58 cards of their deck so that the cards are in a random order. Those cards become the player's library.
+
+906.8 Once the starting player has been determined, each player sets their life total to 20 and draws a hand of seven cards.
+
+906.9 A player may cast a Oathbreaker they own from the command zone. An Oathbreaker cast from the command zone costs an additional {2} for each previous time the player casting it has cast it from the command zone that game. This additional cost is informally known as the "command zone tax".
+
+906.10 If an Oathbreaker would be exiled from anywhere or put into its owner's hand, graveyard, or library from anywhere, its owner may put it into the command zone instead. This replacement effect may apply more than once to the same event.
+
+906.11 A player may cast a Signature Spell they own from the command zone as long as the associated Oathbreaker is on the battlefield and under that player's control. A Signature Spell cast from the command zone costs an additional {2} for each previous time the player casting it has cast it from the command zone that game.
+
+906.12 If a Signature Spell would be exiled from anywhere or put into its owner's hand, graveyard, or library from anywhere, its owner must put it into the command zone instead. This replacement effect may apply more than once to the same event.
+
+906.12a If a Signature Spell would somehow go anywhere but the command zone or the stack, it instead goes to the command zone. This takes precedence over other replacement effects such as buyback.
+
+906.13 Abilities that refer to cards owned "outside the game" do not function in Oathbreaker.
+
+906.14 If another rule or effect refers to your commander, it instead refers to your Oathbreaker.

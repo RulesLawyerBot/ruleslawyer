@@ -33,6 +33,7 @@ public class JsonRuleIngestionService {
             rules.addAll(getRules("/JAR-parsed.json", JAR));
             rules.addAll(getRules("/IPG-parsed.json", IPG));
             rules.addAll(getRules("/MTR-parsed.json", MTR));
+            rules.addAll(getFlattenedRules("/oath-parsed.json", OATH));
             return rules;
         } catch (IOException ignored) {
             System.exit(-1);
