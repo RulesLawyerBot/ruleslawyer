@@ -9,12 +9,14 @@ from contract.rules import RuleHeader
 from contract.rules import RuleSubHeader
 from contract.rules import Rule
 
+
 def is_int(val):
     try:
         num = int(val)
     except ValueError:
         return False
     return True
+
 
 def main():
     file = FileData(open_file("CR-input.txt"))

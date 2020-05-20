@@ -2,5 +2,5 @@ package contract;
 
 public enum RuleSource {
 
-    CR, IPG, JAR, MTR, ANY
+    CR, IPG, JAR, MTR, OATH, ANY
 }
