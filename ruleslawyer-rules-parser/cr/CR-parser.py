@@ -62,9 +62,9 @@ def main():
     print(output)
     clear("CR-parsed.json")
     write("CR-parsed.json", output)
-    output = []
 
     # Glossary
+    output = []
     line_builder = ""
     current_rule = None
     while True:

@@ -7,11 +7,11 @@ import contract.searchRequests.SearchRequest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 public class Card implements Searchable {
 
@@ -21,6 +21,7 @@ public class Card implements Searchable {
     private String oracleText;
     private List<String> rulings;
     private List<String> searchSpace;
+    private List<String> sets;
     //TODO legality
 
     public Card(
@@ -37,8 +38,9 @@ public class Card implements Searchable {
         this.oracleText = oracleText;
         this.rulings = rulings;
         this.searchSpace = new ArrayList<>();
+        this.sets = sets;
         searchSpace.addAll(asList(cardName.toLowerCase(), typeLine.toLowerCase(), oracleText.toLowerCase()));
-        searchSpace.addAll(rulings.stream().map(String::toLowerCase).collect(Collectors.toList()));
+        searchSpace.addAll(rulings.stream().map(String::toLowerCase).collect(toList()));
     }
 
     public String getCardName() {
@@ -65,6 +67,10 @@ public class Card implements Searchable {
         return searchSpace;
     }
 
+    public List<String> getSets() {
+        return sets;
+    }
+
     @Override
     public List<? extends Searchable> searchForKeywords(SearchRequest searchRequest) {
         List<String> keywords = ((CardSearchRequest)searchRequest).getKeywords();
@@ -85,7 +91,17 @@ public class Card implements Searchable {
 
     @Override
     public Integer getRelevancy(List<String> keywords) {
-        return 0; //TODO I have no fucking idea tbh
+        //TODO this is a fucking disaster
+        Integer keywordsInName = (int)keywords.stream()
+                .filter(keyword -> cardName.toLowerCase().contains(keyword.toLowerCase()))
+                .count();
+        Integer relevancy = -1 * sets.size() - (100 * keywordsInName);
+        Boolean nameStartsWithKeyword = keywords.stream()
+                .anyMatch(keyword -> cardName.toLowerCase().startsWith(keyword.toLowerCase()));
+        if (typeLine.contains("Legendary") && nameStartsWithKeyword) {
+            relevancy-=1000;
+        }
+        return relevancy;
     }
 
     @Override

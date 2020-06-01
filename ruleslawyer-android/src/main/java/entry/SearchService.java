@@ -11,6 +11,10 @@ import repository.SearchRepository;
 
 import java.util.List;
 
+import static contract.RuleSource.ANY;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+
 public class SearchService {
     private static SearchRepository<AbstractRule> ruleRepository;
     private static SearchRepository<Card> cardRepository;
@@ -23,12 +27,19 @@ public class SearchService {
         cardRepository = new SearchRepository<>(cards);
     }
 
-    public static List<SearchResult<AbstractRule>> getRuleSearchResults(RuleSearchRequest ruleSearchRequest) {
-
-        return ruleRepository.getSearchResult(ruleSearchRequest);
+    public static List<AbstractRule> getRuleSearchResults(String input) {
+        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(asList(input.split(" ")), ANY, 0);
+        return ruleRepository.getSearchResult(ruleSearchRequest)
+                .stream()
+                .map(SearchResult::getEntry)
+                .collect(toList());
     }
 
-    public static List<SearchResult<Card>> getCardSearchResults(CardSearchRequest cardSearchRequest) {
-        return cardRepository.getSearchResult(cardSearchRequest);
+    public static List<Card> getCardSearchResults(String input) {
+        CardSearchRequest cardSearchRequest = new CardSearchRequest(asList(input.split(" ")));
+        return cardRepository.getSearchResult(cardSearchRequest)
+                .stream()
+                .map(SearchResult::getEntry)
+                .collect(toList());
     }
 }
