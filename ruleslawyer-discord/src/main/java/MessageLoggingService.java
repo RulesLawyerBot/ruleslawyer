@@ -1,24 +1,34 @@
 import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.message.MessageAuthor;
+import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
 
+import java.util.List;
 import java.util.Optional;
 
 public class MessageLoggingService {
 
     private DiscordApi api;
     private TextChannel loggingChannel;
-    public static final Long DEV_SERVER_ID = 590180833118388255L;
+    private TextChannel joinLoggingChannel;
 
     public MessageLoggingService(DiscordApi api) {
         this.api = api;
-        loggingChannel = api.getServerById(DEV_SERVER_ID)
+
+        List<ServerChannel> devServerChannels = api.getServerById(ApplicationMain.DEV_SERVER_ID)
                 .get()
-                .getChannels()
-                .stream()
+                .getChannels();
+        loggingChannel = devServerChannels.stream()
                 .filter(channel -> channel.getName().equals("log"))
+                .findFirst()
+                .get()
+                .asTextChannel()
+                .get();
+
+        joinLoggingChannel = devServerChannels.stream()
+                .filter(channel -> channel.getName().equals("join-log"))
                 .findFirst()
                 .get()
                 .asTextChannel()
@@ -42,5 +52,10 @@ public class MessageLoggingService {
 
     public void logOutput(String message) {
         loggingChannel.sendMessage(message);
+    }
+
+    public void logJoin(Server server) {
+        joinLoggingChannel.sendMessage(":tada: RulesLawyer was just added to " + server.getName() + " with " + server.getMembers().size() + " members. +" +
+                "RulesLawyer is now running on " + api.getServers().size() + " servers.");
     }
 }

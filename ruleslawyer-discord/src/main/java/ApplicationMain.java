@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static chat_platform.HelpMessageService.MAIN_HELP;
 import static contract.RequestSource.DISCORD;
+import static org.javacord.api.util.logging.ExceptionLogger.get;
 
 public class ApplicationMain {
 
@@ -22,8 +23,9 @@ public class ApplicationMain {
     private static MessageDeletionService messageDeletionService;
     private static MessageLoggingService messageLoggingService;
     private static AdministratorCommandsService administratorCommandsService;
+    public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.4.1 / IKO / {{help}}";
+    private static final String CURRENT_VERSION = "Version 1.5.0 / IKO / {{help}}";
 
     public static void main(String[] args) {
 
@@ -45,18 +47,15 @@ public class ApplicationMain {
         administratorCommandsService = new AdministratorCommandsService(api);
 
         api.updateActivity(CURRENT_VERSION);
-
         api.addMessageCreateListener(ApplicationMain::handleMessageCreateEvent);
-
         api.addReactionAddListener(ApplicationMain::handleReactionAddEvent);
-
         api.addServerJoinListener(ApplicationMain::handleServerJoinEvent);
-
-        System.out.println("up");
+        System.out.println("Initialization complete");
     }
 
     private static void handleServerJoinEvent(ServerJoinEvent event) {
-        messageLoggingService.logOutput(":tada: RulesLawyer was just added to " + event.getServer().getName());
+        messageLoggingService.logJoin(event.getServer());
+
         Optional<TextChannel> generalChannel = ServerJoinHelpService.getChannelToSendMessage(event);
         generalChannel.ifPresent(channel -> channel.sendMessage(MAIN_HELP));
     }
@@ -67,7 +66,7 @@ public class ApplicationMain {
         }
     }
 
-    public static void handleMessageCreateEvent(MessageCreateEvent event) {
+    private static void handleMessageCreateEvent(MessageCreateEvent event) {
         Optional<User> messageSender = event.getMessageAuthor().asUser();
         if (messageSender.isPresent() && !messageSender.get().isBot()){
             List<String> output = chatMessageService.processMessage(event.getMessageContent());
@@ -85,7 +84,7 @@ public class ApplicationMain {
             administratorCommandsService.processCommand(event.getMessage().getContent(), event.getChannel());
         }
         if (event.getMessageAuthor().isYourself()) {
-            event.getMessage().addReaction("✅");
+            event.getMessage().addReaction(":white_check_mark:").exceptionally(get());
         }
         event.getApi().updateActivity(CURRENT_VERSION);
     }
