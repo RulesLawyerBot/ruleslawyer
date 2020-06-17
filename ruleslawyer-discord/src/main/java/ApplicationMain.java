@@ -3,7 +3,7 @@ import contract.rules.AbstractRule;
 import ingestion.rule.JsonRuleIngestionService;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
-import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
@@ -15,7 +15,6 @@ import java.util.Optional;
 
 import static chat_platform.HelpMessageService.MAIN_HELP;
 import static contract.RequestSource.DISCORD;
-import static org.javacord.api.util.logging.ExceptionLogger.get;
 
 public class ApplicationMain {
 
@@ -30,7 +29,6 @@ public class ApplicationMain {
     public static void main(String[] args) {
 
         String discordToken = args[0];
-        messageDeletionService = new MessageDeletionService();
 
         DiscordApi api = new DiscordApiBuilder()
                 .setToken(discordToken)
@@ -43,6 +41,7 @@ public class ApplicationMain {
             System.exit(-1);
         }
 
+        messageDeletionService = new MessageDeletionService(api);
         messageLoggingService = new MessageLoggingService(api);
         administratorCommandsService = new AdministratorCommandsService(api);
 
@@ -56,7 +55,7 @@ public class ApplicationMain {
     private static void handleServerJoinEvent(ServerJoinEvent event) {
         messageLoggingService.logJoin(event.getServer());
 
-        Optional<TextChannel> generalChannel = ServerJoinHelpService.getChannelToSendMessage(event);
+        Optional<ServerTextChannel> generalChannel = ServerJoinHelpService.getChannelToSendMessage(event);
         generalChannel.ifPresent(channel -> channel.sendMessage(MAIN_HELP));
     }
 
@@ -84,7 +83,7 @@ public class ApplicationMain {
             administratorCommandsService.processCommand(event.getMessage().getContent(), event.getChannel());
         }
         if (event.getMessageAuthor().isYourself()) {
-            event.getMessage().addReaction(":white_check_mark:").exceptionally(get());
+            event.getMessage().addReaction("javacord:" + MessageDeletionService.DELETE_EMOTE_ID);
         }
         event.getApi().updateActivity(CURRENT_VERSION);
     }

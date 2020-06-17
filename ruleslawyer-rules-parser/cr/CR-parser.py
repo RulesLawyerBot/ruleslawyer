@@ -64,26 +64,28 @@ def main():
     write("CR-parsed.json", output)
 
     # Glossary
-    output = []
+    output = RuleHeader("Glossary", [])
     line_builder = ""
     current_rule = None
     while True:
-        line = file.next_line()
+        line = file.next_line().replace('“', '"').replace('”', '"').replace("’", "'")
         if line == "Credits":
             break
         if len(line) == 0:
             if current_rule:
                 current_rule.subrules.append(Rule(line_builder.strip()))
-                output.append(current_rule)
+                output.subrules.append(current_rule)
+                line_builder = ""
             current_rule = None
         else:
             if not current_rule:
-                current_rule = RuleHeader(line, [])
+                current_rule = RuleSubHeader(line, [])
             else:
                 line_builder = line_builder + " " + line
 
+    print(output)
     clear("CRG-parsed.json")
-    write("CRG-parsed.json", output)
+    write("CRG-parsed.json", [output])
 
 
 if __name__ == "__main__":

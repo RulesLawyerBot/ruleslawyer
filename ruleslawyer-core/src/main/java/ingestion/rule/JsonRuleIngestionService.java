@@ -29,7 +29,7 @@ public class JsonRuleIngestionService {
         try {
             List<AbstractRule> rules = new ArrayList<>();
             rules.addAll(getFlattenedRules("/CR-parsed.json", CR));
-            //rules.addAll(getRules("/CRG-parsed.json", CR)); TODO
+            rules.addAll(getRules("/CRG-parsed.json", CR));
             rules.addAll(getRules("/JAR-parsed.json", JAR));
             rules.addAll(getRules("/IPG-parsed.json", IPG));
             rules.addAll(getRules("/MTR-parsed.json", MTR));

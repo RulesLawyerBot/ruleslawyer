@@ -55,7 +55,7 @@ public class MessageLoggingService {
     }
 
     public void logJoin(Server server) {
-        joinLoggingChannel.sendMessage(":tada: RulesLawyer was just added to " + server.getName() + " with " + server.getMembers().size() + " members. +" +
+        joinLoggingChannel.sendMessage(":tada: RulesLawyer was just added to " + server.getName() + " with " + server.getMembers().size() + " members. " +
                 "RulesLawyer is now running on " + api.getServers().size() + " servers.");
     }
 }

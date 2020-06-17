@@ -24,7 +24,7 @@ public class RuleSearchRepositoryTest {
 
     @Test
     public void searchRules_IPG_EntireHeader_ExpectCorrectResults() {
-        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(singletonList("cheating"), IPG, 0);
+        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(singletonList("cheating"), IPG, 0, false);
 
         List<SearchResult<AbstractRule>> output = ruleSearchRepository.getSearchResult(ruleSearchRequest);
 
@@ -34,7 +34,7 @@ public class RuleSearchRepositoryTest {
 
     @Test
     public void searchRules_IPG_SomeRules_ExpectCorrectResults() {
-        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(singletonList("lies"), IPG, 0);
+        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(singletonList("lies"), IPG, 0, false);
 
         List<SearchResult<AbstractRule>> output = ruleSearchRepository.getSearchResult(ruleSearchRequest);
 
@@ -45,7 +45,7 @@ public class RuleSearchRepositoryTest {
 
     @Test
     public void searchRules_CR_SomeRule_IncludingSubRulesOfIncludedRule_ExpectOnlyTopLevelResults() {
-        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(singletonList("layer 7"), CR, 0);
+        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(singletonList("layer 7"), CR, 0, false);
 
         List<SearchResult<AbstractRule>> output = ruleSearchRepository.getSearchResult(ruleSearchRequest);
 

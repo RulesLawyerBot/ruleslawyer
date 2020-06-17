@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class HelpMessageService {
 
-    public static final String MAIN_HELP = "**RulesLawyer** is a discord bot that answers rules questions related to Magic: The Gathering. After reading this post, feel free to delete it by clicking the check mark reaction. You can bring up this post again by doing {{help}}.\n" +
+    public static final String MAIN_HELP = "**RulesLawyer** is a discord bot that answers rules questions related to Magic: The Gathering. After reading this post, feel free to delete it by clicking the reaction. You can bring up this post again by doing {{help}}.\n" +
             "\n" +
             "RulesLawyer is designed to be used like a search engine, where you can not only call it with specific citations, but with search terms. Call it with curly braces {{like this}}, roughly analogous to Scryfall.\n" +
             "\n" +
@@ -20,7 +20,7 @@ public class HelpMessageService {
             "\n" +
             "**Filtering**: Filter results by including the rule source after a pipe character like this: {{serious problems|JAR}}\n" +
             "\n" +
-            "**Pagination**: Is in development, I promise.\n" +
+            "**Pagination**: Paginate by including the page number after a pipe character like this: {{echo|p1}}. The first (default) page is page zero.\n" +
             "\n" +
             "**A note**: RulesLawyer has the capacity to determine which rules are most likely to be the ones you want, rather than just giving you random ones that match the search query. However, as with any relevancy algorithm, its an inexact science. The algorithm chooses which results to return based on relevancy, but uses a different ordering to determine what order to display the results within that page. So the result you want is unlikely to be the first result given.";
 
@@ -37,19 +37,14 @@ public class HelpMessageService {
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
             "Current rules version: Ikoria, Lair of Behemoths\n" +
-            "--Last updated: v1.4.1 5/19/2020--\n" +
-            "Added Oathbreaker rules.\n" +
-            "--Last major update: v1.4.0 4/12/2020--\n" +
-            "Rules database updated for Ikoria.\n" +
-            "Pagination is finally finished! Please let me know if there are any glaring bugs I may have missed.\n" +
-            "Pagination is zero-indexed (e.g. first page is page 0). If this drives you crazy, I apologize.\n" +
-            "Redesigned relevancy algorithm in light of some unintended results. (Read: Search results are more likely to return what you want them to)\n" +
+            "--Last updated: v1.5.0 TBD--\n" +
+            "Major back-end changes in preparation for deployment to other platforms. Stay tuned!\n" +
+            "Significant rewrites to many parts of the application- ingestion, relevancy, and printing. Results should be significantly cleaner.\n" +
+            "New custom (well, stolen) deletion emote!\n" +
+            "When Ruleslawyer is added to a new server, it will now be better about finding your server's \"general\" channel and posting its hello message there.\n" +
             "--Future development and known issues--\n" +
-            "Some issues with the parser for the current version of the Magic Tournament Rules.\n" +
-            "Some other parsing issues with unprintable characters. Blame WOTC for using weird symbols!\n" +
-            "Fuzzy string matching?\n" +
-            "5/18 B&R announcement doesn't have a corresponding MTR yet, so its not updated.\n" +
-            "Major relevancy algorithm changes that aren't quite ready yet.\n" +
+            "Still a ton of known parsing issues. Regardless, please report issues at {{help|about}}.\n" +
+            "Pagination by clicking left and right arrows (its a struggle)\n" +
             "```";
 
     public static final String NOT_FOUND = "I don't have that help file. Use {{help}} for the main help file.";

@@ -13,6 +13,7 @@ import repository.SearchRepository;
 import java.util.Arrays;
 import java.util.List;
 
+import static contract.RuleSource.valueOf;
 import static contract.searchRequests.builder.RuleSearchRequestBuilder.aRuleSearchRequest;
 import static contract.searchRequests.builder.RuleSearchRequestBuilder.fromRuleSearchRequest;
 import static java.lang.Integer.parseInt;
@@ -56,7 +57,7 @@ public class ChatMessageService {
 
         List<SearchResult<AbstractRule>> searchResults = searchRepository.getSearchResult(searchRequest);
 
-        String queryInfo = rulePrinterService.printRequest(searchRequest);
+        String queryInfo = searchRequest.toString();
         RuleSearchResult searchResult = rulePrinterService. getOutputFromRawResults(searchResults, searchRequest);
         if (searchResult.hasMore()) {
             return asList(queryInfo + "\n" + NEXTPAGE_MESSAGE + getQueryStringForNextPage(searchRequest), searchResult.getResult());
@@ -90,9 +91,13 @@ public class ChatMessageService {
                         } catch (NumberFormatException ignored) {
                             ruleSearchRequest.appendKeywords(getKeywordsFromSubquery(command));
                         }
-                    } else {
+                    }
+                    else if (command.equalsIgnoreCase("digital")) {
+                        ruleSearchRequest.setIsDigitalRuleRequest(true);
+                    }
+                    else {
                         try {
-                            ruleSearchRequest.setRuleSource(RuleSource.valueOf(command.toUpperCase()));
+                            ruleSearchRequest.setRuleSource(valueOf(command.toUpperCase()));
                         } catch (IllegalArgumentException ignored) {
                             ruleSearchRequest.appendKeywords(getKeywordsFromSubquery(command));
                         }

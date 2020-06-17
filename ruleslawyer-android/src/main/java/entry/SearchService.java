@@ -28,7 +28,7 @@ public class SearchService {
     }
 
     public static List<AbstractRule> getRuleSearchResults(String input) {
-        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(asList(input.split(" ")), ANY, 0);
+        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(asList(input.split(" ")), ANY, 0, false);
         return ruleRepository.getSearchResult(ruleSearchRequest)
                 .stream()
                 .map(SearchResult::getEntry)

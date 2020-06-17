@@ -21,7 +21,7 @@ public class RuleSearchTest {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
             String input = reader.readLine();
-            RuleSearchRequest request = new RuleSearchRequest(asList(input.split(" ")), ANY, 0);
+            RuleSearchRequest request = new RuleSearchRequest(asList(input.split(" ")), ANY, 0, false);
             List<SearchResult<AbstractRule>> results = repository.getSearchResult(request);
             String output = results.stream()
                     .map(SearchResult::getEntry)

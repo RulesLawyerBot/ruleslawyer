@@ -97,12 +97,6 @@ public abstract class AbstractRule implements Searchable {
         return text;
     }
 
-    private String getFullCitation() {
-        return getParentText() + subRules.stream()
-                .map(AbstractRule::getFullCitation)
-                .collect(joining("\n"));
-    }
-
     @Override
     public int compareTo(Object o) {
         if (!(o instanceof AbstractRule))

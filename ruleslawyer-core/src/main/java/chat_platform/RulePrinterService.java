@@ -17,14 +17,16 @@ import static contract.RequestSource.DISCORD;
 import static contract.RequestSource.SLACK;
 import static contract.RuleSource.ANY;
 import static java.lang.String.join;
+import static java.util.Collections.sort;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class RulePrinterService {
 
-    RequestSource requestSource;
-    String boldDelimiter;
-    Integer maxMessageLength;
+    private RequestSource requestSource;
+    private String boldDelimiter;
+    private String codeLineDelimiter;
+    private Integer maxMessageLength;
 
     private static final Integer DISCORD_MAX_MESSAGE_LENGTH = 2000;
     private static final Integer SLACK_MAX_MESSAGE_LENGTH = 10000;
@@ -33,10 +35,12 @@ public class RulePrinterService {
         this.requestSource = requestSource;
         if (requestSource == DISCORD) {
             boldDelimiter = "**";
+            codeLineDelimiter = "```";
             maxMessageLength = DISCORD_MAX_MESSAGE_LENGTH;
         }
         if (requestSource == SLACK) {
             boldDelimiter = "*";
+            codeLineDelimiter = "```";
             maxMessageLength = SLACK_MAX_MESSAGE_LENGTH;
         }
     }
@@ -58,7 +62,7 @@ public class RulePrinterService {
         }
     }
 
-    //note: modifies searchResults list
+    //modifies searchResults list
     private List<AbstractRule> getNextPageOfResults(List<SearchResult<AbstractRule>> searchResults) {
         List<AbstractRule> output = new ArrayList<>();
 
@@ -89,8 +93,8 @@ public class RulePrinterService {
 
     }
 
-    public String printRules(List<AbstractRule> rules) {
-        rules = rules.stream().sorted().collect(toList());
+    public String printRules(List<AbstractRule> inputRules) {
+        List<AbstractRule> rules = inputRules.stream().sorted().collect(toList());
         StringBuilder output = new StringBuilder();
         RuleHeader lastHeader = null;
         RuleSubheader lastSubheader = null;
@@ -99,18 +103,16 @@ public class RulePrinterService {
             if (elem.getClass() == RuleHeader.class) {
                 lastHeader = (RuleHeader) elem;
                 output.append(printRule(elem));
-                continue;
             }
-            if (elem.getClass() == RuleSubheader.class) {
+            else if (elem.getClass() == RuleSubheader.class) {
                 RuleHeader thisHeader = ((RuleSubheader)elem).getHeader();
                 if (lastHeader != thisHeader) {
                     output.append(printBaseRuleHeader(thisHeader));
                     lastHeader = thisHeader;
                 }
                 output.append(printRule(elem));
-                continue;
             }
-            if (elem.getClass() == Rule.class) {
+            else if (elem.getClass() == Rule.class) {
                 RuleHeader thisHeader = ((Rule)elem).getHeader();
                 RuleSubheader thisSubheader = ((Rule)elem).getSubHeader();
                 if (lastSubheader != thisSubheader) {
@@ -122,7 +124,6 @@ public class RulePrinterService {
                     lastSubheader = thisSubheader;
                 }
                 output.append(printRule(elem));
-                continue;
             }
         }
         return output.toString().replace("\n\n", "\n");
@@ -154,7 +155,7 @@ public class RulePrinterService {
     }
 
     private String printBaseRuleHeader(RuleHeader ruleHeader) {
-        return boldDelimiter + ruleHeader.getRuleSource() + " " + ruleHeader.getText() + boldDelimiter + "\n";
+        return "\n> " + boldDelimiter + ruleHeader.getRuleSource() + " " + ruleHeader.getText() + boldDelimiter + "\n";
     }
 
     public String printRule(RuleSubheader ruleSubheader) {
@@ -169,22 +170,11 @@ public class RulePrinterService {
     }
 
     private String printBaseRuleSubheader(RuleSubheader ruleSubheader) {
-        return "> " + ruleSubheader.getText() + "\n";
+        return ruleSubheader.getText() + "\n";
     }
 
     public String printRule(Rule rule) {
-        return "```" + rule.getText() + "```";
-    }
-
-    public String printRequest(RuleSearchRequest ruleSearchRequest) {
-        String baseString = "Search keywords: \"" + join("\" \"", ruleSearchRequest.getKeywords()) + "\"";
-        if (ruleSearchRequest.getPageNumber() != 0) {
-            baseString += " - Page number: " + ruleSearchRequest.getPageNumber();
-        }
-        if (ruleSearchRequest.getRuleSource() != ANY) {
-            baseString += " - Displaying results filtered to: " + ruleSearchRequest.getRuleSource();
-        }
-        return baseString;
+        return codeLineDelimiter + rule.getText() + codeLineDelimiter;
     }
 
     public String printRequestToQuery(RuleSearchRequest ruleSearchRequest) {
@@ -194,6 +184,5 @@ public class RulePrinterService {
             return "{{" + keywordsString + "|" + pageString + "}}";
         }
         return "{{" + keywordsString + "|" + ruleSearchRequest.getRuleSource().toString() + "|" + pageString + "}}";
-
     }
 }

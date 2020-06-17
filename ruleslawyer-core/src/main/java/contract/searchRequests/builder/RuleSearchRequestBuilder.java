@@ -13,6 +13,7 @@ public class RuleSearchRequestBuilder {
     private RuleSource ruleSource;
     private List<String> keywords;
     private Integer pageNumber;
+    private Boolean isDigitalRuleRequest;
 
     public static RuleSearchRequestBuilder aRuleSearchRequest() {
         return new RuleSearchRequestBuilder();
@@ -22,13 +23,15 @@ public class RuleSearchRequestBuilder {
         return aRuleSearchRequest()
                 .setRuleSource(ruleSearchRequest.getRuleSource())
                 .setPageNumber(ruleSearchRequest.getPageNumber())
-                .appendKeywords(ruleSearchRequest.getKeywords());
+                .appendKeywords(ruleSearchRequest.getKeywords())
+                .setIsDigitalRuleRequest(ruleSearchRequest.isDigitalRuleRequest());
     }
 
     private RuleSearchRequestBuilder() {
         ruleSource = ANY;
         pageNumber = 0;
         keywords = new ArrayList<>();
+        isDigitalRuleRequest = false;
     }
 
     public RuleSearchRequestBuilder setRuleSource(RuleSource ruleSource) {
@@ -46,8 +49,12 @@ public class RuleSearchRequestBuilder {
         return this;
     }
 
-    public RuleSearchRequest build() {
-        return new RuleSearchRequest(keywords, ruleSource, pageNumber);
+    public RuleSearchRequestBuilder setIsDigitalRuleRequest(Boolean isDigitalRuleRequest) {
+        this.isDigitalRuleRequest = isDigitalRuleRequest;
+        return this;
     }
 
+    public RuleSearchRequest build() {
+        return new RuleSearchRequest(keywords, ruleSource, pageNumber, isDigitalRuleRequest);
+    }
 }
