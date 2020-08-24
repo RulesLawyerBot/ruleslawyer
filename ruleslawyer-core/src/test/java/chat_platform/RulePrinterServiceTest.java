@@ -1,5 +1,6 @@
 package chat_platform;
 
+import chat_platform.printing.RulePrinterService;
 import contract.rules.AbstractRule;
 import contract.rules.RuleHeader;
 import org.junit.Ignore;

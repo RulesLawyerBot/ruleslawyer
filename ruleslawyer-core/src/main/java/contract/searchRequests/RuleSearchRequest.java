@@ -4,10 +4,10 @@ import contract.RuleSource;
 import contract.rules.AbstractRule;
 
 import java.util.List;
-import java.util.Objects;
 
 import static contract.RuleSource.ANY;
 import static java.lang.String.join;
+import static java.util.Objects.hash;
 
 public class RuleSearchRequest extends SearchRequest<AbstractRule> {
     public RuleSearchRequest(List<String> keywords, RuleSource ruleSource, Integer pageNumber, Boolean isDigitalRuleRequest) {
@@ -38,17 +38,17 @@ public class RuleSearchRequest extends SearchRequest<AbstractRule> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(ruleSource);
+        return hash(ruleSource);
     }
 
     @Override
     public String toString() {
-        String baseString = "Search keywords: \"" + join("\" \"", getKeywords()) + "\"";
+        String baseString = join(" / ", getKeywords());
         if (getPageNumber() != 0) {
-            baseString += " - Page number: " + getPageNumber();
+            baseString += " | Page " + getPageNumber();
         }
         if (getRuleSource() != ANY) {
-            baseString += " - Displaying results filtered to: " + getRuleSource();
+            baseString = getRuleSource() + " | " + baseString;
         }
         return baseString;
     }

@@ -8,6 +8,7 @@ from contract.rules import RuleHeader
 from contract.rules import RuleSubHeader
 from contract.rules import Rule
 
+
 def main():
     file = FileData(getPDF("IPG.pdf"))
 

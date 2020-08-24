@@ -1,6 +1,13 @@
-import chat_platform.ChatMessageService;
+package app;
+
+import org.javacord.api.entity.channel.TextChannel;
+import search.SearchService;
+import search.contract.DiscordSearchResult;
+import utils.AdministratorCommandsService;
 import contract.rules.AbstractRule;
 import ingestion.rule.JsonRuleIngestionService;
+import utils.MessageLoggingService;
+import utils.MessageDeletionService;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.channel.ServerTextChannel;
@@ -9,22 +16,22 @@ import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
 import org.javacord.api.event.server.ServerJoinEvent;
 import repository.SearchRepository;
+import utils.ServerJoinHelpService;
 
 import java.util.List;
 import java.util.Optional;
 
 import static chat_platform.HelpMessageService.MAIN_HELP;
-import static contract.RequestSource.DISCORD;
 
 public class ApplicationMain {
 
-    private static ChatMessageService chatMessageService;
+    private static SearchService searchService;
     private static MessageDeletionService messageDeletionService;
     private static MessageLoggingService messageLoggingService;
     private static AdministratorCommandsService administratorCommandsService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.5.0 / IKO / {{help}}";
+    private static final String CURRENT_VERSION = "DEV Version 1.6.0 / IKO";
 
     public static void main(String[] args) {
 
@@ -36,7 +43,7 @@ public class ApplicationMain {
                 .join();
         try {
             List<AbstractRule> rules = JsonRuleIngestionService.getRules();
-            chatMessageService = new ChatMessageService(DISCORD, new SearchRepository<>(rules));
+            searchService = new SearchService(new SearchRepository<>(rules));
         } catch (Exception ignored) {
             System.exit(-1);
         }
@@ -68,16 +75,21 @@ public class ApplicationMain {
     private static void handleMessageCreateEvent(MessageCreateEvent event) {
         Optional<User> messageSender = event.getMessageAuthor().asUser();
         if (messageSender.isPresent() && !messageSender.get().isBot()){
-            List<String> output = chatMessageService.processMessage(event.getMessageContent());
-            if (output.size() != 0) {
+            String author = event.getServer().isPresent() ?
+                    messageSender.get().getDisplayName(event.getServer().get()) :
+                    messageSender.get().getName();
+            DiscordSearchResult result = searchService.getSearchResult(author, event.getMessageContent());
+            if (result != null) {
                 messageLoggingService.logInput(event);
+                TextChannel channel = event.getChannel();
+                if (result.isEmbed()) {
+                    channel.sendMessage(result.getEmbed());
+                    messageLoggingService.logOutput(result.getEmbed());
+                } else {
+                    channel.sendMessage(result.getText());
+                    messageLoggingService.logOutput(result.getText());
+                }
             }
-            output.forEach(message ->  {
-                        event.getChannel().sendMessage(message);
-                        messageLoggingService.logOutput(message);
-                        System.out.println(message);
-                    }
-            );
         }
         if (messageSender.isPresent() && messageSender.get().isBotOwner()) {
             administratorCommandsService.processCommand(event.getMessage().getContent(), event.getChannel());

@@ -1,3 +1,6 @@
+package utils;
+
+import app.ApplicationMain;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.emoji.CustomEmoji;
 import org.javacord.api.entity.message.MessageAuthor;

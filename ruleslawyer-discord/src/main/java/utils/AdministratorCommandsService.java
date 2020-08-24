@@ -1,8 +1,17 @@
+package utils;
+
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.Nameable;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.server.Server;
+import org.javacord.api.entity.user.User;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 public class AdministratorCommandsService {
 
@@ -16,7 +25,7 @@ public class AdministratorCommandsService {
         if(message.equalsIgnoreCase("shut down ruleslawyer")) {
             shutDown();
         }
-        if(message.equalsIgnoreCase("ruleslawyer list servers")) {
+        if(message.equalsIgnoreCase("ruleslawyer status")) {
             listServers(channel);
         }
     }
@@ -27,16 +36,11 @@ public class AdministratorCommandsService {
     }
 
     private void listServers(TextChannel channel) {
-        Integer numServers = api.getServers().size();
-        channel.sendMessage("RulesLawyer is currently running on " + numServers + " servers.");
-        String allServers = api.getServers().stream()
-                .map(Nameable::getName)
-                .collect(joining(", "));
-        if (allServers.length() < 2000) {
-            channel.sendMessage(allServers);
-        } else {
-            channel.sendMessage(allServers.substring(0, 2000));
-            channel.sendMessage(allServers.substring(2000));
-        }
+        Collection<Server> servers = api.getServers();
+        Integer totalUsers = (int) servers.stream()
+                .map(Server::getMembers)
+                .flatMap(Collection::stream)
+                .count();
+        channel.sendMessage("RulesLawyer is currently running on " + servers.size() + " servers with " + totalUsers + " total users.");
     }
 }

@@ -1,6 +1,10 @@
+package utils;
+
+import app.ApplicationMain;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
@@ -48,6 +52,10 @@ public class MessageLoggingService {
         String query = event.getMessage().getContent();
         String output = "**" + username + " (" + displayname + ") asked for: " + query + "**";
         loggingChannel.sendMessage(output);
+    }
+
+    public void logOutput(EmbedBuilder message) {
+        loggingChannel.sendMessage(message);
     }
 
     public void logOutput(String message) {

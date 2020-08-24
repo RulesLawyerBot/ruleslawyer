@@ -1,4 +1,4 @@
-package chat_platform;
+package chat_platform.printing;
 
 import contract.RequestSource;
 import contract.RuleSearchResult;
@@ -15,12 +15,11 @@ import java.util.List;
 
 import static contract.RequestSource.DISCORD;
 import static contract.RequestSource.SLACK;
-import static contract.RuleSource.ANY;
-import static java.lang.String.join;
-import static java.util.Collections.sort;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
+/*Deprecated. Saved for possible future use in other platforms.*/
+@Deprecated
 public class RulePrinterService {
 
     private RequestSource requestSource;
@@ -45,7 +44,6 @@ public class RulePrinterService {
         }
     }
 
-    //TODO testcase
     public RuleSearchResult getOutputFromRawResults(List<SearchResult<AbstractRule>> searchResults, RuleSearchRequest ruleSearchRequest) {
         Integer page = ruleSearchRequest.getPageNumber();
 
@@ -175,14 +173,5 @@ public class RulePrinterService {
 
     public String printRule(Rule rule) {
         return codeLineDelimiter + rule.getText() + codeLineDelimiter;
-    }
-
-    public String printRequestToQuery(RuleSearchRequest ruleSearchRequest) {
-        String keywordsString = join("|", ruleSearchRequest.getKeywords());
-        String pageString = "p" + ruleSearchRequest.getPageNumber();
-        if (ruleSearchRequest.getRuleSource() == ANY) {
-            return "{{" + keywordsString + "|" + pageString + "}}";
-        }
-        return "{{" + keywordsString + "|" + ruleSearchRequest.getRuleSource().toString() + "|" + pageString + "}}";
     }
 }

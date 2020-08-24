@@ -8,6 +8,7 @@ from contract.rules import RuleHeader
 from contract.rules import RuleSubHeader
 from contract.rules import Rule
 
+LINE_ENDINGS = [".", ")", '"']
 
 def main():
     file = FileData(getPDF("MTR.pdf"))
@@ -22,7 +23,7 @@ def main():
             emptyline_flag = True
             continue
 
-        is_new_line = (line[0].isupper() or not line[0].isalpha()) and (emptyline_flag or (len(line_builder) == 0 or not line_builder[-2].isalpha()) or len(line_builder) < 75)
+        is_new_line = (line[0].isupper() or not line[0].isalpha()) and (emptyline_flag or (len(line_builder) == 0 or line_builder[-2] in LINE_ENDINGS) or len(line_builder) < 75)
 
         if is_new_line and len(line_builder) != 0:
             normalized_text.append(line_builder)
@@ -43,11 +44,17 @@ def main():
         if line.startswith("Appendix"):
             break
 
-        if (line[0].isnumeric() and line[1] == ".") or (line[0:1].isnumeric() and line[2] == "."):  # header
+        if ((line[0].isnumeric() and line[1] == ".") or (line[0:1].isnumeric() and line[2] == ".")) and line[-2].isalpha():  # header
+            print(line)
+            if current_subheader:
+                current_header.subrules.append(current_subheader)
+                current_subheader = None
             if current_header:
                 rules.append(current_header)
             current_header = RuleHeader(line, [])
         elif line[0].isnumeric() or line[0] == "*":  # subsection
+            if not current_subheader:
+                current_subheader = RuleSubHeader(line, [])
             current_subheader.subrules.append(Rule(line))
         else:  # subheader
             if current_subheader:
@@ -57,7 +64,6 @@ def main():
 
     clear("MTR-parsed.json")
     write("MTR-parsed.json", rules)
-
 
 
 if __name__ == "__main__":
