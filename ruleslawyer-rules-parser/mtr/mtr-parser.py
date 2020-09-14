@@ -10,6 +10,7 @@ from contract.rules import Rule
 
 LINE_ENDINGS = [".", ")", '"']
 
+
 def main():
     file = FileData(getPDF("MTR.pdf"))
     normalized_text = []

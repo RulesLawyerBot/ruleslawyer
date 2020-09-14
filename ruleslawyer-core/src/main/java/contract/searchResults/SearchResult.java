@@ -1,5 +1,6 @@
-package contract;
+package contract.searchResults;
 
+import contract.Searchable;
 import exception.NotYetImplementedException;
 
 public class SearchResult<T extends Searchable> implements Comparable {

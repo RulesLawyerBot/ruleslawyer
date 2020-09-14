@@ -1,6 +1,6 @@
 package repository;
 
-import contract.SearchResult;
+import contract.searchResults.SearchResult;
 import contract.Searchable;
 import contract.searchRequests.SearchRequest;
 import java.util.Collection;

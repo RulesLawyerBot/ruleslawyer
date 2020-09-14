@@ -2,7 +2,7 @@ package search;
 
 import chat_platform.ChatMessageService;
 import chat_platform.HelpMessageService;
-import contract.SearchResult;
+import contract.searchResults.SearchResult;
 import contract.rules.AbstractRule;
 import contract.rules.Rule;
 import contract.rules.RuleHeader;

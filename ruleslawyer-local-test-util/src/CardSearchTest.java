@@ -1,4 +1,4 @@
-import contract.SearchResult;
+import contract.searchResults.SearchResult;
 import contract.cards.Card;
 import contract.searchRequests.CardSearchRequest;
 import ingestion.card.JsonCardIngestionService;

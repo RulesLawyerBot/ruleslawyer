@@ -36,15 +36,17 @@ public class HelpMessageService {
 
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
-            "Current rules version: Ikoria, Lair of Behemoths\n" +
-            "--Last updated: v1.5.0 TBD--\n" +
-            "Major back-end changes in preparation for deployment to other platforms. Stay tuned!\n" +
-            "Significant rewrites to many parts of the application- ingestion, relevancy, and printing. Results should be significantly cleaner.\n" +
-            "New custom (well, stolen) deletion emote!\n" +
-            "When Ruleslawyer is added to a new server, it will now be better about finding your server's \"general\" channel and posting its hello message there.\n" +
+            "Current rules version: Jumpstart\n" +
+            "--Last patch release: v1.6.0 2020-09-13-\n" +
+            "Finally updated rules version for Jumpstart and M21. Sorry for being late :/\n" +
+            "Discord implementation now uses embeds. This required a major rewrite, so let me know if anything doesn't work as expected.\n" +
+            "Hopefully most major MTR parsing issues are gone.\n" +
             "--Future development and known issues--\n" +
-            "Still a ton of known parsing issues. Regardless, please report issues at {{help|about}}.\n" +
-            "Pagination by clicking left and right arrows (its a struggle)\n" +
+            "ZNR rules updates will be out as 1.6.1 as soon as they are released.\n" +
+            "Digital events rules are WIP.\n" +
+            "Fuzzy searching is actually being worked on. I promise!\n" +
+            "Still fine-tuning the parser.\n" +
+            "Android version is actively being worked on. Slack is pending me finding a deployment model that actually works with their API and isn't expensive." +
             "```";
 
     public static final String NOT_FOUND = "I don't have that help file. Use {{help}} for the main help file.";

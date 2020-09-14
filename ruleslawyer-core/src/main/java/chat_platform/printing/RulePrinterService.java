@@ -1,8 +1,8 @@
 package chat_platform.printing;
 
 import contract.RequestSource;
-import contract.RuleSearchResult;
-import contract.SearchResult;
+import contract.searchResults.RuleSearchResult;
+import contract.searchResults.SearchResult;
 import contract.rules.AbstractRule;
 import contract.rules.Rule;
 import contract.rules.RuleHeader;

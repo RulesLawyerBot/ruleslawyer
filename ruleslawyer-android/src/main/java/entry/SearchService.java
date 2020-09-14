@@ -1,6 +1,6 @@
 package entry;
 
-import contract.SearchResult;
+import contract.searchResults.SearchResult;
 import contract.cards.Card;
 import contract.rules.AbstractRule;
 import contract.searchRequests.CardSearchRequest;

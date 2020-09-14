@@ -1,4 +1,4 @@
-import contract.SearchResult;
+import contract.searchResults.SearchResult;
 import contract.rules.AbstractRule;
 import contract.searchRequests.RuleSearchRequest;
 import ingestion.rule.JsonRuleIngestionService;

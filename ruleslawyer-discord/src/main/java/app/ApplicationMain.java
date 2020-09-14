@@ -31,7 +31,7 @@ public class ApplicationMain {
     private static AdministratorCommandsService administratorCommandsService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "DEV Version 1.6.0 / IKO";
+    private static final String CURRENT_VERSION = "Version 1.6.0 / JMP";
 
     public static void main(String[] args) {
 

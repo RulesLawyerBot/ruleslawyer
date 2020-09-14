@@ -1,6 +1,6 @@
 package repository;
 
-import contract.SearchResult;
+import contract.searchResults.SearchResult;
 import contract.rules.AbstractRule;
 import contract.rules.RuleHeader;
 import contract.searchRequests.RuleSearchRequest;

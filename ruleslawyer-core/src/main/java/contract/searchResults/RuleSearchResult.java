@@ -1,5 +1,7 @@
-package contract;
+package contract.searchResults;
 
+// Why did I even make this?
+@Deprecated
 public class RuleSearchResult {
 
     private String result;
