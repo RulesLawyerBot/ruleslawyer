@@ -38,13 +38,13 @@ public class HelpMessageService {
             "--RulesLawyer patch notes--\n" +
             "Current rules version: Zendikar Rising\n" +
             "--Last patch release: v1.6.1 2020-11-01-\n" +
-            "I don't want to talk about it. https://twitter.com/RulesLawyerBot/status/1323051063407095809\n" +
+            "Some fixes for this: https://twitter.com/RulesLawyerBot/status/1323051063407095809\n" +
+            "Due to API permissions issues, message deletion and Server join intro messages have been disabled. I am currently harassing Discord to fix this.\n" +
             "--Last major release: v1.6.0--\n" +
             "New rules versions.\n" +
             "Discord implementation now uses embeds. This required a major rewrite, so let me know if anything doesn't work as expected.\n" +
             "Hopefully most major MTR parsing issues are gone.\n" +
             "--Future development and known issues--\n" +
-            "Discord has disabled my Privileged Gateway Intents, so some functions may be missing. I'm trying to get them back.\n" +
             "Actively working on various error mitigation.\n" +
             "Digital events rules are WIP.\n" +
             "Fuzzy searching is actually being worked on. I promise!\n" +

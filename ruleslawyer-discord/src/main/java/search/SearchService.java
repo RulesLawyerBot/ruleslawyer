@@ -79,6 +79,8 @@ public class SearchService {
         } else {
             footer += "No more pages";
         }
+        //TEMPORARY MESSAGE DUE TO LACK OF INTENT
+        footer += " | Message deletion is disabled. {{help|dev}} for details";
 
         result.setFooter(footer);
 

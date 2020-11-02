@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+//DISABLED DUE TO LACK OF INTENT
+@Deprecated
 public class ServerJoinHelpService {
 
     public static Optional<ServerTextChannel> getChannelToSendMessage(ServerJoinEvent event) {

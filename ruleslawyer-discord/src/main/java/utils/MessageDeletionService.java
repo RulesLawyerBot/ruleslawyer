@@ -8,6 +8,8 @@ import org.javacord.api.event.message.reaction.ReactionAddEvent;
 
 import java.util.Optional;
 
+// DISABLED DUE TO LACK OF INTENT
+@Deprecated
 public class MessageDeletionService {
     public static final Long DELETE_EMOTE_ID = 719583524176265256L;
     private CustomEmoji DELETE_EMOJI;
@@ -23,6 +25,6 @@ public class MessageDeletionService {
         if (!messageAuthor.isPresent() || !emoji.isPresent()) {
             return false;
         }
-        return messageAuthor.get().isYourself() && emoji.get().equals(DELETE_EMOJI) && !event.getUser().isBot();
+        return messageAuthor.get().isYourself() && emoji.get().equals(DELETE_EMOJI) && !event.getUser().get().isBot();
     }
 }

@@ -31,7 +31,8 @@ public class ApplicationMain {
     private static AdministratorCommandsService administratorCommandsService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.6.1 / ZNR";
+    //TEMPORARY HELP ADD DUE TO LACK OF INTENT
+    private static final String CURRENT_VERSION = "Version 1.6.1 / ZNR / {{help|dev}}";
 
     public static void main(String[] args) {
 
@@ -54,8 +55,8 @@ public class ApplicationMain {
 
         api.updateActivity(CURRENT_VERSION);
         api.addMessageCreateListener(ApplicationMain::handleMessageCreateEvent);
-        api.addReactionAddListener(ApplicationMain::handleReactionAddEvent);
         // DISABLED DUE TO LACK OF INTENT
+        //api.addReactionAddListener(ApplicationMain::handleReactionAddEvent);
         //api.addServerJoinListener(ApplicationMain::handleServerJoinEvent);
         System.out.println("Initialization complete");
     }
@@ -71,11 +72,14 @@ public class ApplicationMain {
     }
     */
 
+    // DISABLED DUE TO LACK OF INTENT
+    /*
     private static void handleReactionAddEvent(ReactionAddEvent event) {
         if (messageDeletionService.shouldDeleteMessage(event)) {
             event.deleteMessage();
         }
     }
+    */
 
     private static void handleMessageCreateEvent(MessageCreateEvent event) {
         Optional<User> messageSender = event.getMessageAuthor().asUser();
@@ -99,9 +103,12 @@ public class ApplicationMain {
         if (messageSender.isPresent() && messageSender.get().isBotOwner()) {
             administratorCommandsService.processCommand(event.getMessage().getContent(), event.getChannel());
         }
+        // DISABLED DUE TO LACK OF INTENT
+        /*
         if (event.getMessageAuthor().isYourself()) {
             event.getMessage().addReaction("javacord:" + MessageDeletionService.DELETE_EMOTE_ID);
         }
+        */
         event.getApi().updateActivity(CURRENT_VERSION);
     }
 }
