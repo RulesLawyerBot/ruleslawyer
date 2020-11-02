@@ -31,7 +31,7 @@ public class ApplicationMain {
     private static AdministratorCommandsService administratorCommandsService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.6.0 / JMP";
+    private static final String CURRENT_VERSION = "Version 1.6.1 / ZNR";
 
     public static void main(String[] args) {
 
@@ -55,16 +55,21 @@ public class ApplicationMain {
         api.updateActivity(CURRENT_VERSION);
         api.addMessageCreateListener(ApplicationMain::handleMessageCreateEvent);
         api.addReactionAddListener(ApplicationMain::handleReactionAddEvent);
-        api.addServerJoinListener(ApplicationMain::handleServerJoinEvent);
+        // DISABLED DUE TO LACK OF INTENT
+        //api.addServerJoinListener(ApplicationMain::handleServerJoinEvent);
         System.out.println("Initialization complete");
     }
 
+    // DISABLED DUE TO LACK OF INTENT
+    /*
     private static void handleServerJoinEvent(ServerJoinEvent event) {
         messageLoggingService.logJoin(event.getServer());
 
         Optional<ServerTextChannel> generalChannel = ServerJoinHelpService.getChannelToSendMessage(event);
         generalChannel.ifPresent(channel -> channel.sendMessage(MAIN_HELP));
+        generalChannel.ifPresent(channel -> messageLoggingService.logJoinMessageSuccess(channel.getServer()));
     }
+    */
 
     private static void handleReactionAddEvent(ReactionAddEvent event) {
         if (messageDeletionService.shouldDeleteMessage(event)) {

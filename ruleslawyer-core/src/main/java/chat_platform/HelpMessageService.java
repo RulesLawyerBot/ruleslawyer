@@ -26,7 +26,7 @@ public class HelpMessageService {
 
     public static final String HELP_ABOUT = "**About RulesLawyer**\n" +
             "\n" +
-            "RulesLawyer is written by Elaine Cao, Level 2 from Saint Louis, Missouri.\n" +
+            "RulesLawyer is written by Elaine Cao, Level 2 from Calgary, Alberta.\n" +
             "\n" +
             "RulesLawyer uses material that is copyrighted to Wizards of the Coast and is used under fair use doctrine. Feel free to do whatever with it as long as you credit me.\n" +
             "\n" +
@@ -36,17 +36,20 @@ public class HelpMessageService {
 
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
-            "Current rules version: Jumpstart\n" +
-            "--Last patch release: v1.6.0 2020-09-13-\n" +
-            "Finally updated rules version for Jumpstart and M21. Sorry for being late :/\n" +
+            "Current rules version: Zendikar Rising\n" +
+            "--Last patch release: v1.6.1 2020-11-01-\n" +
+            "I don't want to talk about it. https://twitter.com/RulesLawyerBot/status/1323051063407095809\n" +
+            "--Last major release: v1.6.0--\n" +
+            "New rules versions.\n" +
             "Discord implementation now uses embeds. This required a major rewrite, so let me know if anything doesn't work as expected.\n" +
             "Hopefully most major MTR parsing issues are gone.\n" +
             "--Future development and known issues--\n" +
-            "ZNR rules updates will be out as 1.6.1 as soon as they are released.\n" +
+            "Discord has disabled my Privileged Gateway Intents, so some functions may be missing. I'm trying to get them back.\n" +
+            "Actively working on various error mitigation.\n" +
             "Digital events rules are WIP.\n" +
             "Fuzzy searching is actually being worked on. I promise!\n" +
             "Still fine-tuning the parser.\n" +
-            "Android version is actively being worked on. Slack is pending me finding a deployment model that actually works with their API and isn't expensive." +
+            "Android version is actively being worked on. Slack is pending me finding a deployment model that actually works with their API and isn't expensive.\n" +
             "```";
 
     public static final String NOT_FOUND = "I don't have that help file. Use {{help}} for the main help file.";

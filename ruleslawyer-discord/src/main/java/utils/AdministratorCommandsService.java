@@ -25,8 +25,16 @@ public class AdministratorCommandsService {
         if(message.equalsIgnoreCase("shut down ruleslawyer")) {
             shutDown();
         }
+        // DISABLED DUE TO LACK OF INTENT
+        /*
         if(message.equalsIgnoreCase("ruleslawyer status")) {
             listServers(channel);
+        }
+        */
+        if(message.equalsIgnoreCase("ruleslawyer verify")) {
+            channel.sendMessage("Hi mom!");
+            // DISABLED DUE TO LACK OF INTENT
+            //listServers(channel);
         }
     }
 
