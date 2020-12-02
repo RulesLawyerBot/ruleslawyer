@@ -3,48 +3,57 @@ package app;
 import org.javacord.api.entity.channel.TextChannel;
 import search.SearchService;
 import search.contract.DiscordSearchResult;
-import utils.AdministratorCommandsService;
+import utils.*;
 import contract.rules.AbstractRule;
 import ingestion.rule.JsonRuleIngestionService;
-import utils.MessageLoggingService;
-import utils.MessageDeletionService;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
-import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
-import org.javacord.api.event.message.reaction.ReactionAddEvent;
-import org.javacord.api.event.server.ServerJoinEvent;
 import repository.SearchRepository;
-import utils.ServerJoinHelpService;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Optional;
 
-import static chat_platform.HelpMessageService.MAIN_HELP;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.toList;
 
 public class ApplicationMain {
 
+    private static JsonRuleIngestionService jsonRuleIngestionService;
     private static SearchService searchService;
     private static MessageDeletionService messageDeletionService;
+    private static ManaEmojiService manaEmojiService;
     private static MessageLoggingService messageLoggingService;
     private static AdministratorCommandsService administratorCommandsService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
     //TEMPORARY HELP ADD DUE TO LACK OF INTENT
-    private static final String CURRENT_VERSION = "Version 1.6.1 / ZNR / {{help|dev}}";
+    private static final String CURRENT_VERSION = "Version 1.7.0 / CMR / {{help|dev}}";
 
     public static void main(String[] args) {
 
-        String discordToken = args[0];
+        String keyId = args[0];
+        String discordToken = getKey(keyId);
 
         DiscordApi api = new DiscordApiBuilder()
                 .setToken(discordToken)
                 .login()
                 .join();
+
+        jsonRuleIngestionService = new JsonRuleIngestionService();
+        ManaEmojiService manaEmojiService = new ManaEmojiService(api);
+
         try {
-            List<AbstractRule> rules = JsonRuleIngestionService.getRules();
-            searchService = new SearchService(new SearchRepository<>(rules));
+            List<AbstractRule> rules = jsonRuleIngestionService.getRules();
+            List<AbstractRule> emojiReplacedRules = rules.stream()
+                    .map(manaEmojiService::replaceManaSymbols)
+                    .collect(toList());
+            searchService = new SearchService(new SearchRepository<>(emojiReplacedRules));
         } catch (Exception ignored) {
             System.exit(-1);
         }
@@ -110,5 +119,25 @@ public class ApplicationMain {
         }
         */
         event.getApi().updateActivity(CURRENT_VERSION);
+    }
+
+    public static String getKey(String keyId) {
+        if(keyId.equals("dev") || keyId.equals("prod")) {
+            try {
+                InputStream in = ApplicationMain.class.getResourceAsStream("/keys.txt");
+                BufferedReader br = new BufferedReader(new InputStreamReader(in, UTF_8));
+                char[] buffer = new char[1000000];
+                br.read(buffer);
+                in.close();
+                String keys = new String(buffer);
+                if (keyId.equals("dev")) {
+                    return keys.substring(0, 59);
+                }
+                return keys.substring(60, 120);
+            } catch(IOException exception) {
+                return keyId;
+            }
+        }
+        return keyId;
     }
 }

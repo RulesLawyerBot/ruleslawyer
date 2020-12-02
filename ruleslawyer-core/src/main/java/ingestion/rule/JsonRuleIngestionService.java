@@ -25,7 +25,7 @@ import static java.util.stream.Collectors.toList;
 
 public class JsonRuleIngestionService {
 
-    public static List<AbstractRule> getRules() {
+    public List<AbstractRule> getRules() {
         try {
             List<AbstractRule> rules = new ArrayList<>();
             rules.addAll(getFlattenedRules("/CR-parsed.json", CR));
@@ -41,7 +41,7 @@ public class JsonRuleIngestionService {
         return emptyList();
     }
 
-    private static List<AbstractRule> getRules(String filename, RuleSource ruleSource) throws IOException {
+    private List<AbstractRule> getRules(String filename, RuleSource ruleSource) throws IOException {
         List<JsonMappedRule> rawRules = getJsonMappedRules(filename);
         return rawRules.stream()
                 .map(rule -> convertToRuleHeaders(singletonList(rule), ruleSource))
@@ -49,7 +49,7 @@ public class JsonRuleIngestionService {
                 .collect(toList());
     }
 
-    private static List<AbstractRule> getFlattenedRules(String filename, RuleSource ruleSource) throws IOException {
+    private List<AbstractRule> getFlattenedRules(String filename, RuleSource ruleSource) throws IOException {
         List<JsonMappedRule> rawRules = getJsonMappedRules(filename);
         return rawRules.stream()
                 .map(rule -> convertToRuleHeaders(rule.getSubRules(), ruleSource))
@@ -57,7 +57,7 @@ public class JsonRuleIngestionService {
                 .collect(toList());
     }
 
-    private static List<JsonMappedRule> getJsonMappedRules(String filename) throws IOException {
+    private List<JsonMappedRule> getJsonMappedRules(String filename) throws IOException {
         InputStream in = JsonRuleIngestionService.class.getResourceAsStream(filename);
         BufferedReader br = new BufferedReader(new InputStreamReader(in, UTF_8));
         char[] buffer = new char[1000000];
@@ -67,7 +67,7 @@ public class JsonRuleIngestionService {
         return mapper.readValue(valueOf(buffer), new TypeReference<List<JsonMappedRule>>() {});
     }
 
-    private static List<AbstractRule> convertToRuleHeaders(List<JsonMappedRule> rules, RuleSource ruleSource) {
+    private List<AbstractRule> convertToRuleHeaders(List<JsonMappedRule> rules, RuleSource ruleSource) {
         return rules.stream()
                 .map(rule -> {
                     RuleHeader ruleHeader = new RuleHeader(rule.getText(), ruleSource);
@@ -78,7 +78,7 @@ public class JsonRuleIngestionService {
                 .collect(toList());
     }
 
-    private static List<AbstractRule> convertToRuleSubheaders(List<JsonMappedRule> rules) {
+    private List<AbstractRule> convertToRuleSubheaders(List<JsonMappedRule> rules) {
         return rules.stream()
                 .map(rule -> {
                     RuleSubheader ruleSubheader = new RuleSubheader(rule.getText());
@@ -89,7 +89,7 @@ public class JsonRuleIngestionService {
                 .collect(toList());
     }
 
-    private static List<AbstractRule> convertToBaseRules(List<JsonMappedRule> rules) {
+    private List<AbstractRule> convertToBaseRules(List<JsonMappedRule> rules) {
         return rules.stream()
                 .map(rule -> new Rule(rule.getText()))
                 .collect(toList());
