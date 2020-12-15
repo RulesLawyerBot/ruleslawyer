@@ -8,6 +8,7 @@ import contract.rules.Rule;
 import contract.rules.RuleHeader;
 import contract.rules.RuleSubheader;
 import exception.NotYetImplementedException;
+import org.javacord.api.entity.message.embed.EmbedBuilder;
 import repository.SearchRepository;
 import search.contract.DiscordEmbedField;
 import search.contract.DiscordSearchRequest;
@@ -36,7 +37,8 @@ public class SearchService {
     public static final Integer MAX_PAYLOAD_SIZE = 3000;
     public static final Integer MAX_FIELD_NAME_SIZE = 256;
     public static final Integer MAX_FIELD_VALUE_SIZE = 1024;
-    private static final String NO_RESULTS_MESSAGE = "No results found :( If you believe this to be an error, please let me know at {{help|about}}. Otherwise, make sure you spelled everything correctly.";
+
+    //private static final String NO_RESULTS_MESSAGE = "No results found :( If you believe this to be an error, please let me know at {{help|about}}. Otherwise, make sure you spelled everything correctly.";
 
     public SearchService(SearchRepository<AbstractRule> searchRepository) {
         this.chatMessageService = new ChatMessageService(searchRepository);
@@ -58,7 +60,12 @@ public class SearchService {
         List<SearchResult<AbstractRule>> rawResults = chatMessageService.processMessage(discordSearchRequest);
 
         if (rawResults.size() == 0) {
-            return new DiscordSearchResult(NO_RESULTS_MESSAGE);
+            return new DiscordSearchResult(
+                    new EmbedBuilderBuilder()
+                        .setAuthor("RulesLawyer")
+                        .addFields(singletonList(new DiscordEmbedField(query, "No Results Found")))
+                        .build()
+            );
         }
 
         EmbedBuilderBuilder result = new EmbedBuilderBuilder()
@@ -79,8 +86,6 @@ public class SearchService {
         } else {
             footer += "No more pages";
         }
-        //TEMPORARY MESSAGE DUE TO LACK OF INTENT
-        footer += " | Message deletion is disabled. {{help|dev}} for details";
 
         result.setFooter(footer);
 
@@ -102,6 +107,7 @@ public class SearchService {
                         }
                     }
                     else if (command.equalsIgnoreCase("digital")) {
+                        //TODO still gotta do something with this
                         ruleSearchRequest.setDigitalRuleRequest(true);
                     }
                     else {

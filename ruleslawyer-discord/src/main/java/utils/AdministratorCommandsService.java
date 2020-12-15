@@ -1,17 +1,12 @@
 package utils;
 
 import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.Nameable;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.server.Server;
-import org.javacord.api.entity.user.User;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 
 public class AdministratorCommandsService {
 
@@ -25,16 +20,12 @@ public class AdministratorCommandsService {
         if(message.equalsIgnoreCase("shut down ruleslawyer")) {
             shutDown();
         }
-        // DISABLED DUE TO LACK OF INTENT
-        /*
         if(message.equalsIgnoreCase("ruleslawyer status")) {
-            listServers(channel);
+            countServers(channel);
         }
-        */
         if(message.equalsIgnoreCase("ruleslawyer verify")) {
             channel.sendMessage("Hi mom!");
-            // DISABLED DUE TO LACK OF INTENT
-            //listServers(channel);
+            countServers(channel);
         }
     }
 
@@ -43,7 +34,7 @@ public class AdministratorCommandsService {
         System.exit(0);
     }
 
-    private void listServers(TextChannel channel) {
+    private void countServers(TextChannel channel) {
         Collection<Server> servers = api.getServers();
         Integer totalUsers = (int) servers.stream()
                 .map(Server::getMembers)

@@ -37,15 +37,16 @@ public class HelpMessageService {
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
             "Current rules version: Commander Legends\n" +
-            "Last updated: 01-12-2020\n" +
-            "--v1.7.0--\n" +
-            "Mana symbol emojis! check it out by calling, for example, {{mana symbol}}" +
+            "Last updated: 14-12-2020\n" +
+            "--v1.7.1--\n" +
+            "I have Intents permissions again! Message deletion is back, as well as some back-end logging things.\n" +
+            "Just wanted to quickly patch this while some other improvements are still being worked on.\n" +
+            "--Last major update: v1.7.0--\n" +
+            "Mana symbol emojis! check it out by calling, for example, {{mana symbol}}\n" +
             "Some rule display changes that should increase clarity.\n" +
             "Some deployment changes to make it easier to patch in the future.\n" +
             "BUT MOSTLY MANA SYMBOLS ITS SO PRETTY\n" +
             "--Future development and known issues--\n" +
-            "Due to API permissions issues, message deletion and Server join intro messages have been disabled. (As of 1.6.1, on 1-11-2020) I am currently harassing Discord to fix this, though I've been told its going to be a while until they get back to me.\n" +
-            "Exploring some possible workarounds for the above issue, but there's no guarantee of progress.\n" +
             "At some point I will get around to digital events rules.\n" +
             "Fuzzy searching is being explored.\n" +
             "Android version is actively being worked on. Slack is (still) pending me finding a deployment model that actually works with their API and isn't expensive (read: probably going to sit indefinitely)\n" +
