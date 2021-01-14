@@ -6,6 +6,7 @@ import org.javacord.api.entity.server.Server;
 
 import java.util.Collection;
 
+import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;
 
 public class AdministratorCommandsService {
@@ -25,7 +26,6 @@ public class AdministratorCommandsService {
         }
         if(message.equalsIgnoreCase("ruleslawyer verify")) {
             channel.sendMessage("Hi mom!");
-            countServers(channel);
         }
     }
 
@@ -40,6 +40,11 @@ public class AdministratorCommandsService {
                 .map(Server::getMembers)
                 .flatMap(Collection::stream)
                 .count();
-        channel.sendMessage("RulesLawyer is currently running on " + servers.size() + " servers with " + totalUsers + " total users.");
+        Integer uniqueUsers = (int) servers.stream()
+                .map(Server::getMembers)
+                .flatMap(Collection::stream)
+                .distinct()
+                .count();
+        channel.sendMessage(format("RulesLawyer is current running on %s servers serving %s unique users (%s total).", servers.size(), uniqueUsers, totalUsers));
     }
 }

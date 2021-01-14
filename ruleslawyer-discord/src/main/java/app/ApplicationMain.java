@@ -2,6 +2,7 @@ package app;
 
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.intent.Intent;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
 import org.javacord.api.event.server.ServerJoinEvent;
 import search.SearchService;
@@ -36,21 +37,23 @@ public class ApplicationMain {
     private static AdministratorCommandsService administratorCommandsService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.7.1 / CMR / {{help|dev}}";
+    private static final String CURRENT_VERSION = "Version 1.7.2 / CMR / {{help|dev}}";
 
     public static void main(String[] args) {
 
-        String keyId = args[0];
-        String discordToken = getKey(keyId);
+        System.out.println("Logging in...");
+        String discordToken = getKey(args[0]);
 
         DiscordApi api = new DiscordApiBuilder()
                 .setToken(discordToken)
+                .setAllIntentsExcept(Intent.GUILD_PRESENCES)
                 .login()
                 .join();
 
         jsonRuleIngestionService = new JsonRuleIngestionService();
-        ManaEmojiService manaEmojiService = new ManaEmojiService(api);
+        manaEmojiService = new ManaEmojiService(api);
 
+        System.out.println("Loading rules...");
         try {
             List<AbstractRule> rules = jsonRuleIngestionService.getRules();
             List<AbstractRule> emojiReplacedRules = rules.stream()
@@ -61,6 +64,7 @@ public class ApplicationMain {
             System.exit(-1);
         }
 
+        System.out.println("Setting listeners...");
         messageDeletionService = new MessageDeletionService(api);
         messageLoggingService = new MessageLoggingService(api);
         administratorCommandsService = new AdministratorCommandsService(api);
@@ -126,10 +130,9 @@ public class ApplicationMain {
                 br.read(buffer);
                 in.close();
                 String keys = new String(buffer);
-                if (keyId.equals("dev")) {
-                    return keys.substring(0, 59);
-                }
-                return keys.substring(60, 120);
+                return keyId.equals("dev") ?
+                        keys.substring(0, 59) :
+                        keys.substring(59, 119);
             } catch(IOException exception) {
                 return keyId;
             }

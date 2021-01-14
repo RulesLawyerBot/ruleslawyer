@@ -37,7 +37,9 @@ public class HelpMessageService {
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
             "Current rules version: Commander Legends\n" +
-            "Last updated: 14-12-2020\n" +
+            "Last updated: 14-01-2021\n" +
+            "--v1.7.2--\n" +
+            "Some minor performance improvements.\n" +
             "--v1.7.1--\n" +
             "I have Intents permissions again! Message deletion is back, as well as some back-end logging things.\n" +
             "Just wanted to quickly patch this while some other improvements are still being worked on.\n" +
