@@ -1,5 +1,6 @@
 package entry;
 
+import contract.cards.FormatLegality;
 import contract.searchResults.SearchResult;
 import contract.cards.Card;
 import contract.rules.AbstractRule;
@@ -12,15 +13,17 @@ import repository.SearchRepository;
 import java.util.List;
 
 import static contract.RuleSource.ANY;
+import static contract.searchRequests.CardSearchRequestType.DEFAULT;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
-public class SearchService {
+public class AndroidSearchService {
+    private static JsonRuleIngestionService jsonRuleIngestionService = new JsonRuleIngestionService();
     private static SearchRepository<AbstractRule> ruleRepository;
     private static SearchRepository<Card> cardRepository;
 
     public static void setUp() {
-        List<AbstractRule> rules = JsonRuleIngestionService.getRules();
+        List<AbstractRule> rules = jsonRuleIngestionService.getRules();
         ruleRepository = new SearchRepository<>(rules);
 
         List<Card> cards = JsonCardIngestionService.getCards();
@@ -36,7 +39,7 @@ public class SearchService {
     }
 
     public static List<Card> getCardSearchResults(String input) {
-        CardSearchRequest cardSearchRequest = new CardSearchRequest(asList(input.split(" ")));
+        CardSearchRequest cardSearchRequest = new CardSearchRequest(asList(input.split(" ")), DEFAULT, FormatLegality.ANY_FORMAT);
         return cardRepository.getSearchResult(cardSearchRequest)
                 .stream()
                 .map(SearchResult::getEntry)

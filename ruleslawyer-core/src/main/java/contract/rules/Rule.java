@@ -35,4 +35,9 @@ public class Rule extends AbstractRule {
     public RuleSubheader getSubHeader() {
         return (RuleSubheader)this.parentRule;
     }
+
+    @Override
+    public Integer getRelevancy(List<String> keywords) {
+        return super.getRelevancy(keywords) + 20000;
+    }
 }

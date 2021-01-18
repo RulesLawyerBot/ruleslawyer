@@ -7,8 +7,6 @@ import contract.rules.AbstractRule;
 import contract.rules.Rule;
 import contract.rules.RuleHeader;
 import contract.rules.RuleSubheader;
-import exception.NotYetImplementedException;
-import org.javacord.api.entity.message.embed.EmbedBuilder;
 import repository.SearchRepository;
 import search.contract.DiscordEmbedField;
 import search.contract.DiscordSearchRequest;
@@ -37,8 +35,6 @@ public class SearchService {
     public static final Integer MAX_PAYLOAD_SIZE = 3000;
     public static final Integer MAX_FIELD_NAME_SIZE = 256;
     public static final Integer MAX_FIELD_VALUE_SIZE = 1024;
-
-    //private static final String NO_RESULTS_MESSAGE = "No results found :( If you believe this to be an error, please let me know at {{help|about}}. Otherwise, make sure you spelled everything correctly.";
 
     public SearchService(SearchRepository<AbstractRule> searchRepository) {
         this.chatMessageService = new ChatMessageService(searchRepository);
@@ -75,7 +71,7 @@ public class SearchService {
                 .map(this::getFieldsForRawResult)
                 .flatMap(Collection::stream)
                 .collect(toList());
-        List<List<DiscordEmbedField>> pages = getResultPages(embedFields);
+        List<List<DiscordEmbedField>> pages = splitResultPages(embedFields);
 
         result.addFields(pages.get(discordSearchRequest.getPageNumber()));
 
@@ -136,16 +132,18 @@ public class SearchService {
 
     private List<DiscordEmbedField> getFieldsForRawResult(SearchResult<AbstractRule> result) {
         AbstractRule rule = result.getEntry();
+
+        List<DiscordEmbedField> results = null;
         if (rule.getClass() == Rule.class) {
-            return getFieldForBaseRule((Rule) rule);
+            results = getFieldForBaseRule((Rule) rule);
+        } else if (rule.getClass() == RuleSubheader.class) {
+            results = getFieldForRuleSubheader((RuleSubheader) rule);
+        } else if (rule.getClass() == RuleHeader.class) {
+            results = getFieldForRuleHeader((RuleHeader) rule);
         }
-        if (rule.getClass() == RuleSubheader.class) {
-            return getFieldForRuleSubheader((RuleSubheader) rule);
-        }
-        if (rule.getClass() == RuleHeader.class) {
-            return getFieldForRuleHeader((RuleHeader) rule);
-        }
-        throw new NotYetImplementedException();
+        assert results != null; // ehh its fine
+        results.forEach(field -> field.setRelevancy(result.getRelevancy()));
+        return results;
     }
 
     private List<DiscordEmbedField> getFieldForBaseRule(Rule rule) {
@@ -238,14 +236,15 @@ public class SearchService {
         return output;
     }
 
-    private List<List<DiscordEmbedField>> getResultPages(List<DiscordEmbedField> embedFields) {
+    private List<List<DiscordEmbedField>> splitResultPages(List<DiscordEmbedField> embedFields) {
         List<List<DiscordEmbedField>> pages = new ArrayList<>();
 
         List<DiscordEmbedField> currentPage = new ArrayList<>();
 
         for (int i=0; i<embedFields.size(); i++) {
             DiscordEmbedField field = embedFields.get(i);
-            if (currentPage.stream().mapToInt(DiscordEmbedField::getLength).sum() + field.getLength() > MAX_PAYLOAD_SIZE) {
+            if (currentPage.stream().mapToInt(DiscordEmbedField::getLength).sum() + field.getLength() > MAX_PAYLOAD_SIZE ||
+                    (i > 0 && field.getRelevancy()-embedFields.get(i-1).getRelevancy() > 3000)) {
                 pages.add(currentPage);
                 currentPage = new ArrayList<>();
                 currentPage.add(field);

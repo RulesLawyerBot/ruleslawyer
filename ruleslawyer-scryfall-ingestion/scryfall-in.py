@@ -1,9 +1,10 @@
 import requests
+import json
 from simple_io import write
 from simple_io import clear
 from contract.cards import Card
 
-URL = "https://api.scryfall.com/cards/?page="
+FORMATS = ["standard", "brawl", "historic", "pioneer", "modern", "legacy", "vintage", "commander", "pauper"]
 
 
 def get_rulings(uri):
@@ -26,20 +27,28 @@ def parse_card_oracle(card_json):
 
 def main():
     all_cards = {}
-    page_number = 1
 
-    while True:
-        print("page " + str(page_number))
+    f = open("default-cards.json", "r", encoding="utf-8")
+    text = f.read()
+    print(type(text))
+    raw_data = json.loads(text)
+    print(type(raw_data))
+    print(type(raw_data[0]))
 
-        r = requests.get(url = URL + str(page_number))
-        data = r.json()
-        page = data["data"]
+    for (count, card_json) in enumerate(raw_data):
+        if not card_json["lang"] == "en" or card_json["set_type"] in ["token", "memorabilia"]:
+            continue
 
-        for card_json in page:
-            if not card_json["lang"] == "en" or card_json["set_type"] == "token":
-                continue
+        card_name = card_json["name"].replace('"', "'")
+        card_set = card_json["set_name"]
+        if not card_json["prices"]["usd"]:
+            continue  # means its not a paper product
+        card_price = float(card_json["prices"]["usd"])
+        print(str(count) + " " + card_name)
 
-            card_name = card_json["name"].replace('"', "'")
+        if all_cards.get(card_name):
+            all_cards[card_name].add_set(card_set, card_price)
+        else:
             if "mana_cost" in card_json:
                 mana_cost = card_json["mana_cost"]
             else:
@@ -47,19 +56,12 @@ def main():
             type_line = card_json["type_line"].replace("�", "-")
             oracle = parse_card_oracle(card_json).replace('"', "'")
             rulings = get_rulings(card_json["rulings_uri"])
-            card_set = card_json["set_name"]
-            print(card_name)
-            if all_cards.get(card_name):
-                all_cards[card_name].add_set(card_set)
-            else:
-                card = Card(card_name, mana_cost, type_line, oracle, rulings, card_set)
-                all_cards[card_name] = card
-                print(card)
+            legalities = [k for k in card_json["legalities"] if card_json["legalities"][k] == "legal" and k in FORMATS]
 
-        page_number += 1
+            card = Card(card_name, mana_cost, type_line, oracle, rulings, card_set, legalities, card_price)
+            all_cards[card_name] = card
 
-        if not data["has_more"]:
-            break
+        print(card)
 
     output = [all_cards[k] for k in all_cards]
 

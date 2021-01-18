@@ -3,6 +3,7 @@ package contract.rules;
 import contract.RuleSource;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.stream.Collectors.joining;
 
@@ -21,5 +22,10 @@ public class RuleSubheader extends AbstractRule {
 
     public RuleHeader getHeader() {
         return (RuleHeader)this.parentRule;
+    }
+
+    @Override
+    public Integer getRelevancy(List<String> keywords) {
+        return super.getRelevancy(keywords) + 10000;
     }
 }
