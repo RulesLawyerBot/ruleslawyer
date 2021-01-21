@@ -5,7 +5,7 @@ import contract.rules.AbstractRule;
 import contract.rules.RuleHeader;
 import contract.searchRequests.RuleSearchRequest;
 import org.junit.Test;
-import utils.RuleTestUtils;
+import service.RuleTestUtils;
 
 import java.util.List;
 

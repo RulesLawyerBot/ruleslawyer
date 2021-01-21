@@ -1,6 +1,6 @@
-package utils;
+package service;
 
-import app.ApplicationMain;
+import init_utils.ManaEmojiService;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.junit.After;
@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
+import static app.ApplicationMain.getKey;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -20,7 +21,7 @@ public class ManaEmojiServiceTest {
     @Before
     public void setUp() {
         api = new DiscordApiBuilder()
-                .setToken(ApplicationMain.getKey("dev"))
+                .setToken(getKey("dev"))
                 .login()
                 .join();
         manaEmojiService = new ManaEmojiService(api);

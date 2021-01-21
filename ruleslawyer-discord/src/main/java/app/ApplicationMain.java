@@ -1,5 +1,6 @@
 package app;
 
+import init_utils.ManaEmojiService;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.intent.Intent;
@@ -7,7 +8,7 @@ import org.javacord.api.event.message.reaction.ReactionAddEvent;
 import org.javacord.api.event.server.ServerJoinEvent;
 import search.SearchService;
 import search.contract.DiscordSearchResult;
-import utils.*;
+import service.*;
 import contract.rules.AbstractRule;
 import ingestion.rule.JsonRuleIngestionService;
 import org.javacord.api.DiscordApi;
@@ -15,6 +16,8 @@ import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
 import repository.SearchRepository;
+import service.reaction_pagination.ReactionPaginationService;
+import utils.DiscordUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,8 +27,12 @@ import java.util.List;
 import java.util.Optional;
 
 import static chat_platform.HelpMessageService.MAIN_HELP;
+import static com.vdurmont.emoji.EmojiParser.parseToUnicode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
+import static service.reaction_pagination.ReactionPaginationService.LEFT_EMOJI;
+import static service.reaction_pagination.ReactionPaginationService.RIGHT_EMOJI;
+import static utils.DiscordUtils.*;
 
 public class ApplicationMain {
 
@@ -35,6 +42,7 @@ public class ApplicationMain {
     private static ManaEmojiService manaEmojiService;
     private static MessageLoggingService messageLoggingService;
     private static AdministratorCommandsService administratorCommandsService;
+    private static ReactionPaginationService reactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
     private static final String CURRENT_VERSION = "Version 1.7.2 / CMR / {{help|dev}}";
@@ -63,6 +71,7 @@ public class ApplicationMain {
         } catch (Exception ignored) {
             System.exit(-1);
         }
+        reactionPaginationService = new ReactionPaginationService(searchService);
 
         System.out.println("Setting listeners...");
         messageDeletionService = new MessageDeletionService(api);
@@ -88,15 +97,16 @@ public class ApplicationMain {
         if (messageDeletionService.shouldDeleteMessage(event)) {
             event.deleteMessage();
         }
+        if (isOwnMessage(event) && !isOwnReaction(event)) {
+            reactionPaginationService.handleReactionPaginationEvent(event);
+        }
     }
 
 
     private static void handleMessageCreateEvent(MessageCreateEvent event) {
         Optional<User> messageSender = event.getMessageAuthor().asUser();
-        if (messageSender.isPresent() && !messageSender.get().isBot()){
-            String author = event.getServer().isPresent() ?
-                    messageSender.get().getDisplayName(event.getServer().get()) :
-                    messageSender.get().getName();
+        if (isUserMessage(event)){
+            String author = getUsernameForMessageCreateEvent(event).get();
             DiscordSearchResult result = searchService.getSearchResult(author, event.getMessageContent());
             if (result != null) {
                 messageLoggingService.logInput(event);
@@ -109,13 +119,19 @@ public class ApplicationMain {
                     messageLoggingService.logOutput(result.getText());
                 }
             }
-        }
-        if (messageSender.isPresent() && messageSender.get().isBotOwner()) {
-            administratorCommandsService.processCommand(event.getMessage().getContent(), event.getChannel());
+            if (messageSender.isPresent() && messageSender.get().isBotOwner()) {
+                administratorCommandsService.processCommand(event.getMessage().getContent(), event.getChannel());
+            }
         }
 
-        if (event.getMessageAuthor().isYourself()) {
-            event.getMessage().addReaction("javacord:" + MessageDeletionService.DELETE_EMOTE_ID);
+        if (isOwnMessage(event)) {
+            if (reactionPaginationService.shouldPaginate(event)) {
+                event.getMessage().addReaction(LEFT_EMOJI);
+                event.getMessage().addReaction("javacord:" + MessageDeletionService.DELETE_EMOTE_ID);
+                event.getMessage().addReaction(RIGHT_EMOJI);
+            } else {
+                event.getMessage().addReaction("javacord:" + MessageDeletionService.DELETE_EMOTE_ID);
+            }
         }
 
         event.getApi().updateActivity(CURRENT_VERSION);

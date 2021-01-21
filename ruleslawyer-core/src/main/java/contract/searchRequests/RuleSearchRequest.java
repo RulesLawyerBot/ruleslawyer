@@ -40,16 +40,4 @@ public class RuleSearchRequest extends SearchRequest<AbstractRule> {
     public int hashCode() {
         return hash(ruleSource);
     }
-
-    @Override
-    public String toString() {
-        String baseString = join(" / ", getKeywords());
-        if (getPageNumber() != 0) {
-            baseString += " | Page " + getPageNumber();
-        }
-        if (getRuleSource() != ANY) {
-            baseString = getRuleSource() + " | " + baseString;
-        }
-        return baseString;
-    }
 }

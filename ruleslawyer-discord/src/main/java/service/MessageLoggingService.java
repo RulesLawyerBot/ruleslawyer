@@ -1,4 +1,4 @@
-package utils;
+package service;
 
 import app.ApplicationMain;
 import org.javacord.api.DiscordApi;

@@ -2,6 +2,7 @@ package search;
 
 import chat_platform.ChatMessageService;
 import chat_platform.HelpMessageService;
+import contract.RuleSource;
 import contract.searchResults.SearchResult;
 import contract.rules.AbstractRule;
 import contract.rules.Rule;
@@ -20,6 +21,8 @@ import java.util.List;
 
 import static contract.RuleSource.valueOf;
 import static java.lang.Integer.parseInt;
+import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
@@ -53,19 +56,23 @@ public class SearchService {
         }
 
         DiscordSearchRequest discordSearchRequest = getSearchRequest(author, query);
+        return getSearchResult(discordSearchRequest);
+    }
+
+    public DiscordSearchResult getSearchResult(DiscordSearchRequest discordSearchRequest) {
         List<SearchResult<AbstractRule>> rawResults = chatMessageService.processMessage(discordSearchRequest);
 
         if (rawResults.size() == 0) {
             return new DiscordSearchResult(
                     new EmbedBuilderBuilder()
-                        .setAuthor("RulesLawyer")
-                        .addFields(singletonList(new DiscordEmbedField(query, "No Results Found")))
-                        .build()
+                            .setAuthor("RulesLawyer")
+                            .addFields(singletonList(new DiscordEmbedField(getEmbedTitle(discordSearchRequest), "No Results Found")))
+                            .build()
             );
         }
 
         EmbedBuilderBuilder result = new EmbedBuilderBuilder()
-                .setAuthor("RulesLawyer").setTitle(discordSearchRequest.toString());
+                .setAuthor("RulesLawyer").setTitle(getEmbedTitle(discordSearchRequest));
 
         List<DiscordEmbedField> embedFields = rawResults.stream()
                 .map(this::getFieldsForRawResult)
@@ -73,19 +80,16 @@ public class SearchService {
                 .collect(toList());
         List<List<DiscordEmbedField>> pages = splitResultPages(embedFields);
 
-        result.addFields(pages.get(discordSearchRequest.getPageNumber()));
+        Integer boundedPageNumber = getBoundedIndex(pages, discordSearchRequest.getPageNumber());
+        result.addFields(pages.get(boundedPageNumber));
 
-        String footer = "Requested by: " + author + " | "
-                + pages.size() + (pages.size() == 1 ? " page" : " pages") + " total | ";
-        if (discordSearchRequest.getPageNumber() < pages.size()-1) {
-            footer += chatMessageService.getQueryForNextPage(discordSearchRequest) + " for next page";
-        } else {
-            footer += "No more pages";
-        }
+        String footer = format("Requested by: %s | page %s of %s | Use arrow keys for pagination",
+                discordSearchRequest.getRequester(), boundedPageNumber+1, pages.size());
 
         result.setFooter(footer);
 
         return new DiscordSearchResult(result.build());
+
     }
 
     private DiscordSearchRequest getSearchRequest(String author, String query) {
@@ -128,6 +132,12 @@ public class SearchService {
                     .map(String::toLowerCase)
                     .collect(toList());
         }
+    }
+
+    private String getEmbedTitle(DiscordSearchRequest discordSearchRequest) {
+        return discordSearchRequest.getRuleSource() == RuleSource.ANY ?
+                join("/", discordSearchRequest.getKeywords()) :
+                discordSearchRequest.getRuleSource() + " | " + join("/", discordSearchRequest.getKeywords());
     }
 
     private List<DiscordEmbedField> getFieldsForRawResult(SearchResult<AbstractRule> result) {
@@ -256,5 +266,15 @@ public class SearchService {
         pages.add(currentPage);
 
         return pages;
+    }
+
+    private Integer getBoundedIndex(List<List<DiscordEmbedField>> results, Integer index) {
+        if (index < 0) {
+            return 0;
+        }
+        if (index >= results.size()) {
+            return results.size()-1;
+        }
+        return index;
     }
 }

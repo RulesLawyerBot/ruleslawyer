@@ -1,4 +1,4 @@
-package utils;
+package service;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.TextChannel;

@@ -1,4 +1,4 @@
-package utils;
+package init_utils;
 
 import app.ApplicationMain;
 import contract.rules.AbstractRule;

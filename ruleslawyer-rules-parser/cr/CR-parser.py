@@ -30,7 +30,7 @@ def main():
     superheader = None
     header = None
     while True:
-        line = file.next_line().strip().replace('“', '"').replace('”', '"').replace("’", "'")
+        line = file.next_line().strip().replace('“', '"').replace('”', '"').replace("’", "'").replace("—", "-")
         if line == "Glossary":
             output.append(superheader)
             break
