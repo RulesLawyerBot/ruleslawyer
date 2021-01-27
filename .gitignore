@@ -6,3 +6,4 @@
 *.iml
 /classes/
 /ruleslawyer-discord/src/main/resources/keys.txt
+/ruleslawyer-scryfall-ingestion/script.py

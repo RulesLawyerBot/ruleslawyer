@@ -4,13 +4,17 @@ import app.ApplicationMain;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
+import service.reaction_pagination.PageDirection;
 
 import java.util.List;
 import java.util.Optional;
+
+import static java.lang.String.format;
 
 public class MessageLoggingService {
 
@@ -45,12 +49,14 @@ public class MessageLoggingService {
             return;
         }
         String username = user.get().getName();
-        String displayname = username;
+        String displayname = event.getServer()
+                .map(server -> user.get().getDisplayName(server))
+                .orElse(username);
         if (event.getServer().isPresent()) {
             displayname = user.get().getDisplayName(event.getServer().get());
         }
         String query = event.getMessage().getContent();
-        String output = "**" + username + " (" + displayname + ") asked for: " + query + "**";
+        String output = format("**%s (%s) asked for: %s**", username, displayname, query);
         loggingChannel.sendMessage(output);
     }
 
@@ -60,6 +66,11 @@ public class MessageLoggingService {
 
     public void logOutput(String message) {
         loggingChannel.sendMessage(message);
+    }
+
+    public void logEditInput(PageDirection pageDirection, Embed embed) {
+        String output = format("**Edit: %s\n%s\n%s**", pageDirection.name(), embed.getTitle().get(), embed.getFooter().get().getText().get());
+        loggingChannel.sendMessage(output);
     }
 
     public void logJoin(Server server) {

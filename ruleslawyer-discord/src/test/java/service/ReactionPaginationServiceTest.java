@@ -17,12 +17,13 @@ public class ReactionPaginationServiceTest {
 
     @Mock
     private SearchService searchService;
+    private MessageLoggingService messageLoggingService;
 
     private ReactionPaginationService reactionPaginationService;
 
     @Before
     public void setUp() {
-        this.reactionPaginationService = new ReactionPaginationService(searchService);
+        this.reactionPaginationService = new ReactionPaginationService(searchService, messageLoggingService);
     }
 
     @Test

@@ -7,6 +7,7 @@ import org.javacord.api.event.message.reaction.ReactionAddEvent;
 import search.SearchService;
 import search.contract.DiscordSearchRequest;
 import search.contract.DiscordSearchResult;
+import service.MessageLoggingService;
 
 
 import java.util.List;
@@ -27,9 +28,11 @@ public class ReactionPaginationService {
     public static final String RIGHT_EMOJI = parseToUnicode(":arrow_right:");
 
     private SearchService searchService;
+    private MessageLoggingService messageLoggingService;
 
-    public ReactionPaginationService(SearchService searchService) {
+    public ReactionPaginationService(SearchService searchService, MessageLoggingService messageLoggingService) {
         this.searchService = searchService;
+        this.messageLoggingService = messageLoggingService;
     }
 
     public void handleReactionPaginationEvent(ReactionAddEvent event) {
@@ -42,6 +45,8 @@ public class ReactionPaginationService {
         if (searchRequest.getRequester().equals(getUsernameForReactionAddEvent(event).get())) {
             searchRequest.getNextPage(pageDirection.get());
             DiscordSearchResult result = searchService.getSearchResult(searchRequest);
+            messageLoggingService.logEditInput(pageDirection.get(), embed);
+            messageLoggingService.logOutput(result.getEmbed());
             event.getMessage().get().edit(result.getEmbed());
             event.removeReaction();
         }

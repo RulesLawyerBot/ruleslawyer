@@ -32,26 +32,21 @@ public class HelpMessageService {
             "\n" +
             "Contact me with bugs, feedback, and other inquiries at @ RulesLawyerBot on Twitter or Oritart#2698 on Discord.";
 
-    public static final String HELP_ADD = "Add **RulesLawyer** to your own server by using this link: https://discordapp.com/oauth2/authorize?client_id=590184543684788253&scope=bot&permissions=346112";
+    public static final String HELP_ADD = "Add **RulesLawyer** to your own server by using this link: https://discordapp.com/oauth2/authorize?client_id=590184543684788253&scope=bot&permissions=354368";
 
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
             "Current rules version: Commander Legends\n" +
-            "Last updated: 14-01-2021\n" +
-            "--v1.7.2--\n" +
-            "Some minor performance improvements.\n" +
-            "--v1.7.1--\n" +
-            "I have Intents permissions again! Message deletion is back, as well as some back-end logging things.\n" +
-            "Just wanted to quickly patch this while some other improvements are still being worked on.\n" +
-            "--Last major update: v1.7.0--\n" +
-            "Mana symbol emojis! check it out by calling, for example, {{mana symbol}}\n" +
-            "Some rule display changes that should increase clarity.\n" +
-            "Some deployment changes to make it easier to patch in the future.\n" +
-            "BUT MOSTLY MANA SYMBOLS ITS SO PRETTY\n" +
+            "Last updated: 26-01-2021\n" +
+            "--v1.8.0--\n" +
+            "Reaction pagination! Left and right emojis should appear under search results, which can be clicked to print up next and previous pages.\n" +
+            "The bot should delete your reaction after processing it, but this requires permissions that the bot may not have in your server. If this doesn't work, you'll need to kick and re-add the bot, using the new permissions integer in {{help|add}}\n" +
             "--Future development and known issues--\n" +
+            "Kaldheim rules updates will be added as 1.8.1 when the new CR is released.\n" +
             "At some point I will get around to digital events rules.\n" +
-            "Fuzzy searching is being explored.\n" +
+            "Fuzzy searching is being explored but ITS HARD TO MAKE WORK OKAY\n" +
             "Android version is actively being worked on. Slack is (still) pending me finding a deployment model that actually works with their API and isn't expensive (read: probably going to sit indefinitely)\n" +
+            "Maybe more reaction-based filtering?\n" +
             "```";
 
     public static final String NOT_FOUND = "I don't have that help file. Use {{help}} for the main help file.";

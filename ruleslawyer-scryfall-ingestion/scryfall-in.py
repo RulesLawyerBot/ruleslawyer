@@ -1,16 +1,9 @@
-import requests
 import json
 from simple_io import write
 from simple_io import clear
 from contract.cards import Card
 
 FORMATS = ["standard", "brawl", "historic", "pioneer", "modern", "legacy", "vintage", "commander", "pauper"]
-
-
-def get_rulings(uri):
-    r = requests.get(url = uri)
-    data = r.json()["data"]
-    return [elem["comment"] for elem in data]
 
 
 def parse_card_oracle(card_json):

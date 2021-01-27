@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static chat_platform.HelpMessageService.MAIN_HELP;
-import static com.vdurmont.emoji.EmojiParser.parseToUnicode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static service.reaction_pagination.ReactionPaginationService.LEFT_EMOJI;
@@ -71,12 +70,12 @@ public class ApplicationMain {
         } catch (Exception ignored) {
             System.exit(-1);
         }
-        reactionPaginationService = new ReactionPaginationService(searchService);
 
         System.out.println("Setting listeners...");
         messageDeletionService = new MessageDeletionService(api);
         messageLoggingService = new MessageLoggingService(api);
         administratorCommandsService = new AdministratorCommandsService(api);
+        reactionPaginationService = new ReactionPaginationService(searchService, messageLoggingService);
 
         api.updateActivity(CURRENT_VERSION);
         api.addMessageCreateListener(ApplicationMain::handleMessageCreateEvent);
