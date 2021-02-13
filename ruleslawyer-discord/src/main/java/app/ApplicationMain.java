@@ -44,7 +44,7 @@ public class ApplicationMain {
     private static ReactionPaginationService reactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.8.0 / CMR / {{help|dev}}";
+    private static final String CURRENT_VERSION = "Version 1.8.1 / KHM / {{help|dev}}";
 
     public static void main(String[] args) {
 

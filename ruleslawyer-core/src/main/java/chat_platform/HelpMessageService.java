@@ -36,13 +36,14 @@ public class HelpMessageService {
 
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
-            "Current rules version: Commander Legends\n" +
-            "Last updated: 26-01-2021\n" +
+            "Current rules version: Kaldheim\n" +
+            "Last updated: 08-02-2021\n" +
+            "--v1.8.1--\n" +
+            "Bump rules version to Kaldheim.\n" +
             "--v1.8.0--\n" +
             "Reaction pagination! Left and right emojis should appear under search results, which can be clicked to print up next and previous pages.\n" +
             "The bot should delete your reaction after processing it, but this requires permissions that the bot may not have in your server. If this doesn't work, you'll need to kick and re-add the bot, using the new permissions integer in {{help|add}}\n" +
             "--Future development and known issues--\n" +
-            "Kaldheim rules updates will be added as 1.8.1 when the new CR is released.\n" +
             "At some point I will get around to digital events rules.\n" +
             "Fuzzy searching is being explored but ITS HARD TO MAKE WORK OKAY\n" +
             "Android version is actively being worked on. Slack is (still) pending me finding a deployment model that actually works with their API and isn't expensive (read: probably going to sit indefinitely)\n" +
