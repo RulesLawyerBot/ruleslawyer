@@ -32,14 +32,14 @@ public class HelpMessageService {
             "\n" +
             "Contact me with bugs, feedback, and other inquiries at @ RulesLawyerBot on Twitter or Oritart#2698 on Discord.";
 
-    public static final String HELP_ADD = "Add **RulesLawyer** to your own server by using this link: https://discordapp.com/oauth2/authorize?client_id=590184543684788253&scope=bot&permissions=354368";
+    public static final String HELP_ADD = "Add **RulesLawyer** to your own server by using this link: https://discordapp.com/oauth2/authorize?client_id=590184543684788253&scope=bot&permissions=2147838016";
 
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
             "Current rules version: Kaldheim\n" +
-            "Last updated: 08-02-2021\n" +
-            "--v1.8.1--\n" +
-            "Bump rules version to Kaldheim.\n" +
+            "Last updated: 24-02-2021\n" +
+            "--v1.8.2--\n" +
+            "Changed permissions integer to future proof for slash commands.\n" +
             "--v1.8.0--\n" +
             "Reaction pagination! Left and right emojis should appear under search results, which can be clicked to print up next and previous pages.\n" +
             "The bot should delete your reaction after processing it, but this requires permissions that the bot may not have in your server. If this doesn't work, you'll need to kick and re-add the bot, using the new permissions integer in {{help|add}}\n" +

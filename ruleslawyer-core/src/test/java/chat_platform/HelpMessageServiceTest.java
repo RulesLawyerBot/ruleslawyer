@@ -25,7 +25,7 @@ public class HelpMessageServiceTest {
     }
 
     @Test
-    public void getExistantHelpFile() {
+    public void getExistentHelpFile() {
         assertThat(helpMessageService.getHelpFile("add"), is(HELP_ADD));
     }
 
