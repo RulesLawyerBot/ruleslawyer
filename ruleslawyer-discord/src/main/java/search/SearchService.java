@@ -80,11 +80,11 @@ public class SearchService {
                 .collect(toList());
         List<List<DiscordEmbedField>> pages = splitResultPages(embedFields);
 
-        Integer boundedPageNumber = getBoundedIndex(pages, discordSearchRequest.getPageNumber());
-        result.addFields(pages.get(boundedPageNumber));
+        Integer moddedPageNumber = (discordSearchRequest.getPageNumber() + pages.size()) % pages.size();
+        result.addFields(pages.get(moddedPageNumber));
 
         String footer = format("Requested by: %s | page %s of %s | Use arrow keys for pagination",
-                discordSearchRequest.getRequester(), boundedPageNumber+1, pages.size());
+                discordSearchRequest.getRequester(), moddedPageNumber+1, pages.size());
 
         result.setFooter(footer);
 
@@ -266,15 +266,5 @@ public class SearchService {
         pages.add(currentPage);
 
         return pages;
-    }
-
-    private Integer getBoundedIndex(List<List<DiscordEmbedField>> results, Integer index) {
-        if (index < 0) {
-            return 0;
-        }
-        if (index >= results.size()) {
-            return results.size()-1;
-        }
-        return index;
     }
 }

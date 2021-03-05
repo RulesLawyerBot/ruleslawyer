@@ -1,9 +1,12 @@
 package service.reaction_pagination;
 
 import contract.RuleSource;
+import contract.searchRequests.SearchRequest;
 import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
+import org.javacord.api.event.message.reaction.ReactionRemoveEvent;
+import org.javacord.api.event.message.reaction.SingleReactionEvent;
 import search.SearchService;
 import search.contract.DiscordSearchRequest;
 import search.contract.DiscordSearchResult;
@@ -18,6 +21,7 @@ import static contract.RuleSource.ANY;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
+import static search.contract.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
 import static service.reaction_pagination.PageDirection.NEXT_PAGE;
 import static service.reaction_pagination.PageDirection.PREVIOUS_PAGE;
 import static utils.DiscordUtils.*;
@@ -35,24 +39,26 @@ public class ReactionPaginationService {
         this.messageLoggingService = messageLoggingService;
     }
 
-    public void handleReactionPaginationEvent(ReactionAddEvent event) {
+    public void handleReactionPaginationEvent(SingleReactionEvent event) {
         Optional<PageDirection> pageDirection = getPaginationDirection(event);
         if (isOwnReaction(event) || !isOwnMessage(event) || !pageDirection.isPresent())
             return;
         Embed embed = event.getMessage().get().getEmbeds().get(0);
         DiscordSearchRequest searchRequest = getSearchRequestFromEmbed(embed.getTitle().get(), embed.getFooter().get().getText().get());
 
-        if (searchRequest.getRequester().equals(getUsernameForReactionAddEvent(event).get())) {
+        if (hasPaginationPermissions(searchRequest, event)) {
             searchRequest.getNextPage(pageDirection.get());
             DiscordSearchResult result = searchService.getSearchResult(searchRequest);
             messageLoggingService.logEditInput(pageDirection.get(), embed);
             messageLoggingService.logOutput(result.getEmbed());
             event.getMessage().get().edit(result.getEmbed());
-            event.removeReaction();
+            if (event instanceof ReactionAddEvent) {
+                ((ReactionAddEvent)event).removeReaction();
+            }
         }
     }
 
-    private Optional<PageDirection> getPaginationDirection(ReactionAddEvent event) {
+    private Optional<PageDirection> getPaginationDirection(SingleReactionEvent event) {
         if (isOwnReaction(event) || !isOwnMessage(event)) {
             return empty();
         }
@@ -71,10 +77,29 @@ public class ReactionPaginationService {
         List<String> footerParts = asList(footer.split(" \\| "));
         String requester = footerParts.get(0).substring("Requested by: ".length());
         Integer pageNumber = parseInt(asList(footerParts.get(1).split(" ")).get(1))-1;
-        return new DiscordSearchRequest(requester, keywords, ruleSource, pageNumber, false);
+        return aDiscordSearchRequest()
+                .setRequester(requester)
+                .appendKeywords(keywords)
+                .setRuleSource(ruleSource)
+                .setPageNumber(pageNumber)
+                .setDigitalRuleRequest(false)
+                .build();
     }
 
-    public boolean shouldPaginate(MessageCreateEvent event) {
+    private boolean hasPaginationPermissions(DiscordSearchRequest searchRequest, SingleReactionEvent event) {
+        if (event.getUser().map(
+                user -> event.getServer().isPresent()
+                        && event.getServer().get().canBanUsers(user)
+                ).orElse(false)
+        ) {
+            return true;
+        }
+        return event.getUser().map(
+                user -> user.getDiscriminatedName().equals(searchRequest.getRequester())
+        ).orElse(false);
+    }
+
+    public boolean shouldPlacePaginationReactions(MessageCreateEvent event) {
         return isOwnMessage(event) && event.getMessage().getEmbeds().size() == 1
                 && event.getMessage().getEmbeds().get(0).getTitle().isPresent();
     }

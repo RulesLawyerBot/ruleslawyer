@@ -5,6 +5,7 @@ import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.intent.Intent;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
+import org.javacord.api.event.message.reaction.SingleReactionEvent;
 import org.javacord.api.event.server.ServerJoinEvent;
 import search.SearchService;
 import search.contract.DiscordSearchResult;
@@ -17,7 +18,6 @@ import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
 import repository.SearchRepository;
 import service.reaction_pagination.ReactionPaginationService;
-import utils.DiscordUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -79,7 +79,8 @@ public class ApplicationMain {
 
         api.updateActivity(CURRENT_VERSION);
         api.addMessageCreateListener(ApplicationMain::handleMessageCreateEvent);
-        api.addReactionAddListener(ApplicationMain::handleReactionAddEvent);
+        api.addReactionAddListener(ApplicationMain::handleReactionEvent);
+        api.addReactionRemoveListener(ApplicationMain::handleReactionEvent);
         api.addServerJoinListener(ApplicationMain::handleServerJoinEvent);
         System.out.println("Initialization complete");
     }
@@ -92,9 +93,12 @@ public class ApplicationMain {
         generalChannel.ifPresent(channel -> messageLoggingService.logJoinMessageSuccess(channel.getServer()));
     }
 
-    private static void handleReactionAddEvent(ReactionAddEvent event) {
-        if (messageDeletionService.shouldDeleteMessage(event)) {
-            event.deleteMessage();
+    private static void handleReactionEvent(SingleReactionEvent event) {
+        if (
+                event instanceof ReactionAddEvent &&
+                messageDeletionService.shouldDeleteMessage((ReactionAddEvent)event)
+        ) {
+                event.deleteMessage();
         }
         if (isOwnMessage(event) && !isOwnReaction(event)) {
             reactionPaginationService.handleReactionPaginationEvent(event);
@@ -105,8 +109,10 @@ public class ApplicationMain {
     private static void handleMessageCreateEvent(MessageCreateEvent event) {
         Optional<User> messageSender = event.getMessageAuthor().asUser();
         if (isUserMessage(event)){
-            String author = getUsernameForMessageCreateEvent(event).get();
-            DiscordSearchResult result = searchService.getSearchResult(author, event.getMessageContent());
+            DiscordSearchResult result = searchService.getSearchResult(
+                    getUsernameForMessageCreateEvent(event).get(),
+                    event.getMessageContent()
+            );
             if (result != null) {
                 messageLoggingService.logInput(event);
                 TextChannel channel = event.getChannel();
@@ -124,7 +130,7 @@ public class ApplicationMain {
         }
 
         if (isOwnMessage(event)) {
-            if (reactionPaginationService.shouldPaginate(event)) {
+            if (reactionPaginationService.shouldPlacePaginationReactions(event)) {
                 event.getMessage().addReaction(LEFT_EMOJI);
                 event.getMessage().addReaction("javacord:" + MessageDeletionService.DELETE_EMOTE_ID);
                 event.getMessage().addReaction(RIGHT_EMOJI);
