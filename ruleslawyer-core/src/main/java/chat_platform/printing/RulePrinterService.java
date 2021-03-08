@@ -1,6 +1,6 @@
 package chat_platform.printing;
 
-import contract.RequestSource;
+import contract.rules.enums.RequestSource;
 import contract.searchResults.RuleSearchResult;
 import contract.searchResults.SearchResult;
 import contract.rules.AbstractRule;
@@ -13,8 +13,8 @@ import exception.NotYetImplementedException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static contract.RequestSource.DISCORD;
-import static contract.RequestSource.SLACK;
+import static contract.rules.enums.RequestSource.DISCORD;
+import static contract.rules.enums.RequestSource.SLACK;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 

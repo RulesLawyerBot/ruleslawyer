@@ -9,8 +9,8 @@ import service.RuleTestUtils;
 
 import java.util.List;
 
-import static contract.RequestSource.DISCORD;
-import static contract.RequestSource.SLACK;
+import static contract.rules.enums.RequestSource.DISCORD;
+import static contract.rules.enums.RequestSource.SLACK;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

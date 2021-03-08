@@ -3,11 +3,11 @@ package app;
 import init_utils.ManaEmojiService;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.intent.Intent;
+import org.javacord.api.event.message.MessageEditEvent;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
 import org.javacord.api.event.message.reaction.SingleReactionEvent;
 import org.javacord.api.event.server.ServerJoinEvent;
-import search.SearchService;
+import search.RuleSearchService;
 import search.contract.DiscordSearchResult;
 import service.*;
 import contract.rules.AbstractRule;
@@ -29,6 +29,7 @@ import java.util.Optional;
 import static chat_platform.HelpMessageService.MAIN_HELP;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
+import static org.javacord.api.entity.intent.Intent.GUILD_PRESENCES;
 import static service.reaction_pagination.ReactionPaginationService.LEFT_EMOJI;
 import static service.reaction_pagination.ReactionPaginationService.RIGHT_EMOJI;
 import static utils.DiscordUtils.*;
@@ -36,7 +37,7 @@ import static utils.DiscordUtils.*;
 public class ApplicationMain {
 
     private static JsonRuleIngestionService jsonRuleIngestionService;
-    private static SearchService searchService;
+    private static RuleSearchService ruleSearchService;
     private static MessageDeletionService messageDeletionService;
     private static ManaEmojiService manaEmojiService;
     private static MessageLoggingService messageLoggingService;
@@ -53,7 +54,7 @@ public class ApplicationMain {
 
         DiscordApi api = new DiscordApiBuilder()
                 .setToken(discordToken)
-                .setAllIntentsExcept(Intent.GUILD_PRESENCES)
+                .setAllIntentsExcept(GUILD_PRESENCES)
                 .login()
                 .join();
 
@@ -62,12 +63,15 @@ public class ApplicationMain {
 
         System.out.println("Loading rules...");
         try {
-            List<AbstractRule> rules = jsonRuleIngestionService.getRules();
-            List<AbstractRule> emojiReplacedRules = rules.stream()
+            List<AbstractRule> rules = jsonRuleIngestionService.getRules().stream()
                     .map(manaEmojiService::replaceManaSymbols)
                     .collect(toList());
-            searchService = new SearchService(new SearchRepository<>(emojiReplacedRules));
-        } catch (Exception ignored) {
+            List<AbstractRule> digitalRules = jsonRuleIngestionService.getDigitalEventRules().stream()
+                    .map(manaEmojiService::replaceManaSymbols)
+                    .collect(toList());
+            ruleSearchService = new RuleSearchService(new SearchRepository<>(rules), new SearchRepository<>(digitalRules));
+        } catch (Exception e) {
+            e.printStackTrace();
             System.exit(-1);
         }
 
@@ -75,13 +79,14 @@ public class ApplicationMain {
         messageDeletionService = new MessageDeletionService(api);
         messageLoggingService = new MessageLoggingService(api);
         administratorCommandsService = new AdministratorCommandsService(api);
-        reactionPaginationService = new ReactionPaginationService(searchService, messageLoggingService);
+        reactionPaginationService = new ReactionPaginationService(ruleSearchService, messageLoggingService);
 
         api.updateActivity(CURRENT_VERSION);
         api.addMessageCreateListener(ApplicationMain::handleMessageCreateEvent);
         api.addReactionAddListener(ApplicationMain::handleReactionEvent);
         api.addReactionRemoveListener(ApplicationMain::handleReactionEvent);
         api.addServerJoinListener(ApplicationMain::handleServerJoinEvent);
+        api.addMessageEditListener(ApplicationMain::handleMessageEditEvent);
         System.out.println("Initialization complete");
     }
 
@@ -109,7 +114,7 @@ public class ApplicationMain {
     private static void handleMessageCreateEvent(MessageCreateEvent event) {
         Optional<User> messageSender = event.getMessageAuthor().asUser();
         if (isUserMessage(event)){
-            DiscordSearchResult result = searchService.getSearchResult(
+            DiscordSearchResult result = ruleSearchService.getSearchResult(
                     getUsernameForMessageCreateEvent(event).get(),
                     event.getMessageContent()
             );
@@ -130,19 +135,20 @@ public class ApplicationMain {
         }
 
         if (isOwnMessage(event)) {
-            if (reactionPaginationService.shouldPlacePaginationReactions(event)) {
-                event.getMessage().addReaction(LEFT_EMOJI);
-                event.getMessage().addReaction("javacord:" + MessageDeletionService.DELETE_EMOTE_ID);
-                event.getMessage().addReaction(RIGHT_EMOJI);
-            } else {
-                event.getMessage().addReaction("javacord:" + MessageDeletionService.DELETE_EMOTE_ID);
-            }
+            reactionPaginationService.placePaginationReactions(event);
         }
 
         event.getApi().updateActivity(CURRENT_VERSION);
     }
 
-    public static String getKey(String keyId) {
+    private static void handleMessageEditEvent(MessageEditEvent event) {
+        if (!isOwnMessage(event)) {
+            return;
+        }
+        reactionPaginationService.replaceSourceChangeReactions(event);
+    }
+
+    public static String getKey(String keyId) { //TODO move this why the fuck is it even here
         if(keyId.equals("dev") || keyId.equals("prod")) {
             try {
                 InputStream in = ApplicationMain.class.getResourceAsStream("/keys.txt");

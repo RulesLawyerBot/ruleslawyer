@@ -1,7 +1,7 @@
 package contract.rules;
 
 
-import contract.RuleSource;
+import contract.rules.enums.RuleSource;
 
 import java.util.List;
 

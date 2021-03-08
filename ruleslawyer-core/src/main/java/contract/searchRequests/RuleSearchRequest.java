@@ -1,31 +1,30 @@
 package contract.searchRequests;
 
-import contract.RuleSource;
+import contract.rules.enums.RuleRequestCategory;
+import contract.rules.enums.RuleSource;
 import contract.rules.AbstractRule;
 
 import java.util.List;
 
-import static contract.RuleSource.ANY;
-import static java.lang.String.join;
 import static java.util.Objects.hash;
 
 public class RuleSearchRequest extends SearchRequest<AbstractRule> {
-    public RuleSearchRequest(List<String> keywords, RuleSource ruleSource, Integer pageNumber, Boolean isDigitalRuleRequest) {
+    public RuleSearchRequest(List<String> keywords, RuleSource ruleSource, Integer pageNumber, RuleRequestCategory ruleRequestCategory) {
         this.keywords = keywords;
         this.ruleSource = ruleSource;
         this.pageNumber = pageNumber;
-        this.isDigitalRuleRequest = isDigitalRuleRequest;
+        this.ruleRequestCategory = ruleRequestCategory;
     }
 
-    private RuleSource ruleSource;
-    private Boolean isDigitalRuleRequest;
+    protected RuleSource ruleSource;
+    protected RuleRequestCategory ruleRequestCategory;
 
     public RuleSource getRuleSource() {
         return ruleSource;
     }
 
-    public boolean isDigitalRuleRequest() {
-        return isDigitalRuleRequest;
+    public RuleRequestCategory getRuleRequestCategory() {
+        return ruleRequestCategory;
     }
 
     @Override
@@ -33,11 +32,12 @@ public class RuleSearchRequest extends SearchRequest<AbstractRule> {
         if (this == o) return true;
         if (!(o instanceof RuleSearchRequest)) return false;
         RuleSearchRequest that = (RuleSearchRequest) o;
-        return ruleSource == that.ruleSource;
+        return ruleSource == that.ruleSource &&
+                ruleRequestCategory == that.ruleRequestCategory;
     }
 
     @Override
     public int hashCode() {
-        return hash(ruleSource);
+        return hash(ruleSource, ruleRequestCategory);
     }
 }

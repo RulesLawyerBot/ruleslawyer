@@ -1,15 +1,18 @@
 package service.reaction_pagination;
 
-import contract.RuleSource;
-import contract.searchRequests.SearchRequest;
+import contract.rules.enums.RuleRequestCategory;
+import contract.rules.enums.RuleSource;
+import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.event.message.MessageCreateEvent;
+import org.javacord.api.event.message.MessageEditEvent;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
-import org.javacord.api.event.message.reaction.ReactionRemoveEvent;
 import org.javacord.api.event.message.reaction.SingleReactionEvent;
-import search.SearchService;
+import search.RuleSearchService;
 import search.contract.DiscordSearchRequest;
 import search.contract.DiscordSearchResult;
+import search.contract.builder.DiscordSearchRequestBuilder;
+import service.MessageDeletionService;
 import service.MessageLoggingService;
 
 
@@ -17,24 +20,24 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.vdurmont.emoji.EmojiParser.parseToUnicode;
-import static contract.RuleSource.ANY;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static search.contract.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
-import static service.reaction_pagination.PageDirection.NEXT_PAGE;
-import static service.reaction_pagination.PageDirection.PREVIOUS_PAGE;
+import static service.reaction_pagination.PageDirection.*;
 import static utils.DiscordUtils.*;
 
 public class ReactionPaginationService {
 
     public static final String LEFT_EMOJI = parseToUnicode(":arrow_left:");
     public static final String RIGHT_EMOJI = parseToUnicode(":arrow_right:");
+    public static final String PAPER_EMOJI = parseToUnicode(":page_facing_up:");
+    public static final String DIGITAL_EMOJI = parseToUnicode(":desktop_computer:");
 
-    private SearchService searchService;
+    private RuleSearchService searchService;
     private MessageLoggingService messageLoggingService;
 
-    public ReactionPaginationService(SearchService searchService, MessageLoggingService messageLoggingService) {
+    public ReactionPaginationService(RuleSearchService searchService, MessageLoggingService messageLoggingService) {
         this.searchService = searchService;
         this.messageLoggingService = messageLoggingService;
     }
@@ -66,41 +69,110 @@ public class ReactionPaginationService {
             return Optional.of(PREVIOUS_PAGE);
         if (event.getEmoji().equalsEmoji(RIGHT_EMOJI))
             return Optional.of(NEXT_PAGE);
+        if (event.getEmoji().equalsEmoji(PAPER_EMOJI)) {
+            return Optional.of(TO_PAPER);
+        }
+        if (event.getEmoji().equalsEmoji(DIGITAL_EMOJI)) {
+            return Optional.of(TO_DIGITAL);
+        }
         return empty();
     }
 
     public DiscordSearchRequest getSearchRequestFromEmbed(String header, String footer) {
+        DiscordSearchRequestBuilder discordSearchRequest = aDiscordSearchRequest();
         List<String> headerParts = asList(header.split(" \\| "));
-        RuleSource ruleSource = headerParts.size() > 1 ? RuleSource.valueOf(headerParts.get(0)) : ANY;
-        List<String> keywords = asList(headerParts.get(headerParts.size()-1).split("/"));
+        headerParts.subList(0, headerParts.size()-1).forEach(
+                headerPart -> addHeaderPartsToRequest(discordSearchRequest, headerPart)
+        );
+        discordSearchRequest.appendKeywords(
+                asList(headerParts.get(headerParts.size()-1).split("/"))
+        );
 
         List<String> footerParts = asList(footer.split(" \\| "));
-        String requester = footerParts.get(0).substring("Requested by: ".length());
-        Integer pageNumber = parseInt(asList(footerParts.get(1).split(" ")).get(1))-1;
-        return aDiscordSearchRequest()
-                .setRequester(requester)
-                .appendKeywords(keywords)
-                .setRuleSource(ruleSource)
-                .setPageNumber(pageNumber)
-                .setDigitalRuleRequest(false)
+        discordSearchRequest.setRequester(footerParts.get(0).substring("Requested by: ".length()));
+        discordSearchRequest.setPageNumber(parseInt(asList(footerParts.get(1).split(" ")).get(1))-1);
+        return discordSearchRequest
                 .build();
     }
 
-    private boolean hasPaginationPermissions(DiscordSearchRequest searchRequest, SingleReactionEvent event) {
-        if (event.getUser().map(
-                user -> event.getServer().isPresent()
-                        && event.getServer().get().canBanUsers(user)
-                ).orElse(false)
-        ) {
-            return true;
+    private void addHeaderPartsToRequest(DiscordSearchRequestBuilder discordSearchRequest, String headerPart) {
+        try {
+            discordSearchRequest.setRuleSource(RuleSource.valueOf(headerPart));
+        } catch (IllegalArgumentException ignored) {
+            discordSearchRequest.setRuleRequestCategory(RuleRequestCategory.valueOf(headerPart.toUpperCase()));
         }
-        return event.getUser().map(
-                user -> user.getDiscriminatedName().equals(searchRequest.getRequester())
-        ).orElse(false);
     }
 
-    public boolean shouldPlacePaginationReactions(MessageCreateEvent event) {
+    private boolean hasPaginationPermissions(DiscordSearchRequest searchRequest, SingleReactionEvent event) {
+        return event.getUser().map(
+                    user -> event.getServer().isPresent()
+                            && event.getServer().get().canBanUsers(user)
+                ).orElse(false) ||
+                getUsernameForReactionAddEvent(event).map(
+                        name -> name.equals(searchRequest.getRequester())
+                ).orElse(false);
+    }
+
+    public void placePaginationReactions(MessageCreateEvent event) {
+        event.getMessage().addReaction("javacord:" + MessageDeletionService.DELETE_EMOTE_ID);
+        if (shouldPlacePaginationReactions(event)) {
+            event.getMessage().addReaction(LEFT_EMOJI);
+            event.getMessage().addReaction(RIGHT_EMOJI);
+        }
+        if (getSourceChangeReaction(event).isPresent()) {
+            event.getMessage().addReaction(getSourceChangeReaction(event).get());
+        }
+    }
+
+    private boolean shouldPlacePaginationReactions(MessageCreateEvent event) {
         return isOwnMessage(event) && event.getMessage().getEmbeds().size() == 1
                 && event.getMessage().getEmbeds().get(0).getTitle().isPresent();
+    }
+
+    public void replaceSourceChangeReactions(MessageEditEvent event) {
+        Optional<String> reaction = getSourceChangeReaction(event);
+        if (!reaction.isPresent()) {
+            return;
+        }
+        if (reaction.get().equals(PAPER_EMOJI)) {
+            event.getMessage().get().removeReactionByEmoji(DIGITAL_EMOJI);
+            event.getMessage().get().addReaction(PAPER_EMOJI);
+        }
+        if (reaction.get().equals(DIGITAL_EMOJI)) {
+            event.getMessage().get().removeReactionByEmoji(PAPER_EMOJI);
+            event.getMessage().get().addReaction(DIGITAL_EMOJI);
+        }
+    }
+
+    private Optional<String> getSourceChangeReaction(MessageCreateEvent event) {
+        return messageHasFooter(event.getMessage()) ?
+                getSourceChangeReaction(event.getMessage().getEmbeds().get(0)) :
+                empty();
+    }
+
+    private Optional<String> getSourceChangeReaction(MessageEditEvent event) {
+        return event.getMessage().map(this::messageHasFooter).orElse(false) ?
+                getSourceChangeReaction(event.getMessage().get().getEmbeds().get(0)) :
+                empty();
+    }
+
+    private boolean messageHasFooter(Message message) {
+        if (message.getEmbeds().size() == 0) {
+            return false;
+        }
+        Embed embed = message.getEmbeds().get(0);
+        return embed.getFooter().map(footer -> footer.getText().isPresent()).orElse(false);
+    }
+
+
+    private Optional<String> getSourceChangeReaction(Embed embed) {
+        if (!embed.getFooter().map(footer -> footer.getText().isPresent()).orElse(false)) {
+            return empty();
+        }
+        String footerPart = asList(embed.getFooter().get().getText().get().split(" \\| ")).get(2);
+        if (!footerPart.contains("rules available")) {
+            return empty();
+        }
+        return footerPart.split(" ")[0].equals("paper") ? Optional.of(PAPER_EMOJI) : Optional.of(DIGITAL_EMOJI);
     }
 }

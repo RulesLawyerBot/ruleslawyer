@@ -12,7 +12,7 @@ import repository.SearchRepository;
 
 import java.util.List;
 
-import static contract.RuleSource.ANY;
+import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
 import static contract.searchRequests.CardSearchRequestType.DEFAULT;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -31,7 +31,7 @@ public class AndroidSearchService {
     }
 
     public static List<AbstractRule> getRuleSearchResults(String input) {
-        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(asList(input.split(" ")), ANY, 0, false);
+        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(asList(input.split(" ")), ANY_DOCUMENT, 0, false);
         return ruleRepository.getSearchResult(ruleSearchRequest)
                 .stream()
                 .map(SearchResult::getEntry)

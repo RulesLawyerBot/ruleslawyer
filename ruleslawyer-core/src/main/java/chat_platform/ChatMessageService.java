@@ -7,20 +7,10 @@ import repository.SearchRepository;
 
 import java.util.List;
 
-import static contract.RuleSource.ANY;
+import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
 import static java.lang.String.join;
 
 public class ChatMessageService {
-
-    private SearchRepository<AbstractRule> searchRepository;
-
-    public ChatMessageService(SearchRepository<AbstractRule> searchRepository) {
-        this.searchRepository = searchRepository;
-    }
-
-    public List<SearchResult<AbstractRule>> processMessage(RuleSearchRequest searchRequest) {
-        return searchRepository.getSearchResult(searchRequest);
-    }
 
     public String getQuery(String message) {
         int indexLeft = message.indexOf("{{");
@@ -33,7 +23,7 @@ public class ChatMessageService {
     public String getQueryForNextPage(RuleSearchRequest ruleSearchRequest) {
         String keywordsString = join("|", ruleSearchRequest.getKeywords());
         String pageString = "p" + (ruleSearchRequest.getPageNumber()+1);
-        if (ruleSearchRequest.getRuleSource() == ANY) {
+        if (ruleSearchRequest.getRuleSource() == ANY_DOCUMENT) {
             return "{{" + keywordsString + "|" + pageString + "}}";
         }
         return "{{" + keywordsString + "|" + ruleSearchRequest.getRuleSource().toString() + "|" + pageString + "}}";

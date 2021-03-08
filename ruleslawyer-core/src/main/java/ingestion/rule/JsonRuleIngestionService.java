@@ -2,7 +2,7 @@ package ingestion.rule;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import contract.RuleSource;
+import contract.rules.enums.RuleSource;
 import contract.rules.AbstractRule;
 import contract.rules.Rule;
 import contract.rules.RuleHeader;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static contract.RuleSource.*;
+import static contract.rules.enums.RuleSource.*;
 import static java.lang.String.valueOf;
 import static java.nio.charset.StandardCharsets.*;
 import static java.util.Collections.emptyList;
@@ -34,6 +34,17 @@ public class JsonRuleIngestionService {
             rules.addAll(getRules("/IPG-parsed.json", IPG));
             rules.addAll(getRules("/MTR-parsed.json", MTR));
             rules.addAll(getFlattenedRules("/oath-parsed.json", OATH));
+            return rules;
+        } catch (IOException ignored) {
+            System.exit(-1);
+        }
+        return emptyList();
+    }
+
+    public List<AbstractRule> getDigitalEventRules() {
+        try {
+            List<AbstractRule> rules = new ArrayList<>();
+            rules.addAll(getRules("/DIPG-parsed.json", DMTR));
             return rules;
         } catch (IOException ignored) {
             System.exit(-1);

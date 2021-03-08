@@ -9,8 +9,9 @@ import service.RuleTestUtils;
 
 import java.util.List;
 
-import static contract.RuleSource.CR;
-import static contract.RuleSource.IPG;
+import static contract.rules.enums.RuleRequestCategory.PAPER;
+import static contract.rules.enums.RuleSource.CR;
+import static contract.rules.enums.RuleSource.IPG;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -24,7 +25,7 @@ public class RuleSearchRepositoryTest {
 
     @Test
     public void searchRules_IPG_EntireHeader_ExpectCorrectResults() {
-        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(singletonList("cheating"), IPG, 0, false);
+        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(singletonList("cheating"), IPG, 0, PAPER);
 
         List<SearchResult<AbstractRule>> output = ruleSearchRepository.getSearchResult(ruleSearchRequest);
 
@@ -34,7 +35,7 @@ public class RuleSearchRepositoryTest {
 
     @Test
     public void searchRules_IPG_SomeRules_ExpectCorrectResults() {
-        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(singletonList("lies"), IPG, 0, false);
+        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(singletonList("lies"), IPG, 0, PAPER);
 
         List<SearchResult<AbstractRule>> output = ruleSearchRepository.getSearchResult(ruleSearchRequest);
 
@@ -45,7 +46,7 @@ public class RuleSearchRepositoryTest {
 
     @Test
     public void searchRules_CR_SomeRule_IncludingSubRulesOfIncludedRule_ExpectOnlyTopLevelResults() {
-        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(singletonList("layer 7"), CR, 0, false);
+        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(singletonList("layer 7"), CR, 0, PAPER);
 
         List<SearchResult<AbstractRule>> output = ruleSearchRepository.getSearchResult(ruleSearchRequest);
 

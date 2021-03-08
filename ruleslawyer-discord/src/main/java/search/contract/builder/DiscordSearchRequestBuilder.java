@@ -1,28 +1,42 @@
 package search.contract.builder;
 
-import contract.RuleSource;
+import contract.rules.enums.RuleRequestCategory;
+import contract.rules.enums.RuleSource;
 import search.contract.DiscordSearchRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static contract.RuleSource.ANY;
+import static contract.rules.enums.RuleRequestCategory.PAPER;
+import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
 
 public class DiscordSearchRequestBuilder {
 
     private String requester;
+    private String channelName;
     private List<String> keywords;
     private RuleSource ruleSource;
     private Integer pageNumber;
-    private Boolean isDigitalRuleRequest;
+    private RuleRequestCategory ruleRequestCategory;
 
     public static DiscordSearchRequestBuilder aDiscordSearchRequest() {
         DiscordSearchRequestBuilder discordSearchRequestBuilder = new DiscordSearchRequestBuilder()
-                .setRuleSource(ANY)
+                .setRuleSource(ANY_DOCUMENT)
+                .setRuleRequestCategory(PAPER)
                 .setPageNumber(0)
-                .setDigitalRuleRequest(false);
+                .setChannelName("TO BE IMPLEMENTED");
         discordSearchRequestBuilder.keywords = new ArrayList<>();
         return discordSearchRequestBuilder;
+    }
+
+    public static DiscordSearchRequestBuilder fromDiscordSearchRequest(DiscordSearchRequest request) {
+        return aDiscordSearchRequest()
+                .setRequester(request.getRequester())
+                .setChannelName(request.getChannelName())
+                .appendKeywords(request.getKeywords())
+                .setRuleSource(request.getRuleSource())
+                .setPageNumber(request.getPageNumber())
+                .setRuleRequestCategory(request.getRuleRequestCategory());
     }
 
     public DiscordSearchRequestBuilder appendKeywords(List<String> keywords) {
@@ -32,6 +46,11 @@ public class DiscordSearchRequestBuilder {
 
     public DiscordSearchRequestBuilder setRequester(String requester) {
         this.requester = requester;
+        return this;
+    }
+
+    public DiscordSearchRequestBuilder setChannelName(String channelName) {
+        this.channelName = channelName;
         return this;
     }
 
@@ -45,12 +64,12 @@ public class DiscordSearchRequestBuilder {
         return this;
     }
 
-    public DiscordSearchRequestBuilder setDigitalRuleRequest(Boolean digitalRuleRequest) {
-        isDigitalRuleRequest = digitalRuleRequest;
+    public DiscordSearchRequestBuilder setRuleRequestCategory(RuleRequestCategory ruleRequestCategory) {
+        this.ruleRequestCategory = ruleRequestCategory;
         return this;
     }
 
     public DiscordSearchRequest build() {
-        return new DiscordSearchRequest(requester, keywords, ruleSource, pageNumber, isDigitalRuleRequest);
+        return new DiscordSearchRequest(requester, channelName, keywords, ruleSource, pageNumber, ruleRequestCategory);
     }
 }

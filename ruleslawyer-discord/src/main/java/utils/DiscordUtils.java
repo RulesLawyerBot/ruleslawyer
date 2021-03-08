@@ -3,6 +3,7 @@ package utils;
 import org.javacord.api.entity.message.MessageAuthor;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
+import org.javacord.api.event.message.MessageEditEvent;
 import org.javacord.api.event.message.reaction.SingleReactionEvent;
 
 import java.util.Optional;
@@ -22,6 +23,10 @@ public class DiscordUtils {
     }
 
     public static boolean isOwnMessage(SingleReactionEvent event) {
+        return event.getMessageAuthor().map(MessageAuthor::isYourself).orElse(false);
+    }
+
+    public static boolean isOwnMessage(MessageEditEvent event) {
         return event.getMessageAuthor().map(MessageAuthor::isYourself).orElse(false);
     }
 

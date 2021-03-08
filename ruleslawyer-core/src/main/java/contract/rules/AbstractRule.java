@@ -1,6 +1,6 @@
 package contract.rules;
 
-import contract.RuleSource;
+import contract.rules.enums.RuleSource;
 import contract.Searchable;
 import contract.searchRequests.RuleSearchRequest;
 import contract.searchRequests.SearchRequest;
@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.OptionalInt;
 
-import static contract.RuleSource.ANY;
+import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -44,7 +44,7 @@ public abstract class AbstractRule implements Searchable {
 
     @Override
     public List<AbstractRule> searchForKeywords(SearchRequest searchRequest) {
-        if (((RuleSearchRequest)searchRequest).getRuleSource() != ANY && ((RuleSearchRequest)searchRequest).getRuleSource() != getRuleSource())
+        if (((RuleSearchRequest)searchRequest).getRuleSource() != ANY_DOCUMENT && ((RuleSearchRequest)searchRequest).getRuleSource() != getRuleSource())
             return emptyList();
         return searchForKeywords(((RuleSearchRequest)searchRequest).getKeywords());
     }

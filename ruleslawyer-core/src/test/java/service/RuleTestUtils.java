@@ -4,8 +4,8 @@ import contract.rules.Rule;
 import contract.rules.RuleHeader;
 import contract.rules.RuleSubheader;
 
-import static contract.RuleSource.CR;
-import static contract.RuleSource.IPG;
+import static contract.rules.enums.RuleSource.CR;
+import static contract.rules.enums.RuleSource.IPG;
 
 public class RuleTestUtils {
 

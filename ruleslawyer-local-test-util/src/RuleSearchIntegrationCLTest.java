@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import static contract.RuleSource.ANY;
+import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 
@@ -22,7 +22,7 @@ public class RuleSearchIntegrationCLTest {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
             String input = reader.readLine();
-            RuleSearchRequest request = new RuleSearchRequest(asList(input.split(" ")), ANY, 0, false);
+            RuleSearchRequest request = new RuleSearchRequest(asList(input.split(" ")), ANY_DOCUMENT, 0, false);
             List<SearchResult<AbstractRule>> results = repository.getSearchResult(request);
             String output = results.stream()
                     .map(SearchResult::getEntry)
