@@ -83,6 +83,9 @@ public abstract class AbstractRule implements Searchable {
         if (getParentText().toLowerCase().contains(keyword)) {
             return OptionalInt.of(getParentText().toLowerCase().indexOf(keyword));
         }
+        if (getRuleSource().toString().contains(keyword.toUpperCase())) {
+            return OptionalInt.of(0);
+        }
         return subRules.stream()
                 .map(subRule -> subRule.getRelevancyForKeyword(keyword))
                 .filter(OptionalInt::isPresent)
