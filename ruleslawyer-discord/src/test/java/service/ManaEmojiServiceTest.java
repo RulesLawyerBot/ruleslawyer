@@ -9,9 +9,9 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
-import static app.ApplicationMain.getKey;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static utils.DiscordUtils.getDiscordKey;
 
 public class ManaEmojiServiceTest {
 
@@ -21,7 +21,7 @@ public class ManaEmojiServiceTest {
     @Before
     public void setUp() {
         api = new DiscordApiBuilder()
-                .setToken(getKey("dev"))
+                .setToken(getDiscordKey("dev"))
                 .login()
                 .join();
         manaEmojiService = new ManaEmojiService(api);

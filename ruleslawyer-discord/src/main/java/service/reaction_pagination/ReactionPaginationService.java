@@ -14,25 +14,21 @@ import search.contract.DiscordSearchResult;
 import search.contract.builder.DiscordSearchRequestBuilder;
 import service.MessageDeletionService;
 import service.MessageLoggingService;
+import utils.StaticEmojis;
 
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.vdurmont.emoji.EmojiParser.parseToUnicode;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static search.contract.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
 import static service.reaction_pagination.PageDirection.*;
 import static utils.DiscordUtils.*;
+import static utils.StaticEmojis.*;
 
 public class ReactionPaginationService {
-
-    public static final String LEFT_EMOJI = parseToUnicode(":arrow_left:");
-    public static final String RIGHT_EMOJI = parseToUnicode(":arrow_right:");
-    public static final String PAPER_EMOJI = parseToUnicode(":page_facing_up:");
-    public static final String DIGITAL_EMOJI = parseToUnicode(":desktop_computer:");
 
     private RuleSearchService searchService;
     private MessageLoggingService messageLoggingService;

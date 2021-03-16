@@ -11,7 +11,6 @@ import search.RuleSearchService;
 import search.contract.DiscordSearchResult;
 import service.*;
 import contract.rules.AbstractRule;
-import ingestion.rule.JsonRuleIngestionService;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.user.User;
@@ -27,16 +26,15 @@ import java.util.List;
 import java.util.Optional;
 
 import static chat_platform.HelpMessageService.MAIN_HELP;
+import static ingestion.rule.JsonRuleIngestionService.getDigitalEventRules;
+import static ingestion.rule.JsonRuleIngestionService.getRules;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static org.javacord.api.entity.intent.Intent.GUILD_PRESENCES;
-import static service.reaction_pagination.ReactionPaginationService.LEFT_EMOJI;
-import static service.reaction_pagination.ReactionPaginationService.RIGHT_EMOJI;
 import static utils.DiscordUtils.*;
 
 public class ApplicationMain {
 
-    private static JsonRuleIngestionService jsonRuleIngestionService;
     private static RuleSearchService ruleSearchService;
     private static MessageDeletionService messageDeletionService;
     private static ManaEmojiService manaEmojiService;
@@ -48,9 +46,8 @@ public class ApplicationMain {
     private static final String CURRENT_VERSION = "Version 1.8.2 / KHM / {{help|dev}}";
 
     public static void main(String[] args) {
-
-        System.out.println("Logging in...");
-        String discordToken = getKey(args[0]);
+        String discordToken = getDiscordKey(args[0]);
+        System.out.println("Logging in with " + discordToken);
 
         DiscordApi api = new DiscordApiBuilder()
                 .setToken(discordToken)
@@ -58,15 +55,14 @@ public class ApplicationMain {
                 .login()
                 .join();
 
-        jsonRuleIngestionService = new JsonRuleIngestionService();
+        System.out.println("Loading rules...");
         manaEmojiService = new ManaEmojiService(api);
 
-        System.out.println("Loading rules...");
         try {
-            List<AbstractRule> rules = jsonRuleIngestionService.getRules().stream()
+            List<AbstractRule> rules = getRules().stream()
                     .map(manaEmojiService::replaceManaSymbols)
                     .collect(toList());
-            List<AbstractRule> digitalRules = jsonRuleIngestionService.getDigitalEventRules().stream()
+            List<AbstractRule> digitalRules = getDigitalEventRules().stream()
                     .map(manaEmojiService::replaceManaSymbols)
                     .collect(toList());
             ruleSearchService = new RuleSearchService(new SearchRepository<>(rules), new SearchRepository<>(digitalRules));
@@ -76,17 +72,19 @@ public class ApplicationMain {
         }
 
         System.out.println("Setting listeners...");
-        messageDeletionService = new MessageDeletionService(api);
-        messageLoggingService = new MessageLoggingService(api);
-        administratorCommandsService = new AdministratorCommandsService(api);
-        reactionPaginationService = new ReactionPaginationService(ruleSearchService, messageLoggingService);
-
         api.updateActivity(CURRENT_VERSION);
         api.addMessageCreateListener(ApplicationMain::handleMessageCreateEvent);
         api.addReactionAddListener(ApplicationMain::handleReactionEvent);
         api.addReactionRemoveListener(ApplicationMain::handleReactionEvent);
         api.addServerJoinListener(ApplicationMain::handleServerJoinEvent);
         api.addMessageEditListener(ApplicationMain::handleMessageEditEvent);
+
+        System.out.println("Final setup...");
+        messageDeletionService = new MessageDeletionService(api);
+        messageLoggingService = new MessageLoggingService(api);
+        administratorCommandsService = new AdministratorCommandsService(api);
+        reactionPaginationService = new ReactionPaginationService(ruleSearchService, messageLoggingService);
+
         System.out.println("Initialization complete");
     }
 
@@ -146,24 +144,5 @@ public class ApplicationMain {
             return;
         }
         reactionPaginationService.replaceSourceChangeReactions(event);
-    }
-
-    public static String getKey(String keyId) { //TODO move this why the fuck is it even here
-        if(keyId.equals("dev") || keyId.equals("prod")) {
-            try {
-                InputStream in = ApplicationMain.class.getResourceAsStream("/keys.txt");
-                BufferedReader br = new BufferedReader(new InputStreamReader(in, UTF_8));
-                char[] buffer = new char[1000000];
-                br.read(buffer);
-                in.close();
-                String keys = new String(buffer);
-                return keyId.equals("dev") ?
-                        keys.substring(0, 59) :
-                        keys.substring(59, 119);
-            } catch(IOException exception) {
-                return keyId;
-            }
-        }
-        return keyId;
     }
 }
