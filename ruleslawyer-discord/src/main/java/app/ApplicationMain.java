@@ -18,17 +18,12 @@ import org.javacord.api.event.message.MessageCreateEvent;
 import repository.SearchRepository;
 import service.reaction_pagination.ReactionPaginationService;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Optional;
 
 import static chat_platform.HelpMessageService.MAIN_HELP;
 import static ingestion.rule.JsonRuleIngestionService.getDigitalEventRules;
 import static ingestion.rule.JsonRuleIngestionService.getRules;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static org.javacord.api.entity.intent.Intent.GUILD_PRESENCES;
 import static utils.DiscordUtils.*;
@@ -43,7 +38,7 @@ public class ApplicationMain {
     private static ReactionPaginationService reactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.8.2 / KHM / {{help|dev}}";
+    private static final String CURRENT_VERSION = "Version 1.9.0 / KHM / {{help|dev}}";
 
     public static void main(String[] args) {
         String discordToken = getDiscordKey(args[0]);

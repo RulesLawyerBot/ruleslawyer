@@ -12,6 +12,8 @@ import repository.SearchRepository;
 
 import java.util.List;
 
+import static contract.cards.FormatLegality.ANY_FORMAT;
+import static contract.rules.enums.RuleRequestCategory.ANY_RULE_TYPE;
 import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
 import static contract.searchRequests.CardSearchRequestType.DEFAULT;
 import static java.util.Arrays.asList;
@@ -31,7 +33,7 @@ public class AndroidSearchService {
     }
 
     public static List<AbstractRule> getRuleSearchResults(String input) {
-        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(asList(input.split(" ")), ANY_DOCUMENT, 0, false);
+        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(asList(input.split(" ")), ANY_DOCUMENT, 0, ANY_RULE_TYPE);
         return ruleRepository.getSearchResult(ruleSearchRequest)
                 .stream()
                 .map(SearchResult::getEntry)
@@ -39,7 +41,7 @@ public class AndroidSearchService {
     }
 
     public static List<Card> getCardSearchResults(String input) {
-        CardSearchRequest cardSearchRequest = new CardSearchRequest(asList(input.split(" ")), DEFAULT, FormatLegality.ANY_FORMAT);
+        CardSearchRequest cardSearchRequest = new CardSearchRequest(asList(input.split(" ")), DEFAULT, ANY_FORMAT);
         return cardRepository.getSearchResult(cardSearchRequest)
                 .stream()
                 .map(SearchResult::getEntry)

@@ -5,12 +5,12 @@
     <parent>
         <artifactId>ruleslawyer</artifactId>
         <groupId>com.github.elainecao93</groupId>
-        <version>0.8.2</version>
+        <version>0.9.0</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>ruleslawyer-core</artifactId>
-    <version>0.8.2</version>
+    <version>${parent.version}</version>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->

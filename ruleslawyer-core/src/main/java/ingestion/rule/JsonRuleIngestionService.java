@@ -44,7 +44,8 @@ public class JsonRuleIngestionService {
     public static List<AbstractRule> getDigitalEventRules() {
         try {
             List<AbstractRule> rules = new ArrayList<>();
-            rules.addAll(getRules("/DIPG-parsed.json", DMTR));
+            rules.addAll(getRules("/DIPG-parsed.json", DIPG));
+            rules.addAll(getRules("/DMTR-parsed.json", DMTR));
             return rules;
         } catch (IOException ignored) {
             System.exit(-1);

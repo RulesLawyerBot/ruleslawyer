@@ -57,11 +57,12 @@ public class DiscordSearchRequest extends RuleSearchRequest {
         if (!(o instanceof DiscordSearchRequest)) return false;
         if (!super.equals(o)) return false;
         DiscordSearchRequest that = (DiscordSearchRequest) o;
-        return requester.equals(that.requester);
+        return Objects.equals(requester, that.requester) &&
+                Objects.equals(channelName, that.channelName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), requester);
+        return Objects.hash(super.hashCode(), requester, channelName);
     }
 }

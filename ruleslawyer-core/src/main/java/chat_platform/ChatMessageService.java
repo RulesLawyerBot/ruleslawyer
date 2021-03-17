@@ -19,13 +19,4 @@ public class ChatMessageService {
             return "";
         return message.substring(indexLeft+2, indexRight).toLowerCase();
     }
-
-    public String getQueryForNextPage(RuleSearchRequest ruleSearchRequest) {
-        String keywordsString = join("|", ruleSearchRequest.getKeywords());
-        String pageString = "p" + (ruleSearchRequest.getPageNumber()+1);
-        if (ruleSearchRequest.getRuleSource() == ANY_DOCUMENT) {
-            return "{{" + keywordsString + "|" + pageString + "}}";
-        }
-        return "{{" + keywordsString + "|" + ruleSearchRequest.getRuleSource().toString() + "|" + pageString + "}}";
-    }
 }

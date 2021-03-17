@@ -37,17 +37,13 @@ public class HelpMessageService {
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
             "Current rules version: Kaldheim\n" +
-            "Last updated: 24-02-2021\n" +
-            "--v1.8.2--\n" +
-            "Changed permissions integer to future proof for slash commands.\n" +
-            "--v1.8.0--\n" +
-            "Reaction pagination! Left and right emojis should appear under search results, which can be clicked to print up next and previous pages.\n" +
-            "The bot should delete your reaction after processing it, but this requires permissions that the bot may not have in your server. If this doesn't work, you'll need to kick and re-add the bot, using the new permissions integer in {{help|add}}\n" +
+            "Last updated: 16-03-2021\n" +
+            "--v1.9.0--\n" +
+            "Fixed various bugs related to pagination.\n" +
+            "Digital events rules are in! Let me know if there are any parsing issues.\n" +
             "--Future development and known issues--\n" +
-            "At some point I will get around to digital events rules.\n" +
             "Fuzzy searching is being explored but ITS HARD TO MAKE WORK OKAY\n" +
             "Android version is actively being worked on. Slack is (still) pending me finding a deployment model that actually works with their API and isn't expensive (read: probably going to sit indefinitely)\n" +
-            "Maybe more reaction-based filtering?\n" +
             "```";
 
     public static final String NOT_FOUND = "I don't have that help file. Use {{help}} for the main help file.";
