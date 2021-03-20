@@ -1,4 +1,5 @@
-*.json
+/ruleslawyer-rules-parser/*/*.json
+/ruleslawyer-scryfall-ingestion/*.json
 /.idea/
 */target/
 */__pycache__/
@@ -6,4 +7,3 @@
 *.iml
 /classes/
 /ruleslawyer-discord/src/main/resources/keys.txt
-/ruleslawyer-scryfall-ingestion/script.py
