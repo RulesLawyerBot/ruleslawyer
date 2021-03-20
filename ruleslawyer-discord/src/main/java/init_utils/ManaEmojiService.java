@@ -1,6 +1,6 @@
 package init_utils;
 
-import app.ApplicationMain;
+import app.DiscordApplicationMain;
 import contract.rules.AbstractRule;
 import contract.rules.Rule;
 import contract.rules.RuleHeader;
@@ -28,7 +28,7 @@ public class ManaEmojiService {
 
     public HashMap<String, String> getEmojis() {
         this.manaSymbolEmojis = new HashMap<>();
-        api.getServerById(ApplicationMain.DEV_SERVER_ID)
+        api.getServerById(DiscordApplicationMain.DEV_SERVER_ID)
                 .get()
                 .getCustomEmojis()
                 .forEach(emoji -> {

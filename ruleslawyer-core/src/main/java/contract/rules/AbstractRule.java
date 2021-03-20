@@ -38,6 +38,10 @@ public abstract class AbstractRule implements Searchable {
         return this.text;
     }
 
+    public AbstractRule getParentRule() {
+        return this.parentRule;
+    }
+
     public List<AbstractRule> getSubRules() {
         return this.subRules;
     }

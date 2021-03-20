@@ -3,11 +3,11 @@
   <parent>
     <artifactId>ruleslawyer</artifactId>
     <groupId>com.github.elainecao93</groupId>
-    <version>0.9.0</version>
+    <version>0.9.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>ruleslawyer-discord</artifactId>
-  <version>0.9.0</version>
+  <version>${parent.version}</version>
   <build>
     <plugins>
       <plugin>
@@ -49,7 +49,7 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>app.ApplicationMain</mainClass>
+              <mainClass>app.DiscordApplicationMain</mainClass>
             </manifest>
           </archive>
         </configuration>

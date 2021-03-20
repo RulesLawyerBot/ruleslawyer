@@ -6,13 +6,14 @@
 
     <groupId>com.github.elainecao93</groupId>
     <artifactId>ruleslawyer</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.1</version>
 
     <packaging>pom</packaging>
     <modules>
         <module>ruleslawyer-discord</module>
         <module>ruleslawyer-core</module>
         <module>ruleslawyer-android</module>
+        <module>ruleslawyer-api</module>
     </modules>
     <build>
         <plugins>

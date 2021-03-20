@@ -1,6 +1,6 @@
 package service;
 
-import app.ApplicationMain;
+import app.DiscordApplicationMain;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.TextChannel;
@@ -25,7 +25,7 @@ public class MessageLoggingService {
     public MessageLoggingService(DiscordApi api) {
         this.api = api;
 
-        List<ServerChannel> devServerChannels = api.getServerById(ApplicationMain.DEV_SERVER_ID)
+        List<ServerChannel> devServerChannels = api.getServerById(DiscordApplicationMain.DEV_SERVER_ID)
                 .get()
                 .getChannels();
         loggingChannel = devServerChannels.stream()

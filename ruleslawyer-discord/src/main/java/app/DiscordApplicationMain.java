@@ -28,7 +28,7 @@ import static java.util.stream.Collectors.toList;
 import static org.javacord.api.entity.intent.Intent.GUILD_PRESENCES;
 import static utils.DiscordUtils.*;
 
-public class ApplicationMain {
+public class DiscordApplicationMain {
 
     private static RuleSearchService ruleSearchService;
     private static MessageDeletionService messageDeletionService;
@@ -68,11 +68,11 @@ public class ApplicationMain {
 
         System.out.println("Setting listeners...");
         api.updateActivity(CURRENT_VERSION);
-        api.addMessageCreateListener(ApplicationMain::handleMessageCreateEvent);
-        api.addReactionAddListener(ApplicationMain::handleReactionEvent);
-        api.addReactionRemoveListener(ApplicationMain::handleReactionEvent);
-        api.addServerJoinListener(ApplicationMain::handleServerJoinEvent);
-        api.addMessageEditListener(ApplicationMain::handleMessageEditEvent);
+        api.addMessageCreateListener(DiscordApplicationMain::handleMessageCreateEvent);
+        api.addReactionAddListener(DiscordApplicationMain::handleReactionEvent);
+        api.addReactionRemoveListener(DiscordApplicationMain::handleReactionEvent);
+        api.addServerJoinListener(DiscordApplicationMain::handleServerJoinEvent);
+        api.addMessageEditListener(DiscordApplicationMain::handleMessageEditEvent);
 
         System.out.println("Final setup...");
         messageDeletionService = new MessageDeletionService(api);

@@ -1,6 +1,5 @@
 package utils;
 
-import app.ApplicationMain;
 import org.javacord.api.entity.message.MessageAuthor;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;

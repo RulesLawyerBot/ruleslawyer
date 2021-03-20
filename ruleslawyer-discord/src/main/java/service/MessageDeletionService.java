@@ -1,6 +1,6 @@
 package service;
 
-import app.ApplicationMain;
+import app.DiscordApplicationMain;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.emoji.CustomEmoji;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
@@ -15,7 +15,7 @@ public class MessageDeletionService {
     private CustomEmoji DELETE_EMOJI;
 
     public MessageDeletionService(DiscordApi api) {
-        DELETE_EMOJI = api.getServerById(ApplicationMain.DEV_SERVER_ID).get()
+        DELETE_EMOJI = api.getServerById(DiscordApplicationMain.DEV_SERVER_ID).get()
                 .getCustomEmojiById(DELETE_EMOTE_ID).get();
     }
 
