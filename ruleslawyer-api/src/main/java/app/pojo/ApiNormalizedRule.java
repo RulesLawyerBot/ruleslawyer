@@ -1,9 +1,13 @@
 package app.pojo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import contract.rules.enums.RuleSource;
 
 import java.util.List;
 
+import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_NULL;
+
+@JsonSerialize(include=NON_NULL)
 public class ApiNormalizedRule {
 
     private String parentText;

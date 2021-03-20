@@ -1,7 +1,7 @@
 package app.controller;
 
 import app.pojo.ApiNormalizedRule;
-import app.service.SearchService;
+import app.service.ApiSearchService;
 import contract.rules.enums.RuleRequestCategory;
 import contract.rules.enums.RuleSource;
 import contract.searchRequests.RuleSearchRequest;
@@ -19,10 +19,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
-public class SearchController {
+public class ApiSearchController {
 
     @Autowired
-    private SearchService searchService;
+    private ApiSearchService apiSearchService;
 
     @RequestMapping(value="/search", method = {GET, POST})
     public List<ApiNormalizedRule> search(
@@ -35,11 +35,11 @@ public class SearchController {
             return emptyList();
         }
         RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(
-                keywords == null ? emptyList() : keywords,
+                keywords,
                 ruleSource == null ? ANY_DOCUMENT : ruleSource,
                 pageNumber == null ? 0 : pageNumber,
                 ruleRequestCategory == null ? ANY_RULE_TYPE : ruleRequestCategory
         );
-        return searchService.getRuleSearchResults(ruleSearchRequest);
+        return apiSearchService.getRuleSearchResults(ruleSearchRequest);
     }
 }

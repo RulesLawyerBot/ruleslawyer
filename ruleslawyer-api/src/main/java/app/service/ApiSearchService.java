@@ -17,18 +17,14 @@ import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 
 @Service
-public class SearchService {
+public class ApiSearchService {
 
     private SearchRepository<AbstractRule> ruleRepository;
     private SearchRepository<AbstractRule> digitalRuleRepository;
 
-    public SearchService() {
-        System.out.println("hello world");
-        List<AbstractRule> rules = getRules();
-        ruleRepository = new SearchRepository<>(rules);
-
-        List<AbstractRule> digitalRules = getDigitalEventRules();
-        digitalRuleRepository = new SearchRepository<>(digitalRules);
+    public ApiSearchService() {
+        ruleRepository = new SearchRepository<>(getRules());
+        digitalRuleRepository = new SearchRepository<>(getDigitalEventRules());
     }
 
     public List<ApiNormalizedRule> getRuleSearchResults(RuleSearchRequest ruleSearchRequest) {
@@ -55,24 +51,9 @@ public class SearchService {
 
     private ApiNormalizedRule normalizeRule(AbstractRule rule) {
         return new ApiNormalizedRule(
-                normalizeWithoutHeaders(rule.getSubRules()),
+                normalizeRules(rule.getSubRules()),
                 rule.getText(),
                 getParentText(rule).orElse(null),
-                rule.getRuleSource()
-        );
-    }
-
-    private List<ApiNormalizedRule> normalizeWithoutHeaders(List<AbstractRule> rules) {
-        return rules.stream()
-                .map(this::normalizeWithoutHeaders)
-                .collect(toList());
-    }
-
-    private ApiNormalizedRule normalizeWithoutHeaders(AbstractRule rule) {
-        return new ApiNormalizedRule(
-                normalizeWithoutHeaders(rule.getSubRules()),
-                rule.getText(),
-                null,
                 rule.getRuleSource()
         );
     }
