@@ -6,6 +6,7 @@ import contract.rules.enums.RuleRequestCategory;
 import contract.rules.enums.RuleSource;
 import contract.searchRequests.RuleSearchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
+@CrossOrigin(maxAge = 3600)
 public class ApiSearchController {
 
     @Autowired
