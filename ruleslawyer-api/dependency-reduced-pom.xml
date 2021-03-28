@@ -53,7 +53,7 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>app.SpringApplicationMain</mainClass>
+              <mainClass>app.HerokuApiApplicationMain</mainClass>
             </manifest>
           </archive>
         </configuration>

@@ -1,6 +1,7 @@
 package app.service;
 
 import app.pojo.ApiNormalizedRule;
+import app.pojo.ApiRulesPayload;
 import contract.rules.AbstractRule;
 import contract.searchRequests.RuleSearchRequest;
 import contract.searchResults.SearchResult;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import static contract.rules.enums.RuleRequestCategory.DIGITAL;
 import static ingestion.rule.JsonRuleIngestionService.getDigitalEventRules;
 import static ingestion.rule.JsonRuleIngestionService.getRules;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 
@@ -21,13 +23,14 @@ public class ApiSearchService {
 
     private SearchRepository<AbstractRule> ruleRepository;
     private SearchRepository<AbstractRule> digitalRuleRepository;
+    public static final Integer PAGE_SIZE = 10;
 
     public ApiSearchService() {
         ruleRepository = new SearchRepository<>(getRules());
         digitalRuleRepository = new SearchRepository<>(getDigitalEventRules());
     }
 
-    public List<ApiNormalizedRule> getRuleSearchResults(RuleSearchRequest ruleSearchRequest) {
+    public ApiRulesPayload getRuleSearchResults(RuleSearchRequest ruleSearchRequest) {
         List<AbstractRule> output;
         if (ruleSearchRequest.getRuleRequestCategory() == DIGITAL) {
             output = digitalRuleRepository.getSearchResult(ruleSearchRequest)
@@ -40,7 +43,14 @@ public class ApiSearchService {
                     .map(SearchResult::getEntry)
                     .collect(toList());
         }
-        return normalizeRules(output);
+        return new ApiRulesPayload(
+                paginateRules(
+                    normalizeRules(output),
+                    ruleSearchRequest.getPageNumber()
+                ),
+                ruleSearchRequest,
+                output.size() / PAGE_SIZE
+        );
     }
 
     private List<ApiNormalizedRule> normalizeRules(List<AbstractRule> rules) {
@@ -70,5 +80,14 @@ public class ApiSearchService {
                         )
                         .orElse(rule.getParentRule().getText())
         );
+    }
+
+    private List<ApiNormalizedRule> paginateRules(List<ApiNormalizedRule> rules, Integer pageNumber) {
+        if (pageNumber < 0 || pageNumber > (rules.size() / PAGE_SIZE)) {
+            return emptyList();
+        }
+        return pageNumber == (rules.size() / PAGE_SIZE) ?
+                rules.subList(pageNumber * PAGE_SIZE, rules.size()) :
+                rules.subList(pageNumber * PAGE_SIZE, (pageNumber+1) * PAGE_SIZE);
     }
 }

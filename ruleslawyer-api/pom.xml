@@ -47,7 +47,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>app.SpringApplicationMain</mainClass>
+                    <mainClass>app.HerokuApiApplicationMain</mainClass>
                 </configuration>
                 <executions>
                     <execution>

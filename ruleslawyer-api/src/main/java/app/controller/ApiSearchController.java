@@ -1,6 +1,7 @@
 package app.controller;
 
 import app.pojo.ApiNormalizedRule;
+import app.pojo.ApiRulesPayload;
 import app.service.ApiSearchService;
 import contract.rules.enums.RuleRequestCategory;
 import contract.rules.enums.RuleSource;
@@ -27,21 +28,21 @@ public class ApiSearchController {
     private ApiSearchService apiSearchService;
 
     @RequestMapping(value="/search", method = {GET, POST})
-    public List<ApiNormalizedRule> search(
+    public ApiRulesPayload search(
             @RequestParam(value="keywords", required = false) List<String> keywords,
             @RequestParam(value="ruleSource", required = false) RuleSource ruleSource,
             @RequestParam(value="pageNumber", required = false) Integer pageNumber,
             @RequestParam(value="ruleRequestCategory", required = false) RuleRequestCategory ruleRequestCategory
     ) {
-        if (keywords == null || keywords.size() == 0) {
-            return emptyList();
-        }
         RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(
-                keywords,
+                keywords == null || keywords.size() == 0 ? emptyList() : keywords,
                 ruleSource == null ? ANY_DOCUMENT : ruleSource,
                 pageNumber == null ? 0 : pageNumber,
                 ruleRequestCategory == null ? ANY_RULE_TYPE : ruleRequestCategory
         );
+        if (ruleSearchRequest.getKeywords().size() == 0) {
+            return new ApiRulesPayload(emptyList(), ruleSearchRequest, 0);
+        }
         return apiSearchService.getRuleSearchResults(ruleSearchRequest);
     }
 }

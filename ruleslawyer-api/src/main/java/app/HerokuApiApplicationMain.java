@@ -6,9 +6,9 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan
-public class SpringApplicationMain {
+public class HerokuApiApplicationMain {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringApplicationMain.class, args);
+		SpringApplication.run(HerokuApiApplicationMain.class, args);
 	}
 }
