@@ -14,7 +14,6 @@ import java.util.Optional;
 import static contract.rules.enums.RuleRequestCategory.DIGITAL;
 import static ingestion.rule.JsonRuleIngestionService.getDigitalEventRules;
 import static ingestion.rule.JsonRuleIngestionService.getRules;
-import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 
@@ -23,7 +22,6 @@ public class ApiSearchService {
 
     private SearchRepository<AbstractRule> ruleRepository;
     private SearchRepository<AbstractRule> digitalRuleRepository;
-    public static final Integer PAGE_SIZE = 10;
 
     public ApiSearchService() {
         ruleRepository = new SearchRepository<>(getRules());
@@ -44,12 +42,8 @@ public class ApiSearchService {
                     .collect(toList());
         }
         return new ApiRulesPayload(
-                paginateRules(
-                    normalizeRules(output),
-                    ruleSearchRequest.getPageNumber()
-                ),
-                ruleSearchRequest,
-                output.size() / PAGE_SIZE
+                normalizeRules(output),
+                ruleSearchRequest
         );
     }
 
@@ -80,14 +74,5 @@ public class ApiSearchService {
                         )
                         .orElse(rule.getParentRule().getText())
         );
-    }
-
-    private List<ApiNormalizedRule> paginateRules(List<ApiNormalizedRule> rules, Integer pageNumber) {
-        if (pageNumber < 0 || pageNumber > (rules.size() / PAGE_SIZE)) {
-            return emptyList();
-        }
-        return pageNumber == (rules.size() / PAGE_SIZE) ?
-                rules.subList(pageNumber * PAGE_SIZE, rules.size()) :
-                rules.subList(pageNumber * PAGE_SIZE, (pageNumber+1) * PAGE_SIZE);
     }
 }

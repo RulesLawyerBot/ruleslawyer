@@ -31,17 +31,16 @@ public class ApiSearchController {
     public ApiRulesPayload search(
             @RequestParam(value="keywords", required = false) List<String> keywords,
             @RequestParam(value="ruleSource", required = false) RuleSource ruleSource,
-            @RequestParam(value="pageNumber", required = false) Integer pageNumber,
             @RequestParam(value="ruleRequestCategory", required = false) RuleRequestCategory ruleRequestCategory
     ) {
         RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(
                 keywords == null || keywords.size() == 0 ? emptyList() : keywords,
                 ruleSource == null ? ANY_DOCUMENT : ruleSource,
-                pageNumber == null ? 0 : pageNumber,
+                0,
                 ruleRequestCategory == null ? ANY_RULE_TYPE : ruleRequestCategory
         );
         if (ruleSearchRequest.getKeywords().size() == 0) {
-            return new ApiRulesPayload(emptyList(), ruleSearchRequest, 0);
+            return new ApiRulesPayload(emptyList(), ruleSearchRequest);
         }
         return apiSearchService.getRuleSearchResults(ruleSearchRequest);
     }

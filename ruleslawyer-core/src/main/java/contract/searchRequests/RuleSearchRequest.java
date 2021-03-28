@@ -1,13 +1,16 @@
 package contract.searchRequests;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import contract.rules.enums.RuleRequestCategory;
 import contract.rules.enums.RuleSource;
 import contract.rules.AbstractRule;
 
 import java.util.List;
 
+import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.NON_NULL;
 import static java.util.Objects.hash;
 
+@JsonSerialize(include=NON_NULL)
 public class RuleSearchRequest extends SearchRequest<AbstractRule> {
     public RuleSearchRequest(List<String> keywords, RuleSource ruleSource, Integer pageNumber, RuleRequestCategory ruleRequestCategory) {
         this.keywords = keywords;

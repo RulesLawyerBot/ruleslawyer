@@ -8,12 +8,10 @@ public class ApiRulesPayload {
 
     private List<ApiNormalizedRule> rules;
     private RuleSearchRequest request;
-    private Integer lastPageNumber;
 
-    public ApiRulesPayload(List<ApiNormalizedRule> rules, RuleSearchRequest request, Integer totalPageNumber) {
+    public ApiRulesPayload(List<ApiNormalizedRule> rules, RuleSearchRequest request) {
         this.rules = rules;
         this.request = request;
-        this.lastPageNumber = totalPageNumber;
     }
 
     public List<ApiNormalizedRule> getRules() {
@@ -22,9 +20,5 @@ public class ApiRulesPayload {
 
     public RuleSearchRequest getRequest() {
         return request;
-    }
-
-    public Integer getLastPageNumber() {
-        return lastPageNumber;
     }
 }
