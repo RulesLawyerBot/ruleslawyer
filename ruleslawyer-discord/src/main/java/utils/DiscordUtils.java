@@ -60,6 +60,6 @@ public class DiscordUtils {
     }
 
     public static boolean isUserMessage(MessageCreateEvent event) {
-        return !event.getMessageAuthor().isBotUser();
+        return event.getMessageAuthor().asUser().isPresent() && !event.getMessageAuthor().isBotUser();
     }
 }
