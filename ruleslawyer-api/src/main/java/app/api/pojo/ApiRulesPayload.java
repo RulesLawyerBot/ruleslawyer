@@ -1,4 +1,4 @@
-package app.pojo;
+package app.api.pojo;
 
 import contract.searchRequests.RuleSearchRequest;
 

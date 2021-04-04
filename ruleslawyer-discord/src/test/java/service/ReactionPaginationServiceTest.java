@@ -3,11 +3,10 @@ package service;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import search.RuleSearchService;
+import search.DiscordRuleSearchService;
 import search.contract.DiscordSearchRequest;
 import service.reaction_pagination.ReactionPaginationService;
 
-import static contract.rules.enums.RuleRequestCategory.ANY_RULE_TYPE;
 import static contract.rules.enums.RuleRequestCategory.PAPER;
 import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
 import static contract.rules.enums.RuleSource.CR;
@@ -18,7 +17,7 @@ import static org.junit.Assert.assertThat;
 public class ReactionPaginationServiceTest {
 
     @Mock
-    private RuleSearchService searchService;
+    private DiscordRuleSearchService searchService;
     private MessageLoggingService messageLoggingService;
 
     private ReactionPaginationService reactionPaginationService;

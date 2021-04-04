@@ -1,7 +1,7 @@
-package app.service;
+package app.api.service;
 
-import app.pojo.ApiNormalizedRule;
-import app.pojo.ApiRulesPayload;
+import app.api.pojo.ApiNormalizedRule;
+import app.api.pojo.ApiRulesPayload;
 import contract.rules.AbstractRule;
 import contract.searchRequests.RuleSearchRequest;
 import contract.searchResults.SearchResult;

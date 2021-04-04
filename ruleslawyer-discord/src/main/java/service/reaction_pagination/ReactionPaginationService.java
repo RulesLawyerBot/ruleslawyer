@@ -8,13 +8,12 @@ import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.event.message.MessageEditEvent;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
 import org.javacord.api.event.message.reaction.SingleReactionEvent;
-import search.RuleSearchService;
+import search.DiscordRuleSearchService;
 import search.contract.DiscordSearchRequest;
 import search.contract.DiscordSearchResult;
 import search.contract.builder.DiscordSearchRequestBuilder;
 import service.MessageDeletionService;
 import service.MessageLoggingService;
-import utils.StaticEmojis;
 
 
 import java.util.List;
@@ -23,17 +22,17 @@ import java.util.Optional;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
-import static search.contract.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
 import static service.reaction_pagination.PageDirection.*;
+import static search.contract.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
 import static utils.DiscordUtils.*;
 import static utils.StaticEmojis.*;
 
 public class ReactionPaginationService {
 
-    private RuleSearchService searchService;
+    private DiscordRuleSearchService searchService;
     private MessageLoggingService messageLoggingService;
 
-    public ReactionPaginationService(RuleSearchService searchService, MessageLoggingService messageLoggingService) {
+    public ReactionPaginationService(DiscordRuleSearchService searchService, MessageLoggingService messageLoggingService) {
         this.searchService = searchService;
         this.messageLoggingService = messageLoggingService;
     }

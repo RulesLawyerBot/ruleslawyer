@@ -1,4 +1,4 @@
-package app.pojo;
+package app.api.pojo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import contract.rules.enums.RuleSource;

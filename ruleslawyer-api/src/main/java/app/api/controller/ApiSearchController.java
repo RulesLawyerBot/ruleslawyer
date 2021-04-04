@@ -1,8 +1,7 @@
-package app.controller;
+package app.api.controller;
 
-import app.pojo.ApiNormalizedRule;
-import app.pojo.ApiRulesPayload;
-import app.service.ApiSearchService;
+import app.api.pojo.ApiRulesPayload;
+import app.api.service.ApiSearchService;
 import contract.rules.enums.RuleRequestCategory;
 import contract.rules.enums.RuleSource;
 import contract.searchRequests.RuleSearchRequest;
@@ -21,6 +20,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
+@RequestMapping("/api")
 @CrossOrigin(maxAge = 3600)
 public class ApiSearchController {
 

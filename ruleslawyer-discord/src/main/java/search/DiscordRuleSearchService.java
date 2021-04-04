@@ -1,6 +1,5 @@
 package search;
 
-import chat_platform.ChatMessageService;
 import chat_platform.HelpMessageService;
 import contract.rules.enums.RuleRequestCategory;
 import contract.rules.enums.RuleSource;
@@ -34,9 +33,8 @@ import static java.util.stream.Collectors.toList;
 import static search.contract.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
 import static search.contract.builder.DiscordSearchRequestBuilder.fromDiscordSearchRequest;
 
-public class RuleSearchService {
+public class DiscordRuleSearchService {
 
-    private ChatMessageService chatMessageService;
     private HelpMessageService helpMessageService;
     private SearchRepository<AbstractRule> paperRuleSearchRepository;
     private SearchRepository<AbstractRule> digitalRuleSearchRepository;
@@ -45,15 +43,14 @@ public class RuleSearchService {
     public static final Integer MAX_FIELD_NAME_SIZE = 256;
     public static final Integer MAX_FIELD_VALUE_SIZE = 1024;
 
-    public RuleSearchService(SearchRepository<AbstractRule> paperRuleSearchRepository, SearchRepository<AbstractRule> digitalRuleSearchRepository) {
-        this.chatMessageService = new ChatMessageService();
+    public DiscordRuleSearchService(SearchRepository<AbstractRule> paperRuleSearchRepository, SearchRepository<AbstractRule> digitalRuleSearchRepository) {
         this.helpMessageService = new HelpMessageService();
         this.paperRuleSearchRepository = paperRuleSearchRepository;
         this.digitalRuleSearchRepository = digitalRuleSearchRepository;
     }
 
     public DiscordSearchResult getSearchResult(String author, String text) {
-        String query = chatMessageService.getQuery(text);
+        String query = getQuery(text);
         if (query.equals(""))
             return null;
 
@@ -67,9 +64,16 @@ public class RuleSearchService {
         return getSearchResult(discordSearchRequest);
     }
 
+    private String getQuery(String message) {
+        int indexLeft = message.indexOf("{{");
+        int indexRight = message.indexOf("}}");
+        if (indexLeft == -1 || indexRight == -1 || indexRight < indexLeft)
+            return "";
+        return message.substring(indexLeft+2, indexRight).toLowerCase();
+    }
+
     public DiscordSearchResult getSearchResult(DiscordSearchRequest discordSearchRequest) {
         List<List<SearchResult<AbstractRule>>> rawResults = processMessage(discordSearchRequest);
-
 
         if (rawResults.get(0).size() == 0) {
             if (rawResults.get(1).size() > 0) {

@@ -7,7 +7,7 @@ import org.javacord.api.event.message.MessageEditEvent;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
 import org.javacord.api.event.message.reaction.SingleReactionEvent;
 import org.javacord.api.event.server.ServerJoinEvent;
-import search.RuleSearchService;
+import search.DiscordRuleSearchService;
 import search.contract.DiscordSearchResult;
 import service.*;
 import contract.rules.AbstractRule;
@@ -30,7 +30,7 @@ import static utils.DiscordUtils.*;
 
 public class DiscordApplicationMain {
 
-    private static RuleSearchService ruleSearchService;
+    private static DiscordRuleSearchService discordRuleSearchService;
     private static MessageDeletionService messageDeletionService;
     private static ManaEmojiService manaEmojiService;
     private static MessageLoggingService messageLoggingService;
@@ -38,7 +38,7 @@ public class DiscordApplicationMain {
     private static ReactionPaginationService reactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.9.0 / KHM / {{help|dev}}";
+    private static final String CURRENT_VERSION = "Version 1.9.3 / KHM / {{help|dev}}";
 
     public static void main(String[] args) {
         String discordToken = getDiscordKey(args[0]);
@@ -60,7 +60,7 @@ public class DiscordApplicationMain {
             List<AbstractRule> digitalRules = getDigitalEventRules().stream()
                     .map(manaEmojiService::replaceManaSymbols)
                     .collect(toList());
-            ruleSearchService = new RuleSearchService(new SearchRepository<>(rules), new SearchRepository<>(digitalRules));
+            discordRuleSearchService = new DiscordRuleSearchService(new SearchRepository<>(rules), new SearchRepository<>(digitalRules));
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
@@ -78,7 +78,7 @@ public class DiscordApplicationMain {
         messageDeletionService = new MessageDeletionService(api);
         messageLoggingService = new MessageLoggingService(api);
         administratorCommandsService = new AdministratorCommandsService(api);
-        reactionPaginationService = new ReactionPaginationService(ruleSearchService, messageLoggingService);
+        reactionPaginationService = new ReactionPaginationService(discordRuleSearchService, messageLoggingService);
 
         System.out.println("Initialization complete");
     }
@@ -107,18 +107,17 @@ public class DiscordApplicationMain {
     private static void handleMessageCreateEvent(MessageCreateEvent event) {
         Optional<User> messageSender = event.getMessageAuthor().asUser();
         if (isUserMessage(event)){
-            DiscordSearchResult result = ruleSearchService.getSearchResult(
+            DiscordSearchResult result = discordRuleSearchService.getSearchResult(
                     getUsernameForMessageCreateEvent(event).get(),
                     event.getMessageContent()
             );
             if (result != null) {
                 messageLoggingService.logInput(event);
-                TextChannel channel = event.getChannel();
                 if (result.isEmbed()) {
-                    channel.sendMessage(result.getEmbed());
+                    event.getMessage().reply(result.getEmbed());
                     messageLoggingService.logOutput(result.getEmbed());
                 } else {
-                    channel.sendMessage(result.getText());
+                    event.getMessage().reply(result.getText());
                     messageLoggingService.logOutput(result.getText());
                 }
             }
