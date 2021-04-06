@@ -41,7 +41,7 @@ public class HelpMessageService {
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
             "Current rules version: Kaldheim\n" +
-            "Last updated: 04-04-2021\n" +
+            "Last updated: 06-04-2021\n" +
             "--v1.9.3--\n" +
             "New api endpoint for Slack and for a webapp. In progress!\n" +
             "Bump Javacord to 3.2.0." +
