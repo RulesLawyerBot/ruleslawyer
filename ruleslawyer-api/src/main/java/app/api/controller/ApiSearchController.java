@@ -1,5 +1,6 @@
 package app.api.controller;
 
+import app.api.pojo.ApiNormalizedRule;
 import app.api.pojo.ApiRulesPayload;
 import app.api.service.ApiSearchService;
 import contract.rules.enums.RuleRequestCategory;
@@ -33,15 +34,30 @@ public class ApiSearchController {
             @RequestParam(value="ruleSource", required = false) RuleSource ruleSource,
             @RequestParam(value="ruleRequestCategory", required = false) RuleRequestCategory ruleRequestCategory
     ) {
-        RuleSearchRequest ruleSearchRequest = new RuleSearchRequest(
+        RuleSearchRequest ruleSearchRequest = getRuleSearchRequest(keywords, ruleSource, ruleRequestCategory);
+        return apiSearchService.getRuleSearchResults(ruleSearchRequest);
+    }
+
+    @RequestMapping(value="/citation", method = {GET, POST})
+    public ApiNormalizedRule getCitation(
+            @RequestParam(value="keywords") List<String> keywords,
+            @RequestParam(value="ruleSource") RuleSource ruleSource
+    ) {
+        RuleSearchRequest ruleSearchRequest = getRuleSearchRequest(keywords, ruleSource, ANY_RULE_TYPE);
+        return apiSearchService.getCitation(ruleSearchRequest);
+    }
+
+    private RuleSearchRequest getRuleSearchRequest(
+            List<String> keywords,
+            RuleSource ruleSource,
+            RuleRequestCategory ruleRequestCategory
+    ) {
+        return new RuleSearchRequest(
                 keywords == null || keywords.size() == 0 ? emptyList() : keywords,
                 ruleSource == null ? ANY_DOCUMENT : ruleSource,
                 0,
                 ruleRequestCategory == null ? ANY_RULE_TYPE : ruleRequestCategory
         );
-        if (ruleSearchRequest.getKeywords().size() == 0) {
-            return new ApiRulesPayload(emptyList(), ruleSearchRequest);
-        }
-        return apiSearchService.getRuleSearchResults(ruleSearchRequest);
     }
+
 }

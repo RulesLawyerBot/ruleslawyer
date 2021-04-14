@@ -15,7 +15,6 @@ import search.contract.builder.DiscordSearchRequestBuilder;
 import service.MessageDeletionService;
 import service.MessageLoggingService;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +59,7 @@ public class ReactionPaginationService {
         if (isOwnReaction(event) || !isOwnMessage(event)) {
             return empty();
         }
+        // I promise this is cleaner than the alternative
         if (event.getEmoji().equalsEmoji(LEFT_EMOJI))
             return Optional.of(PREVIOUS_PAGE);
         if (event.getEmoji().equalsEmoji(RIGHT_EMOJI))
@@ -100,8 +100,9 @@ public class ReactionPaginationService {
 
     private boolean hasPaginationPermissions(DiscordSearchRequest searchRequest, SingleReactionEvent event) {
         return event.getUser().map(
-                    user -> event.getServer().isPresent()
-                            && event.getServer().get().canBanUsers(user)
+                    user -> (event.getServer().isPresent()
+                            && event.getServer().get().canBanUsers(user)) ||
+                            user.isBotOwner()
                 ).orElse(false) ||
                 getUsernameForReactionAddEvent(event).map(
                         name -> name.equals(searchRequest.getRequester())

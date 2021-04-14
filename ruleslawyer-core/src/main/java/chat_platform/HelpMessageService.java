@@ -41,11 +41,9 @@ public class HelpMessageService {
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
             "Current rules version: Kaldheim\n" +
-            "Last updated: 06-04-2021\n" +
-            "--v1.9.3--\n" +
-            "New api endpoint for Slack and for a webapp. In progress!\n" +
-            "Bump Javacord to 3.2.0." +
-            "With this change, RulesLawyer now replies to the requesting message.\n" +
+            "Last updated: 12-04-2021\n" +
+            "--v1.9.4--\n" +
+            "Quick fix: Reaction pagination not working in certain cases.\n" +
             "--Last major patch: v1.9.0--\n" +
             "Fixed various bugs related to pagination.\n" +
             "Digital events rules are in! Let me know if there are any parsing issues.\n" +

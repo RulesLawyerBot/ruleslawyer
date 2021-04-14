@@ -16,18 +16,22 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class DiscordUtils {
 
-    public static String getDiscordKey(String keyId) { //TODO move this why the fuck is it even here
-        if(keyId.equals("dev") || keyId.equals("prod")) {
+    public static String getDiscordKey(String keyId) {
+        if(keyId.equals("dev") || keyId.equals("prod") || keyId.equals("test")) {
             try {
                 InputStream in = DiscordUtils.class.getResourceAsStream("/keys.txt");
                 BufferedReader br = new BufferedReader(new InputStreamReader(in, UTF_8));
                 char[] buffer = new char[1000000];
                 br.read(buffer);
                 in.close();
-                String keys = new String(buffer);
-                return keyId.equals("dev") ?
-                        keys.substring(0, 59) :
-                        keys.substring(59, 119);
+                String[] keys = new String(buffer).split("\r\n");
+                if (keyId.equals("dev")) {
+                    return keys[0];
+                } else if (keyId.equals("prod")) {
+                    return keys[1];
+                } else {
+                    return keys[2];
+                }
             } catch(IOException exception) {
                 return keyId;
             }
@@ -40,7 +44,7 @@ public class DiscordUtils {
     }
 
     public static Optional<String> getUsernameForReactionAddEvent(SingleReactionEvent event) {
-        return event.getMessageAuthor().map(MessageAuthor::getDiscriminatedName);
+        return event.getUser().map(User::getDiscriminatedName);
     }
 
     public static boolean isOwnMessage(MessageCreateEvent event) {

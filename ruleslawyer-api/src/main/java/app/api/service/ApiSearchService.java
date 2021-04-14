@@ -14,6 +14,7 @@ import java.util.Optional;
 import static contract.rules.enums.RuleRequestCategory.DIGITAL;
 import static ingestion.rule.JsonRuleIngestionService.getDigitalEventRules;
 import static ingestion.rule.JsonRuleIngestionService.getRules;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 
@@ -29,22 +30,36 @@ public class ApiSearchService {
     }
 
     public ApiRulesPayload getRuleSearchResults(RuleSearchRequest ruleSearchRequest) {
-        List<AbstractRule> output;
+        List<AbstractRule> rawOutput = getRawResults(ruleSearchRequest);
+        return new ApiRulesPayload(
+                normalizeRules(rawOutput),
+                ruleSearchRequest
+        );
+    }
+
+    public ApiNormalizedRule getCitation(RuleSearchRequest ruleSearchRequest) {
+        List<AbstractRule> rawOutput = getRawResults(ruleSearchRequest);
+        if (rawOutput.size() == 0) {
+            return null;
+        }
+        return normalizeRule(rawOutput.get(0));
+    }
+
+    public List<AbstractRule> getRawResults(RuleSearchRequest ruleSearchRequest) {
+        if (ruleSearchRequest.getKeywords().size() == 0) {
+            return emptyList();
+        }
         if (ruleSearchRequest.getRuleRequestCategory() == DIGITAL) {
-            output = digitalRuleRepository.getSearchResult(ruleSearchRequest)
+            return digitalRuleRepository.getSearchResult(ruleSearchRequest)
                     .stream()
                     .map(SearchResult::getEntry)
                     .collect(toList());
         } else {
-            output = ruleRepository.getSearchResult(ruleSearchRequest)
+            return ruleRepository.getSearchResult(ruleSearchRequest)
                     .stream()
                     .map(SearchResult::getEntry)
                     .collect(toList());
         }
-        return new ApiRulesPayload(
-                normalizeRules(output),
-                ruleSearchRequest
-        );
     }
 
     private List<ApiNormalizedRule> normalizeRules(List<AbstractRule> rules) {
