@@ -17,7 +17,7 @@ public class RuleSearchIntegrationCLTest {
 
     public static void main(String[] args) throws IOException {
         JsonRuleIngestionService jsonRuleIngestionService = new JsonRuleIngestionService();
-        List<AbstractRule> searchSpace = jsonRuleIngestionService.getRules();
+        List<AbstractRule> searchSpace = jsonRuleIngestionService.getRawRulesData();
         SearchRepository<AbstractRule> repository = new SearchRepository<>(searchSpace);
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while (true) {

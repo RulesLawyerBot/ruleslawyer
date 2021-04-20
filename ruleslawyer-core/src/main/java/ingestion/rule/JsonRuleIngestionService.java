@@ -25,14 +25,14 @@ import static java.util.stream.Collectors.toList;
 
 public class JsonRuleIngestionService {
 
-    public static List<AbstractRule> getRules() {
+    public static List<AbstractRule> getRawRulesData() {
         try {
             List<AbstractRule> rules = new ArrayList<>();
             rules.addAll(getFlattenedRules("/CR-parsed.json", CR));
-            rules.addAll(getRules("/CRG-parsed.json", CR));
-            rules.addAll(getRules("/JAR-parsed.json", JAR));
-            rules.addAll(getRules("/IPG-parsed.json", IPG));
-            rules.addAll(getRules("/MTR-parsed.json", MTR));
+            rules.addAll(getRawRulesData("/CRG-parsed.json", CR));
+            rules.addAll(getRawRulesData("/JAR-parsed.json", JAR));
+            rules.addAll(getRawRulesData("/IPG-parsed.json", IPG));
+            rules.addAll(getRawRulesData("/MTR-parsed.json", MTR));
             rules.addAll(getFlattenedRules("/oath-parsed.json", OATH));
             return rules;
         } catch (IOException ignored) {
@@ -41,11 +41,11 @@ public class JsonRuleIngestionService {
         return emptyList();
     }
 
-    public static List<AbstractRule> getDigitalEventRules() {
+    public static List<AbstractRule> getRawDigitalRulesData() {
         try {
             List<AbstractRule> rules = new ArrayList<>();
-            rules.addAll(getRules("/DIPG-parsed.json", DIPG));
-            rules.addAll(getRules("/DMTR-parsed.json", DMTR));
+            rules.addAll(getRawRulesData("/DIPG-parsed.json", DIPG));
+            rules.addAll(getRawRulesData("/DMTR-parsed.json", DMTR));
             return rules;
         } catch (IOException ignored) {
             System.exit(-1);
@@ -53,7 +53,7 @@ public class JsonRuleIngestionService {
         return emptyList();
     }
 
-    private static List<AbstractRule> getRules(String filename, RuleSource ruleSource) throws IOException {
+    private static List<AbstractRule> getRawRulesData(String filename, RuleSource ruleSource) throws IOException {
         List<JsonMappedRule> rawRules = getJsonMappedRules(filename);
         return rawRules.stream()
                 .map(rule -> convertToRuleHeaders(singletonList(rule), ruleSource))

@@ -18,7 +18,7 @@ public class JsonRuleIngestionServiceTest {
 
     @Test
     public void doStuff() {
-        List<AbstractRule> rules = jsonRuleIngestionService.getRules();
+        List<AbstractRule> rules = jsonRuleIngestionService.getRawRulesData();
 
         System.out.println(rules.size());
     }

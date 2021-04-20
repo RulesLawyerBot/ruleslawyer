@@ -3,7 +3,7 @@ package search;
 import chat_platform.HelpMessageService;
 import contract.rules.enums.RuleRequestCategory;
 import contract.rules.enums.RuleSource;
-import contract.searchRequests.RuleSearchRequest;
+import contract.searchResults.RawRuleSearchResult;
 import contract.searchResults.SearchResult;
 import contract.rules.AbstractRule;
 import contract.rules.Rule;
@@ -15,6 +15,7 @@ import search.contract.DiscordSearchRequest;
 import search.contract.DiscordSearchResult;
 import search.contract.EmbedBuilderBuilder;
 import search.contract.builder.DiscordSearchRequestBuilder;
+import service.RawRuleSearchService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,13 +32,11 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static search.contract.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
-import static search.contract.builder.DiscordSearchRequestBuilder.fromDiscordSearchRequest;
 
 public class DiscordRuleSearchService {
 
     private HelpMessageService helpMessageService;
-    private SearchRepository<AbstractRule> paperRuleSearchRepository;
-    private SearchRepository<AbstractRule> digitalRuleSearchRepository;
+    private RawRuleSearchService rawRuleSearchService;
 
     public static final Integer MAX_PAYLOAD_SIZE = 3000;
     public static final Integer MAX_FIELD_NAME_SIZE = 256;
@@ -45,8 +44,7 @@ public class DiscordRuleSearchService {
 
     public DiscordRuleSearchService(SearchRepository<AbstractRule> paperRuleSearchRepository, SearchRepository<AbstractRule> digitalRuleSearchRepository) {
         this.helpMessageService = new HelpMessageService();
-        this.paperRuleSearchRepository = paperRuleSearchRepository;
-        this.digitalRuleSearchRepository = digitalRuleSearchRepository;
+        this.rawRuleSearchService = new RawRuleSearchService();
     }
 
     public DiscordSearchResult getSearchResult(String author, String text) {
@@ -73,37 +71,21 @@ public class DiscordRuleSearchService {
     }
 
     public DiscordSearchResult getSearchResult(DiscordSearchRequest discordSearchRequest) {
-        List<List<SearchResult<AbstractRule>>> rawResults = processMessage(discordSearchRequest);
+        RawRuleSearchResult rawResults = rawRuleSearchService.getRawResult(discordSearchRequest);
 
-        if (rawResults.get(0).size() == 0) {
-            if (rawResults.get(1).size() > 0) {
-                if (discordSearchRequest.getRuleRequestCategory() == PAPER) {
-                    return getSearchResult(
-                            fromDiscordSearchRequest(discordSearchRequest)
-                                    .setRuleRequestCategory(DIGITAL)
-                                    .build()
-                    );
-                } else {
-                    return getSearchResult(
-                            fromDiscordSearchRequest(discordSearchRequest)
-                                    .setRuleRequestCategory(PAPER)
-                                    .build()
-                    );
-                }
-            } else {
-                return new DiscordSearchResult(
-                        new EmbedBuilderBuilder()
-                                .setAuthor("RulesLawyer")
-                                .addFields(singletonList(new DiscordEmbedField(getEmbedTitle(discordSearchRequest), "No Results Found")))
-                                .build()
-                );
-            }
+        if (rawResults.getRawResults().size() == 0) {
+            return new DiscordSearchResult(
+                    new EmbedBuilderBuilder()
+                            .setAuthor("RulesLawyer")
+                            .addFields(singletonList(new DiscordEmbedField(getEmbedTitle(discordSearchRequest), "No Results Found")))
+                            .build()
+            );
         }
 
         EmbedBuilderBuilder result = new EmbedBuilderBuilder()
                 .setAuthor("RulesLawyer").setTitle(getEmbedTitle(discordSearchRequest));
 
-        List<DiscordEmbedField> embedFields = rawResults.get(0).stream()
+        List<DiscordEmbedField> embedFields = rawResults.getRawResults().stream()
                 .map(this::getFieldsForRawResult)
                 .flatMap(Collection::stream)
                 .collect(toList());
@@ -116,7 +98,8 @@ public class DiscordRuleSearchService {
                 discordSearchRequest.getRequester(),
                 moddedPageNumber+1,
                 pages.size(),
-                rawResults.get(1).size() == 0 ? ANY_RULE_TYPE : discordSearchRequest.getRuleRequestCategory()
+                rawResults.getRuleRequestCategory(),
+                rawResults.hasOtherCategory()
         );
 
         result.setFooter(footer);
@@ -125,24 +108,18 @@ public class DiscordRuleSearchService {
 
     }
 
-    private List<List<SearchResult<AbstractRule>>> processMessage(RuleSearchRequest searchRequest) {
-        return searchRequest.getRuleRequestCategory() == DIGITAL?
-                asList(
-                        digitalRuleSearchRepository.getSearchResult(searchRequest),
-                        paperRuleSearchRepository.getSearchResult(searchRequest)
-                ) :
-                asList(
-                        paperRuleSearchRepository.getSearchResult(searchRequest),
-                        digitalRuleSearchRepository.getSearchResult(searchRequest)
-                );
-    }
-
-    private String getFooter(String requester, Integer pageNumber, Integer pageSize, RuleRequestCategory availableRuleSwap) {
-        if (availableRuleSwap == DIGITAL) {
+    private String getFooter(
+            String requester,
+            Integer pageNumber,
+            Integer pageSize,
+            RuleRequestCategory ruleRequestCategory,
+            boolean availableRuleSwap
+    ) {
+        if (ruleRequestCategory == DIGITAL && availableRuleSwap) {
             return format("Requested by: %s | page %s of %s | paper rules available | Use arrow reactions for pagination",
                     requester, pageNumber, pageSize);
         }
-        if (availableRuleSwap == PAPER) {
+        if (ruleRequestCategory == PAPER && availableRuleSwap) {
             return format("Requested by: %s | page %s of %s | digital rules available | Use arrow reactions for pagination",
                     requester, pageNumber, pageSize);
         }

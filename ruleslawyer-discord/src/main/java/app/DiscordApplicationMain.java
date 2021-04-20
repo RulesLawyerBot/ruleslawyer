@@ -2,7 +2,6 @@ package app;
 
 import init_utils.ManaEmojiService;
 import org.javacord.api.entity.channel.ServerTextChannel;
-import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.event.message.MessageEditEvent;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
 import org.javacord.api.event.message.reaction.SingleReactionEvent;
@@ -22,8 +21,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static chat_platform.HelpMessageService.MAIN_HELP;
-import static ingestion.rule.JsonRuleIngestionService.getDigitalEventRules;
-import static ingestion.rule.JsonRuleIngestionService.getRules;
+import static ingestion.rule.JsonRuleIngestionService.getRawDigitalRulesData;
+import static ingestion.rule.JsonRuleIngestionService.getRawRulesData;
 import static java.util.stream.Collectors.toList;
 import static org.javacord.api.entity.intent.Intent.GUILD_PRESENCES;
 import static utils.DiscordUtils.*;
@@ -54,10 +53,10 @@ public class DiscordApplicationMain {
         manaEmojiService = new ManaEmojiService(api);
 
         try {
-            List<AbstractRule> rules = getRules().stream()
+            List<AbstractRule> rules = getRawRulesData().stream()
                     .map(manaEmojiService::replaceManaSymbols)
                     .collect(toList());
-            List<AbstractRule> digitalRules = getDigitalEventRules().stream()
+            List<AbstractRule> digitalRules = getRawDigitalRulesData().stream()
                     .map(manaEmojiService::replaceManaSymbols)
                     .collect(toList());
             discordRuleSearchService = new DiscordRuleSearchService(new SearchRepository<>(rules), new SearchRepository<>(digitalRules));
@@ -106,7 +105,10 @@ public class DiscordApplicationMain {
 
     private static void handleMessageCreateEvent(MessageCreateEvent event) {
         Optional<User> messageSender = event.getMessageAuthor().asUser();
-        if (isUserMessage(event)){
+
+        if (isOwnMessage(event)) {
+            reactionPaginationService.placePaginationReactions(event);
+        } else {
             DiscordSearchResult result = discordRuleSearchService.getSearchResult(
                     getUsernameForMessageCreateEvent(event).get(),
                     event.getMessageContent()
@@ -124,10 +126,6 @@ public class DiscordApplicationMain {
             if (messageSender.isPresent() && messageSender.get().isBotOwner()) {
                 administratorCommandsService.processCommand(event.getMessage().getContent(), event.getChannel());
             }
-        }
-
-        if (isOwnMessage(event)) {
-            reactionPaginationService.placePaginationReactions(event);
         }
 
         event.getApi().updateActivity(CURRENT_VERSION);

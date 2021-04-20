@@ -12,10 +12,10 @@ import static contract.cards.FormatLegality.ANY_FORMAT;
 import static contract.searchRequests.CardSearchRequestType.TITLE_ONLY;
 import static java.util.Arrays.asList;
 
-public class ScryfallHelperService {
+public class CardSearchHelperService {
     private SearchRepository<Card> cardSearchRepository;
 
-    public ScryfallHelperService(List<Card> searchSpace) {
+    public CardSearchHelperService(List<Card> searchSpace) {
         cardSearchRepository = new SearchRepository<>(searchSpace);
     }
 
@@ -26,9 +26,9 @@ public class ScryfallHelperService {
         return searchResults.size() < 2 ? null : searchResults.get(0).getEntry().getCardName();
     }
 
-    private FormatLegality getFormat(String channelName) {
+    private FormatLegality getFormat(String formatName) {
         try {
-            return FormatLegality.valueOf(channelName);
+            return FormatLegality.valueOf(formatName);
         } catch (IllegalArgumentException ignored) {
             return ANY_FORMAT;
         }

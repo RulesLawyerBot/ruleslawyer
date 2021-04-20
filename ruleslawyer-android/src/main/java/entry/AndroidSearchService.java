@@ -1,6 +1,5 @@
 package entry;
 
-import contract.cards.FormatLegality;
 import contract.searchResults.SearchResult;
 import contract.cards.Card;
 import contract.rules.AbstractRule;
@@ -25,7 +24,7 @@ public class AndroidSearchService {
     private static SearchRepository<Card> cardRepository;
 
     public static void setUp() {
-        List<AbstractRule> rules = jsonRuleIngestionService.getRules();
+        List<AbstractRule> rules = jsonRuleIngestionService.getRawRulesData();
         ruleRepository = new SearchRepository<>(rules);
 
         List<Card> cards = JsonCardIngestionService.getCards();

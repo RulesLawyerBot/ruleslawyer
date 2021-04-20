@@ -7,7 +7,7 @@ import search.contract.DiscordSearchRequest;
 import java.util.ArrayList;
 import java.util.List;
 
-import static contract.rules.enums.RuleRequestCategory.PAPER;
+import static contract.rules.enums.RuleRequestCategory.ANY_RULE_TYPE;
 import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
 
 public class DiscordSearchRequestBuilder {
@@ -22,7 +22,7 @@ public class DiscordSearchRequestBuilder {
     public static DiscordSearchRequestBuilder aDiscordSearchRequest() {
         DiscordSearchRequestBuilder discordSearchRequestBuilder = new DiscordSearchRequestBuilder()
                 .setRuleSource(ANY_DOCUMENT)
-                .setRuleRequestCategory(PAPER)
+                .setRuleRequestCategory(ANY_RULE_TYPE)
                 .setPageNumber(0)
                 .setChannelName("TO BE IMPLEMENTED");
         discordSearchRequestBuilder.keywords = new ArrayList<>();

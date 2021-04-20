@@ -6,27 +6,21 @@ import contract.rules.AbstractRule;
 import contract.searchRequests.RuleSearchRequest;
 import contract.searchResults.SearchResult;
 import org.springframework.stereotype.Service;
-import repository.SearchRepository;
+import service.RawRuleSearchService;
 
 import java.util.List;
 import java.util.Optional;
 
-import static contract.rules.enums.RuleRequestCategory.DIGITAL;
-import static ingestion.rule.JsonRuleIngestionService.getDigitalEventRules;
-import static ingestion.rule.JsonRuleIngestionService.getRules;
-import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 
 @Service
 public class ApiSearchService {
 
-    private SearchRepository<AbstractRule> ruleRepository;
-    private SearchRepository<AbstractRule> digitalRuleRepository;
+    private RawRuleSearchService rawRuleSearchService;
 
     public ApiSearchService() {
-        ruleRepository = new SearchRepository<>(getRules());
-        digitalRuleRepository = new SearchRepository<>(getDigitalEventRules());
+        this.rawRuleSearchService = new RawRuleSearchService();
     }
 
     public ApiRulesPayload getRuleSearchResults(RuleSearchRequest ruleSearchRequest) {
@@ -46,20 +40,11 @@ public class ApiSearchService {
     }
 
     public List<AbstractRule> getRawResults(RuleSearchRequest ruleSearchRequest) {
-        if (ruleSearchRequest.getKeywords().size() == 0) {
-            return emptyList();
-        }
-        if (ruleSearchRequest.getRuleRequestCategory() == DIGITAL) {
-            return digitalRuleRepository.getSearchResult(ruleSearchRequest)
-                    .stream()
-                    .map(SearchResult::getEntry)
-                    .collect(toList());
-        } else {
-            return ruleRepository.getSearchResult(ruleSearchRequest)
-                    .stream()
-                    .map(SearchResult::getEntry)
-                    .collect(toList());
-        }
+        return rawRuleSearchService.getRawResult(ruleSearchRequest)
+                .getRawResults()
+                .stream()
+                .map(SearchResult::getEntry)
+                .collect(toList());
     }
 
     private List<ApiNormalizedRule> normalizeRules(List<AbstractRule> rules) {
