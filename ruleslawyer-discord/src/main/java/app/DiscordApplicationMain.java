@@ -90,22 +90,7 @@ public class DiscordApplicationMain {
         generalChannel.ifPresent(channel -> messageLoggingService.logJoinMessageSuccess(channel.getServer()));
     }
 
-    private static void handleReactionEvent(SingleReactionEvent event) {
-        if (
-                event instanceof ReactionAddEvent &&
-                messageDeletionService.shouldDeleteMessage((ReactionAddEvent)event)
-        ) {
-                event.deleteMessage();
-        }
-        if (isOwnMessage(event) && !isOwnReaction(event)) {
-            reactionPaginationService.handleReactionPaginationEvent(event);
-        }
-    }
-
-
     private static void handleMessageCreateEvent(MessageCreateEvent event) {
-        Optional<User> messageSender = event.getMessageAuthor().asUser();
-
         if (isOwnMessage(event)) {
             reactionPaginationService.placePaginationReactions(event);
         } else {
@@ -123,12 +108,24 @@ public class DiscordApplicationMain {
                     messageLoggingService.logOutput(result.getText());
                 }
             }
-            if (messageSender.isPresent() && messageSender.get().isBotOwner()) {
+            if (event.getMessageAuthor().asUser().map(User::isBotOwner).orElse(false)) {
                 administratorCommandsService.processCommand(event.getMessage().getContent(), event.getChannel());
             }
         }
 
         event.getApi().updateActivity(CURRENT_VERSION);
+    }
+
+    private static void handleReactionEvent(SingleReactionEvent event) {
+        if (
+                event instanceof ReactionAddEvent &&
+                        messageDeletionService.shouldDeleteMessage((ReactionAddEvent)event)
+        ) {
+            event.deleteMessage();
+        }
+        if (isOwnMessage(event) && !isOwnReaction(event)) {
+            reactionPaginationService.handleReactionPaginationEvent(event);
+        }
     }
 
     private static void handleMessageEditEvent(MessageEditEvent event) {

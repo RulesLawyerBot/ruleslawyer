@@ -13,9 +13,13 @@ public class SlackResponse {
     @JsonProperty("blocks")
     private List<SlackBlock> blocks;
 
-    public SlackResponse(String responseType, List<SlackBlock> blocks) {
+    @JsonProperty("attachments")
+    private List<SlackAttachment> attachments;
+
+    public SlackResponse(String responseType, List<SlackBlock> blocks, List<SlackAttachment> attachments) {
         this.responseType = responseType;
         this.blocks = blocks;
+        this.attachments = attachments;
     }
 
     public String getResponseType() {
@@ -24,5 +28,9 @@ public class SlackResponse {
 
     public List<SlackBlock> getBlocks() {
         return blocks;
+    }
+
+    public List<SlackAttachment> getAttachments() {
+        return attachments;
     }
 }
