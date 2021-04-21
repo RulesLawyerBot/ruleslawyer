@@ -40,4 +40,14 @@ public class Rule extends AbstractRule {
     public Integer getRelevancy(List<String> keywords) {
         return super.getRelevancy(keywords) + 20000;
     }
+
+    @Override
+    public List<PrintedRule> getPrintedRules() {
+        return singletonList(
+                new PrintedRule(
+                    this.getRuleSource() + " " + this.getHeader().getText() + " " + this.getSubHeader().getText(),
+                    this.getText()
+            )
+        );
+    }
 }

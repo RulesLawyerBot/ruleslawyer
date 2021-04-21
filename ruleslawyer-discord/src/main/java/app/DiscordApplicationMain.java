@@ -59,7 +59,7 @@ public class DiscordApplicationMain {
             List<AbstractRule> digitalRules = getRawDigitalRulesData().stream()
                     .map(manaEmojiService::replaceManaSymbols)
                     .collect(toList());
-            discordRuleSearchService = new DiscordRuleSearchService(new SearchRepository<>(rules), new SearchRepository<>(digitalRules));
+            discordRuleSearchService = new DiscordRuleSearchService();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);

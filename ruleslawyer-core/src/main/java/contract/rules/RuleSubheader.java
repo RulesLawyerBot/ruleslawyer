@@ -5,6 +5,7 @@ import contract.rules.enums.RuleSource;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
 
 public class RuleSubheader extends AbstractRule {
@@ -27,5 +28,24 @@ public class RuleSubheader extends AbstractRule {
     @Override
     public Integer getRelevancy(List<String> keywords) {
         return super.getRelevancy(keywords) + 10000;
+    }
+
+    @Override
+    public List<PrintedRule> getPrintedRules() {
+        if (this.getSubRules().size() == 0) {
+            return singletonList(
+                    new PrintedRule(
+                            this.getRuleSource() + " " + this.getHeader().getText(),
+                            this.getText()
+                    )
+            );
+        } else {
+            return singletonList(
+                    new PrintedRule(
+                            this.getRuleSource() + " " + this.getHeader().getText() + " " + this.getText(),
+                            this.getSubRules().stream().map(AbstractRule::getText).collect(joining("\n"))
+                    )
+            );
+        }
     }
 }

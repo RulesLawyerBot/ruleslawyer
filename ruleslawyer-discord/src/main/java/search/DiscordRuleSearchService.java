@@ -1,14 +1,11 @@
 package search;
 
 import chat_platform.HelpMessageService;
+import contract.rules.*;
 import contract.rules.enums.RuleRequestCategory;
 import contract.rules.enums.RuleSource;
 import contract.searchResults.RawRuleSearchResult;
 import contract.searchResults.SearchResult;
-import contract.rules.AbstractRule;
-import contract.rules.Rule;
-import contract.rules.RuleHeader;
-import contract.rules.RuleSubheader;
 import repository.SearchRepository;
 import search.contract.DiscordEmbedField;
 import search.contract.DiscordSearchRequest;
@@ -29,7 +26,6 @@ import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static search.contract.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
 
@@ -42,7 +38,7 @@ public class DiscordRuleSearchService {
     public static final Integer MAX_FIELD_NAME_SIZE = 256;
     public static final Integer MAX_FIELD_VALUE_SIZE = 1024;
 
-    public DiscordRuleSearchService(SearchRepository<AbstractRule> paperRuleSearchRepository, SearchRepository<AbstractRule> digitalRuleSearchRepository) {
+    public DiscordRuleSearchService() {
         this.helpMessageService = new HelpMessageService();
         this.rawRuleSearchService = new RawRuleSearchService();
     }
@@ -182,56 +178,17 @@ public class DiscordRuleSearchService {
 
     private List<DiscordEmbedField> getFieldsForRawResult(SearchResult<AbstractRule> result) {
         AbstractRule rule = result.getEntry();
-
-        List<DiscordEmbedField> results = null;
-        if (rule.getClass() == Rule.class) {
-            results = getFieldForBaseRule((Rule) rule);
-        } else if (rule.getClass() == RuleSubheader.class) {
-            results = getFieldForRuleSubheader((RuleSubheader) rule);
-        } else if (rule.getClass() == RuleHeader.class) {
-            results = getFieldForRuleHeader((RuleHeader) rule);
-        }
-        assert results != null; // ehh its fine
-        results.forEach(field -> field.setRelevancy(result.getRelevancy()));
-        return results;
-    }
-
-    private List<DiscordEmbedField> getFieldForBaseRule(Rule rule) {
-        return makeEmbedFieldsForRawText(
-                rule.getRuleSource() + " " + rule.getHeader().getText() + " " + rule.getSubHeader().getText(),
-                rule.getText()
-        );
-    }
-
-    private List<DiscordEmbedField> getFieldForRuleSubheader(RuleSubheader rule) {
-        if (rule.getSubRules().size() == 0) {
-            return makeEmbedFieldsForRawText(rule.getRuleSource() + " " + rule.getHeader().getText(), rule.getText());
-        } else {
-            return makeEmbedFieldsForRawText(
-                    rule.getRuleSource() + " " + rule.getHeader().getText() + " " + rule.getText(),
-                    rule.getSubRules().stream().map(AbstractRule::getText).collect(joining("\n"))
-            );
-        }
-    }
-
-    private List<DiscordEmbedField> getFieldForRuleHeader(RuleHeader rule) {
-        if (rule.getSubRules().stream().allMatch(subRule -> subRule.getSubRules().size() == 0)) {
-            return makeEmbedFieldsForRawText(
-                    rule.getRuleSource() + " " + rule.getText(),
-                    rule.getSubRules().stream().map(AbstractRule::getText).collect(joining("\n"))
-                    );
-        }
-        return rule.getSubRules().stream().map(
-                subrule -> makeEmbedFieldsForRawText(
-                        rule.getRuleSource() + " " + rule.getText() + " " + subrule.getText(),
-                        subrule.getSubRules().stream().map(AbstractRule::getText).collect(joining("\n"))
-                )
-        )
+        List<DiscordEmbedField> output = rule.getPrintedRules().stream()
+                .map(this::makeEmbedFieldsForRawText)
                 .flatMap(Collection::stream)
+                .peek(field -> field.setRelevancy(result.getRelevancy()))
                 .collect(toList());
+        return output;
     }
 
-    private List<DiscordEmbedField> makeEmbedFieldsForRawText(String rawFieldName, String rawFieldText) {
+    private List<DiscordEmbedField> makeEmbedFieldsForRawText(PrintedRule rule) {
+        String rawFieldName = rule.getHeader();
+        String rawFieldText = rule.getBodyText();
         if (rawFieldName.length() < MAX_FIELD_NAME_SIZE && rawFieldText.length() < MAX_FIELD_VALUE_SIZE) {
             return singletonList(new DiscordEmbedField(rawFieldName, rawFieldText));
         }

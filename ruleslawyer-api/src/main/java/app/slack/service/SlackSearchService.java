@@ -1,19 +1,26 @@
 package app.slack.service;
 
+import app.slack.contract.SlackAttachment;
 import app.slack.contract.SlackBlock;
+import app.slack.contract.SlackField;
 import app.slack.contract.SlackResponse;
-import contract.rules.AbstractRule;
+import contract.rules.*;
 import contract.searchRequests.RuleSearchRequest;
 import contract.searchResults.RawRuleSearchResult;
 import contract.searchResults.SearchResult;
 import org.springframework.stereotype.Service;
 import service.RawRuleSearchService;
 
+import java.util.Collection;
 import java.util.List;
 
 import static contract.rules.enums.RuleRequestCategory.ANY_RULE_TYPE;
 import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
+import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class SlackSearchService {
@@ -36,14 +43,44 @@ public class SlackSearchService {
         );
 
         RawRuleSearchResult rawResult = rawRuleSearchService.getRawResult(searchRequest);
-        return null; //todo
+        List<SlackField> attachments = getBlocksForResults(rawResult.getRawResults());
+        return new SlackResponse(
+                "in_channel",
+                singletonList(
+                        new SlackBlock(
+                                "section",
+                                singletonList(
+                                        new SlackField(
+                                                "mrkdwn",
+                                                join(" | ", searchRequest.getKeywords())
+                                        )
+                                )
+                        )
+                ),
+                singletonList(
+                        new SlackAttachment(
+                                singletonList(
+                                        new SlackBlock("section", attachments)
+                                )
+                        )
+                )
+        );
     }
 
-    private List<SlackBlock> getBlocksForResults(List<SearchResult<AbstractRule>> rules) {
-        return null;
+    private List<SlackField> getBlocksForResults(List<SearchResult<AbstractRule>> results) {
+        return results.stream()
+                .map(result -> result.getEntry().getPrintedRules())
+                .flatMap(Collection::stream)
+                .map(this::getBlocksForRule)
+                .limit(6)
+                .collect(toList());
     }
 
-    private SlackBlock getBlockForRule(AbstractRule rule) {
-        return null;
+    private SlackField getBlocksForRule(PrintedRule rule) {
+        return new SlackField(
+                "mrkdwn",
+                format("*%s*\n%s", rule.getHeader(), rule.getBodyText())
+        );
     }
+
 }
