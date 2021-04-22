@@ -43,7 +43,9 @@ public class SlackSearchService {
         );
 
         RawRuleSearchResult rawResult = rawRuleSearchService.getRawResult(searchRequest);
-        List<SlackField> attachments = getBlocksForResults(rawResult.getRawResults());
+        List<SlackBlock> attachments = getBlocksForResults(rawResult.getRawResults()).stream()
+                .map(block -> new SlackBlock("section", singletonList(block)))
+                .collect(toList());
         return new SlackResponse(
                 "in_channel",
                 singletonList(
@@ -58,11 +60,7 @@ public class SlackSearchService {
                         )
                 ),
                 singletonList(
-                        new SlackAttachment(
-                                singletonList(
-                                        new SlackBlock("section", attachments)
-                                )
-                        )
+                        new SlackAttachment(attachments)
                 )
         );
     }
@@ -82,5 +80,4 @@ public class SlackSearchService {
                 format("*%s*\n%s", rule.getHeader(), rule.getBodyText())
         );
     }
-
 }

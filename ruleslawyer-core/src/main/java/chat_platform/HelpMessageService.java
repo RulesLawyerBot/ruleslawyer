@@ -40,20 +40,19 @@ public class HelpMessageService {
 
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
-            "Current rules version: Kaldheim\n" +
-            "Last updated: 12-04-2021\n" +
-            "--v1.9.4--\n" +
-            "Quick fix: Reaction pagination not working in certain cases.\n" +
+            "Current rules version: Strixhaven\n" +
+            "Last updated: 23-04-2021\n" +
+            "--v1.9.5--\n" +
+            "Updated rules to Strixhaven.\n" +
+            "Slack version is functional but still being worked on! Let me know if you want to help test it.\n" +
             "--Last major patch: v1.9.0--\n" +
             "Fixed various bugs related to pagination.\n" +
             "Digital events rules are in! Let me know if there are any parsing issues.\n" +
             "--Future development and known issues--\n" +
-            "Strixhaven will be added as 1.9.4 once the set is released.\n" +
             "Slash/application commands will be added once javacord adds support for it.\n" +
             "Enough people have requested card search that I'm considering just adding it.\n" +
             "Fuzzy searching is being explored but ITS HARD TO MAKE WORK OKAY\n" +
             "Android version is actively being worked on.\n" +
-            "Slack is in progress BUT WHY DO THEY GOTTA MAKE IT SO HARD\n" +
             "```";
 
     public static final String NOT_FOUND = "I don't have that help file. Use {{help}} for the main help file.";
