@@ -1,6 +1,5 @@
 package app;
 
-import init_utils.ManaEmojiService;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.event.message.MessageEditEvent;
 import org.javacord.api.event.message.reaction.ReactionAddEvent;
@@ -9,21 +8,15 @@ import org.javacord.api.event.server.ServerJoinEvent;
 import search.DiscordRuleSearchService;
 import search.contract.DiscordSearchResult;
 import service.*;
-import contract.rules.AbstractRule;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
-import repository.SearchRepository;
 import service.reaction_pagination.ReactionPaginationService;
 
-import java.util.List;
 import java.util.Optional;
 
 import static chat_platform.HelpMessageService.MAIN_HELP;
-import static ingestion.rule.JsonRuleIngestionService.getRawDigitalRulesData;
-import static ingestion.rule.JsonRuleIngestionService.getRawRulesData;
-import static java.util.stream.Collectors.toList;
 import static org.javacord.api.entity.intent.Intent.GUILD_PRESENCES;
 import static utils.DiscordUtils.*;
 
@@ -31,7 +24,6 @@ public class DiscordApplicationMain {
 
     private static DiscordRuleSearchService discordRuleSearchService;
     private static MessageDeletionService messageDeletionService;
-    private static ManaEmojiService manaEmojiService;
     private static MessageLoggingService messageLoggingService;
     private static AdministratorCommandsService administratorCommandsService;
     private static ReactionPaginationService reactionPaginationService;
@@ -50,20 +42,7 @@ public class DiscordApplicationMain {
                 .join();
 
         System.out.println("Loading rules...");
-        manaEmojiService = new ManaEmojiService(api);
-
-        try {
-            List<AbstractRule> rules = getRawRulesData().stream()
-                    .map(manaEmojiService::replaceManaSymbols)
-                    .collect(toList());
-            List<AbstractRule> digitalRules = getRawDigitalRulesData().stream()
-                    .map(manaEmojiService::replaceManaSymbols)
-                    .collect(toList());
-            discordRuleSearchService = new DiscordRuleSearchService();
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
+        discordRuleSearchService = new DiscordRuleSearchService(api);
 
         System.out.println("Setting listeners...");
         api.updateActivity(CURRENT_VERSION);

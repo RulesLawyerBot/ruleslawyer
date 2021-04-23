@@ -23,6 +23,11 @@ public class RawRuleSearchService {
         digitalRuleSearchRepository = new SearchRepository<>(getRawDigitalRulesData());
     }
 
+    public RawRuleSearchService(List<AbstractRule> paperRules, List<AbstractRule> digitalRules) {
+        ruleSearchRepository = new SearchRepository<>(paperRules);
+        digitalRuleSearchRepository = new SearchRepository<>(digitalRules);
+    }
+
     public RawRuleSearchResult getRawResult(RuleSearchRequest request) {
         List<SearchResult<AbstractRule>> paperResult = getRawPaperResult(request);
         List<SearchResult<AbstractRule>> digitalResult = getRawDigitalResult(request);

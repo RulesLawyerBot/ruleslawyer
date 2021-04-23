@@ -6,7 +6,8 @@ import contract.rules.enums.RuleRequestCategory;
 import contract.rules.enums.RuleSource;
 import contract.searchResults.RawRuleSearchResult;
 import contract.searchResults.SearchResult;
-import repository.SearchRepository;
+import init_utils.ManaEmojiService;
+import org.javacord.api.DiscordApi;
 import search.contract.DiscordEmbedField;
 import search.contract.DiscordSearchRequest;
 import search.contract.DiscordSearchResult;
@@ -20,6 +21,8 @@ import java.util.List;
 
 import static contract.rules.enums.RuleRequestCategory.*;
 import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
+import static ingestion.rule.JsonRuleIngestionService.getRawDigitalRulesData;
+import static ingestion.rule.JsonRuleIngestionService.getRawRulesData;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.format;
 import static java.lang.String.join;
@@ -38,9 +41,16 @@ public class DiscordRuleSearchService {
     public static final Integer MAX_FIELD_NAME_SIZE = 256;
     public static final Integer MAX_FIELD_VALUE_SIZE = 1024;
 
-    public DiscordRuleSearchService() {
+    public DiscordRuleSearchService(DiscordApi api) {
+        ManaEmojiService manaEmojiService = new ManaEmojiService(api);
+        List<AbstractRule> rules = getRawRulesData().stream()
+                .map(manaEmojiService::replaceManaSymbols)
+                .collect(toList());
+        List<AbstractRule> digitalRules = getRawDigitalRulesData().stream()
+                .map(manaEmojiService::replaceManaSymbols)
+                .collect(toList());
         this.helpMessageService = new HelpMessageService();
-        this.rawRuleSearchService = new RawRuleSearchService();
+        this.rawRuleSearchService = new RawRuleSearchService(rules, digitalRules);
     }
 
     public DiscordSearchResult getSearchResult(String author, String text) {
