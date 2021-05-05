@@ -18,6 +18,8 @@ public class ReactionPaginationServiceTest {
 
     @Mock
     private DiscordRuleSearchService searchService;
+
+    @Mock
     private MessageLoggingService messageLoggingService;
 
     private ReactionPaginationService reactionPaginationService;

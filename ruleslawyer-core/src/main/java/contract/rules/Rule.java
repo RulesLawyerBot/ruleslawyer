@@ -1,9 +1,13 @@
 package contract.rules;
 
 
+import contract.Searchable;
 import contract.rules.enums.RuleSource;
+import contract.searchRequests.SearchRequest;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -38,7 +42,12 @@ public class Rule extends AbstractRule {
 
     @Override
     public Integer getRelevancy(List<String> keywords) {
-        return super.getRelevancy(keywords) + 20000;
+        return super.getRelevancy(keywords) + 2*SUBRULE_RELEVANCY_MODIFIER;
+    }
+
+    @Override
+    public Integer getFuzzyRelevancy(List<String> keywords, Integer fuzzyDistance) {
+        return super.getFuzzyRelevancy(keywords, fuzzyDistance) + 2*SUBRULE_RELEVANCY_MODIFIER;
     }
 
     @Override

@@ -70,6 +70,9 @@ public class DiscordApplicationMain {
     }
 
     private static void handleMessageCreateEvent(MessageCreateEvent event) {
+        if (isLoggingChannel(event)) {
+            return;
+        }
         if (isOwnMessage(event)) {
             reactionPaginationService.placePaginationReactions(event);
         } else {

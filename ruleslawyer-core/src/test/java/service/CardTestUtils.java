@@ -17,7 +17,7 @@ public class CardTestUtils {
     public static Card getSampleCard() {
         return new Card(
                 "Gifts Ungiven",
-                "{3}{UR",
+                "{3}{U}",
                 "Instant",
                 "Search your library for up to four cards with different names and reveal them. Target opponent chooses two of those cards. Put the chosen cards into your graveyard and the rest into your hand. Then shuffle your library.",
                 singletonList("You can choose to find fewer than four cards if you want. If you find one or two cards, your opponent must choose for them to be put into your graveyard, even if they don’t want to."),

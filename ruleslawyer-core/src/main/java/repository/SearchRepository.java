@@ -3,6 +3,8 @@ package repository;
 import contract.searchResults.SearchResult;
 import contract.Searchable;
 import contract.searchRequests.SearchRequest;
+import org.apache.commons.text.similarity.LevenshteinDistance;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -24,5 +26,15 @@ public class SearchRepository<T extends Searchable> {
                  .map(result -> new SearchResult<>(result, result.getRelevancy(searchRequest.getKeywords())))
                  .sorted()
                  .collect(toList());
+    }
+
+    public List<SearchResult<T>> getFuzzySearchResult(SearchRequest<T> searchRequest, Integer fuzzyDistance) {
+        return searchSpace.stream()
+                .map(searchObject -> searchObject.fuzzySearchForKeywords(searchRequest, fuzzyDistance))
+                .flatMap(Collection::stream)
+                .map(elem -> (T)elem)
+                .map(result -> new SearchResult<>(result, result.getFuzzyRelevancy(searchRequest.getKeywords(), fuzzyDistance)))
+                .sorted()
+                .collect(toList());
     }
 }

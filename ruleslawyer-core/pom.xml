@@ -13,7 +13,7 @@
     <version>${parent.version}</version>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+        <!-- testing stuff -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -26,10 +26,17 @@
             <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
+        <!-- objectmapper -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.9.8</version>
+        </dependency>
+        <!-- fuzzy searching -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.9</version>
         </dependency>
     </dependencies>
 

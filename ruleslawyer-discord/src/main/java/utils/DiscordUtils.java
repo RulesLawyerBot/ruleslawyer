@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Optional;
 
+import static app.DiscordApplicationMain.DEV_SERVER_ID;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class DiscordUtils {
@@ -49,6 +50,11 @@ public class DiscordUtils {
 
     public static boolean isOwnMessage(MessageCreateEvent event) {
         return event.getMessageAuthor().isYourself();
+    }
+
+    public static boolean isLoggingChannel(MessageCreateEvent event) {
+        return event.getServer().map(server -> server.getId() == DEV_SERVER_ID).orElse(false) &&
+                event.getServerTextChannel().map(channel -> channel.getName().equals("log")).orElse(false);
     }
 
     public static boolean isOwnMessage(SingleReactionEvent event) {

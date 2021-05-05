@@ -27,7 +27,12 @@ public class RuleSubheader extends AbstractRule {
 
     @Override
     public Integer getRelevancy(List<String> keywords) {
-        return super.getRelevancy(keywords) + 10000;
+        return super.getRelevancy(keywords) + SUBRULE_RELEVANCY_MODIFIER;
+    }
+
+    @Override
+    public Integer getFuzzyRelevancy(List<String> keywords, Integer fuzzyDistance) {
+        return super.getFuzzyRelevancy(keywords, fuzzyDistance) + SUBRULE_RELEVANCY_MODIFIER;
     }
 
     @Override

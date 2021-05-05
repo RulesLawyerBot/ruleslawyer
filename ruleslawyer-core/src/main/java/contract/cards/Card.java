@@ -96,6 +96,11 @@ public class Card implements Searchable {
         return searchForKeywords(new CardSearchRequest(keywords, DEFAULT, ANY_FORMAT));
     }
 
+    @Override
+    public List<? extends Searchable> fuzzySearchForKeywords(SearchRequest searchRequest, Integer fuzzyDistance) {
+        return null;
+    }
+
     private boolean keywordExistsInTitle(String keyword) {
         return this.cardName.toLowerCase().contains(keyword.toLowerCase());
     }
@@ -121,6 +126,11 @@ public class Card implements Searchable {
         if (!matchesName)
             relevancy += 10000;
         return relevancy;
+    }
+
+    @Override
+    public Integer getFuzzyRelevancy(List<String> keywords, Integer fuzzyDistance) {
+        return null;
     }
 
     @Override
