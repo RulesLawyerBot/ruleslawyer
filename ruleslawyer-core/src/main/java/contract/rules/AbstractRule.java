@@ -5,28 +5,30 @@ import contract.Searchable;
 import contract.searchRequests.RuleSearchRequest;
 import contract.searchRequests.SearchRequest;
 import exception.NotYetImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
+import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.*;
 import static java.util.stream.IntStream.range;
+import static org.apache.commons.lang3.StringUtils.countMatches;
 
 public abstract class AbstractRule implements Searchable {
     protected static Integer ruleCount = 0;
+    protected static final Integer MULTIPLE_OCCURANCE_RELEVANCY_MODIFIER = -200000;
     protected static final Integer SUBRULE_RELEVANCY_MODIFIER = 10000;
+    protected static final Integer EXACT_MATCH_RELEVANCY_MODIFIER = -50000;
 
     protected Integer index;
     protected AbstractRule parentRule;
@@ -53,6 +55,8 @@ public abstract class AbstractRule implements Searchable {
     public List<AbstractRule> getSubRules() {
         return this.subRules;
     }
+
+    /* Normal searching starts here */
 
     @Override
     public List<AbstractRule> searchForKeywords(SearchRequest searchRequest) {
@@ -82,6 +86,8 @@ public abstract class AbstractRule implements Searchable {
                 .flatMap(Collection::stream)
                 .collect(toList());
     }
+
+    /* Fuzzy searching starts here */
 
     @Override
     public List<AbstractRule> fuzzySearchForKeywords(SearchRequest searchRequest, Integer fuzzyDistance) {
@@ -118,6 +124,20 @@ public abstract class AbstractRule implements Searchable {
         return processFuzzySearch(keywordMap, keywords, levenshteinDistance);
     }
 
+    protected Map<String, Integer> getFuzzySearchMap(List<String> keywords, LevenshteinDistance levenshteinDistance) {
+         return keywords.stream()
+                 .collect(toMap(
+                         identity(),
+                         keyword -> stream(text.toLowerCase().split(" "))
+                                 .mapToInt(ruleWord -> {
+                                     Integer distance = levenshteinDistance.apply(keyword.toLowerCase(), ruleWord);
+                                     return distance < 0 ? 999999 : distance;
+                                 })
+                                 .min()
+                                 .orElse(999999)
+                 ));
+    }
+
     protected List<AbstractRule> processFuzzySearch(
             Map<String, Integer> keywordMap,
             List<String> keywords,
@@ -137,20 +157,6 @@ public abstract class AbstractRule implements Searchable {
                 .collect(toList());
     }
 
-    protected Map<String, Integer> getFuzzySearchMap(List<String> keywords, LevenshteinDistance levenshteinDistance) {
-         return keywords.stream()
-                 .collect(toMap(
-                         identity(),
-                         keyword -> stream(text.toLowerCase().split(" "))
-                                 .mapToInt(ruleWord -> {
-                                     Integer distance = levenshteinDistance.apply(keyword.toLowerCase(), ruleWord);
-                                     return distance < 0 ? 999999 : distance;
-                                 })
-                                 .min()
-                                 .orElse(999999)
-                 ));
-    }
-
     private Map<String, Integer> mergeMaps(Map<String, Integer> map1, Map<String, Integer> map2) {
         map2.forEach((key, value) ->
                 map1.merge(
@@ -161,17 +167,25 @@ public abstract class AbstractRule implements Searchable {
         return map1;
     }
 
+    /* Normal relevancy */
+
     @Override
     public Integer getRelevancy(List<String> keywords) {
-        return keywords.stream()
+        Integer relevancy = keywords.stream()
                 .map(this::getRelevancyForKeyword)
-                .mapToInt(OptionalInt::getAsInt) //assert exists
+                .mapToInt(OptionalInt::getAsInt) //should all exist
                 .sum();
+        return containsKeywordsExactMatch(keywords) ?
+                relevancy + (keywords.size() * EXACT_MATCH_RELEVANCY_MODIFIER) :
+                relevancy;
     }
 
     private OptionalInt getRelevancyForKeyword(String keyword) {
         if (getParentText().toLowerCase().contains(keyword)) {
-            return OptionalInt.of(getParentText().toLowerCase().indexOf(keyword));
+            return OptionalInt.of(
+                    getParentText().toLowerCase().indexOf(keyword) +
+                            (getKeywordCount(keyword) * MULTIPLE_OCCURANCE_RELEVANCY_MODIFIER / this.getLength())
+            );
         }
         if (getRuleSource().toString().contains(keyword.toUpperCase())) {
             return OptionalInt.of(0);
@@ -184,6 +198,23 @@ public abstract class AbstractRule implements Searchable {
                 .min();
     }
 
+    private Integer getKeywordCount(String keyword) {
+        return StringUtils.countMatches(getParentText().toLowerCase(), keyword.toLowerCase()) +
+                this.subRules.stream()
+                    .mapToInt(subRule -> subRule.getKeywordCount(keyword))
+                    .sum();
+    }
+
+    private boolean containsKeywordsExactMatch(List<String> keywords) {
+        return this.text.toLowerCase().contains(join(" ", keywords).toLowerCase()) ||
+                (
+                        this.subRules != null && this.subRules.size() > 0 &&
+                                this.subRules.stream().anyMatch(subRule -> subRule.containsKeywordsExactMatch(keywords))
+                );
+    }
+
+    /* Fuzzy relevancy */
+
     @Override
     public Integer getFuzzyRelevancy(List<String> keywords, Integer fuzzyDistance) {
         LevenshteinDistance levenshteinDistance = new LevenshteinDistance(fuzzyDistance);
@@ -191,13 +222,11 @@ public abstract class AbstractRule implements Searchable {
 
         subRules.stream()
                 .map(subRule -> subRule.getFuzzyRelevancyMap(keywords, levenshteinDistance))
-                .forEach(map ->
-                            map.forEach((key, value) ->
-                                    relevancyMap.merge(key, value, (v1, v2) -> v1 < v2 ? v1 : v2)
-                            )
-                );
+                .forEach(map -> mergeMaps(map, relevancyMap));
 
-        return relevancyMap.values().stream().mapToInt(i->i).sum();
+        return containsKeywordsExactFuzzyMatch(keywords, levenshteinDistance) ?
+                relevancyMap.values().stream().mapToInt(i->i).sum() - EXACT_MATCH_RELEVANCY_MODIFIER :
+                relevancyMap.values().stream().mapToInt(i->i).sum();
     }
 
     private Map<String, Integer> getFuzzyRelevancyMap(List<String> keywords, LevenshteinDistance levenshteinDistance) {
@@ -217,10 +246,27 @@ public abstract class AbstractRule implements Searchable {
                 ));
     }
 
+    private boolean containsKeywordsExactFuzzyMatch(List<String> keywords, LevenshteinDistance distance) {
+        return distance.apply(this.text.toLowerCase(), join(" ", keywords).toLowerCase()) != -1 ||
+                (
+                        this.subRules != null && this.subRules.size() > 0 &&
+                                this.subRules.stream().anyMatch(subRule -> subRule.containsKeywordsExactFuzzyMatch(keywords, distance))
+                );
+    }
+
+    /* Random utils */
+
     private String getParentText() {
         if (parentRule != null)
             return parentRule.getParentText() + " " + text;
         return text;
+    }
+
+    private Integer getLength() {
+        if (this.subRules == null || this.subRules.size() == 0) {
+            return this.text.length();
+        }
+        return this.text.length() + this.subRules.stream().mapToInt(AbstractRule::getLength).sum();
     }
 
     @Override

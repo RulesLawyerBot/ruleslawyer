@@ -19,7 +19,7 @@ def main():
 
     # parse into blocks
     while file.has_line():
-        line = file.next_line().replace("  ", " ").replace("—", "-").replace("•", "*").replace("’", "'")
+        line = file.next_line().replace("  ", " ").replace("—", "-").replace("•", "*").replace("’", "'").replace("™", "")
         if len(line) < 4:
             emptyline_flag = True
             continue

@@ -35,12 +35,12 @@ public class RawRuleSearchService {
             if (paperResult.size() == 0) {
                 return getFuzzyResult(request);
             }
-            return new RawRuleSearchResult(paperResult, PAPER, false);
+            return new RawRuleSearchResult(paperResult, PAPER, false, false);
         } else {
             if (paperResult.size() == 0) {
-                return new RawRuleSearchResult(digitalResult, DIGITAL, false);
+                return new RawRuleSearchResult(digitalResult, DIGITAL, false, false);
             }
-            return new RawRuleSearchResult(paperResult, PAPER, true);
+            return new RawRuleSearchResult(paperResult, PAPER, true, false);
         }
     }
 
@@ -48,12 +48,12 @@ public class RawRuleSearchService {
         List<SearchResult<AbstractRule>> paperResult = getFuzzyRawPaperResult(request);
         List<SearchResult<AbstractRule>> digitalResult = getFuzzyRawDigitalResult(request);
         if (digitalResult.size() == 0) {
-            return new RawRuleSearchResult(paperResult, PAPER, false);
+            return new RawRuleSearchResult(paperResult, PAPER, false, true);
         } else {
             if (paperResult.size() == 0) {
-                return new RawRuleSearchResult(digitalResult, DIGITAL, false);
+                return new RawRuleSearchResult(digitalResult, DIGITAL, false, true);
             }
-            return new RawRuleSearchResult(paperResult, PAPER, true);
+            return new RawRuleSearchResult(paperResult, PAPER, true, true);
         }
     }
 

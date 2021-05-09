@@ -40,6 +40,9 @@ public class DiscordRuleSearchService {
     public static final Integer MAX_PAYLOAD_SIZE = 3000;
     public static final Integer MAX_FIELD_NAME_SIZE = 256;
     public static final Integer MAX_FIELD_VALUE_SIZE = 1024;
+    public static final String NO_RESULTS_FOUND_HELP_MESSAGE = "RulesLawyer searches the following rules documents: the Comprehensive Rules, Infraction Procedure Guide, Magic Tournament Rules, Judging at Regular document, Oathbreaker rules, Digital Infraction Procedure Guide, and Digital Magic Tournament rules.\n" +
+            "Much like a traditional search engine, if your query does not appear in these documents, no results will be returned. It is suggested that you only use words that you think are likely to appear in these documents.\n" +
+            "For additional help, do {{help}} or {{help|advanced}}.";
 
     public DiscordRuleSearchService(DiscordApi api) {
         ManaEmojiService manaEmojiService = new ManaEmojiService(api);
@@ -83,13 +86,17 @@ public class DiscordRuleSearchService {
             return new DiscordSearchResult(
                     new EmbedBuilderBuilder()
                             .setAuthor("RulesLawyer")
-                            .addFields(singletonList(new DiscordEmbedField(getEmbedTitle(discordSearchRequest), "No Results Found")))
+                            .addFields(asList(
+                                    new DiscordEmbedField(getEmbedTitle(discordSearchRequest), "No Results Found"),
+                                    new DiscordEmbedField("Quick help", NO_RESULTS_FOUND_HELP_MESSAGE)
+                            ))
                             .build()
             );
         }
 
         EmbedBuilderBuilder result = new EmbedBuilderBuilder()
-                .setAuthor("RulesLawyer").setTitle(getEmbedTitle(discordSearchRequest));
+                .setAuthor("RulesLawyer Rules Search")
+                .setTitle(getEmbedTitle(discordSearchRequest));
 
         List<DiscordEmbedField> embedFields = rawResults.getRawResults().stream()
                 .map(this::getFieldsForRawResult)
@@ -105,7 +112,8 @@ public class DiscordRuleSearchService {
                 moddedPageNumber+1,
                 pages.size(),
                 rawResults.getRuleRequestCategory(),
-                rawResults.hasOtherCategory()
+                rawResults.hasOtherCategory(),
+                rawResults.isFuzzy()
         );
 
         result.setFooter(footer);
@@ -119,18 +127,23 @@ public class DiscordRuleSearchService {
             Integer pageNumber,
             Integer pageSize,
             RuleRequestCategory ruleRequestCategory,
-            boolean availableRuleSwap
+            boolean availableRuleSwap,
+            boolean isFuzzy
     ) {
+        String baseFooter;
         if (ruleRequestCategory == DIGITAL && availableRuleSwap) {
-            return format("Requested by: %s | page %s of %s | paper rules available | Use arrow reactions for pagination",
+            baseFooter =  format("Requested by: %s | page %s of %s | paper rules available | paginate with arrow reactions",
+                    requester, pageNumber, pageSize);
+        } else if (ruleRequestCategory == PAPER && availableRuleSwap) {
+            baseFooter =  format("Requested by: %s | page %s of %s | digital rules available | paginate with arrow reactions",
+                    requester, pageNumber, pageSize);
+        } else {
+            baseFooter = format("Requested by: %s | page %s of %s | paginate with arrow reactions",
                     requester, pageNumber, pageSize);
         }
-        if (ruleRequestCategory == PAPER && availableRuleSwap) {
-            return format("Requested by: %s | page %s of %s | digital rules available | Use arrow reactions for pagination",
-                    requester, pageNumber, pageSize);
-        }
-        return format("Requested by: %s | page %s of %s | Use arrow reactions for pagination",
-                requester, pageNumber, pageSize);
+        return isFuzzy ?
+                baseFooter + " | No exact match found. Automatically using experimental fuzzy search" :
+                baseFooter;
     }
 
     private DiscordSearchRequest getSearchRequest(String author, String query) {

@@ -68,8 +68,4 @@ public class DiscordUtils {
     public static boolean isOwnReaction(SingleReactionEvent event) {
         return event.getUser().map(User::isYourself).orElse(false);
     }
-
-    public static boolean isUserMessage(MessageCreateEvent event) {
-        return event.getMessageAuthor().asUser().isPresent() && !event.getMessageAuthor().isBotUser();
-    }
 }

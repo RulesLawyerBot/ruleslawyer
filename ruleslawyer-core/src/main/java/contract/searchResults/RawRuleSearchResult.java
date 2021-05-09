@@ -10,12 +10,13 @@ public class RawRuleSearchResult {
     private List<SearchResult<AbstractRule>> rawResults;
     private RuleRequestCategory ruleRequestCategory;
     private boolean hasOtherCategory;
+    private boolean isFuzzy;
 
-
-    public RawRuleSearchResult(List<SearchResult<AbstractRule>> rawResults, RuleRequestCategory ruleRequestCategory, boolean hasOtherCategory) {
+    public RawRuleSearchResult(List<SearchResult<AbstractRule>> rawResults, RuleRequestCategory ruleRequestCategory, boolean hasOtherCategory, boolean isFuzzy) {
         this.rawResults = rawResults;
         this.ruleRequestCategory = ruleRequestCategory;
         this.hasOtherCategory = hasOtherCategory;
+        this.isFuzzy = isFuzzy;
     }
 
     public List<SearchResult<AbstractRule>> getRawResults() {
@@ -28,5 +29,9 @@ public class RawRuleSearchResult {
 
     public boolean hasOtherCategory() {
         return hasOtherCategory;
+    }
+
+    public boolean isFuzzy() {
+        return isFuzzy;
     }
 }

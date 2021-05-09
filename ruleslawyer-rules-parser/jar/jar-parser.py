@@ -14,7 +14,7 @@ def main():
     line_builder = ""
     emptyline_flag = True
     while file.has_line():
-        line = file.next_line()
+        line = file.next_line().replace("  ", " ").replace("—", "-").replace("•", "*").replace("’", "'").replace("™", "")
         if len(line) == 0:
             emptyline_flag = True
             continue
