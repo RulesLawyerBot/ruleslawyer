@@ -3,7 +3,9 @@ package app.api.service;
 import app.api.pojo.ApiNormalizedRule;
 import app.api.pojo.ApiRulesPayload;
 import contract.rules.AbstractRule;
+import contract.rules.enums.RuleRequestCategory;
 import contract.searchRequests.RuleSearchRequest;
+import contract.searchResults.RawRuleSearchResult;
 import contract.searchResults.SearchResult;
 import org.springframework.stereotype.Service;
 import service.RawRuleSearchService;
@@ -11,6 +13,10 @@ import service.RawRuleSearchService;
 import java.util.List;
 import java.util.Optional;
 
+import static contract.rules.enums.RuleRequestCategory.DIGITAL;
+import static contract.rules.enums.RuleRequestCategory.PAPER;
+import static contract.rules.enums.RuleSource.DIPG;
+import static contract.rules.enums.RuleSource.DMTR;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 
@@ -24,27 +30,34 @@ public class ApiSearchService {
     }
 
     public ApiRulesPayload getRuleSearchResults(RuleSearchRequest ruleSearchRequest) {
-        List<AbstractRule> rawOutput = getRawResults(ruleSearchRequest);
+        RawRuleSearchResult rawRuleSearchResult = rawRuleSearchService.getRawResult(ruleSearchRequest);
+        List<AbstractRule> abstractRules =
+                rawRuleSearchResult.getRawResults()
+                        .stream()
+                        .map(SearchResult::getEntry)
+                        .collect(toList());
+        if (rawRuleSearchResult.getRawResults().size() == 0) {
+            return null;
+        }
         return new ApiRulesPayload(
-                normalizeRules(rawOutput),
-                ruleSearchRequest
+                normalizeRules(abstractRules),
+                ruleSearchRequest,
+                abstractRules.get(0).getRuleSource() == DIPG || abstractRules.get(0).getRuleSource() == DMTR ? DIGITAL : PAPER,
+                rawRuleSearchResult.hasOtherCategory(),
+                rawRuleSearchResult.isFuzzy()
         );
     }
 
     public ApiNormalizedRule getCitation(RuleSearchRequest ruleSearchRequest) {
-        List<AbstractRule> rawOutput = getRawResults(ruleSearchRequest);
-        if (rawOutput.size() == 0) {
-            return null;
-        }
-        return normalizeRule(rawOutput.get(0));
-    }
-
-    public List<AbstractRule> getRawResults(RuleSearchRequest ruleSearchRequest) {
-        return rawRuleSearchService.getRawResult(ruleSearchRequest)
+        List<AbstractRule> rawOutput = rawRuleSearchService.getRawResult(ruleSearchRequest)
                 .getRawResults()
                 .stream()
                 .map(SearchResult::getEntry)
                 .collect(toList());
+        if (rawOutput.size() == 0) {
+            return null;
+        }
+        return normalizeRule(rawOutput.get(0));
     }
 
     private List<ApiNormalizedRule> normalizeRules(List<AbstractRule> rules) {
