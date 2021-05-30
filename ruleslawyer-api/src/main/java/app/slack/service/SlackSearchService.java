@@ -89,10 +89,10 @@ public class SlackSearchService {
                 .collect(toList());
     }
 
-    private List<SlackField> getBlocksForRule(PrintedRule rule) {
+    private List<SlackField> getBlocksForRule(PrintableRule rule) {
         return outputFieldSplitService.getGenericRuleBlocks(rule).stream()
                 .map(ruleField -> new SlackField(
-                        "mrkdwn", format("*%s*\n%s", rule.getHeader(), rule.getBodyText())
+                        "mrkdwn", format("*%s*\n%s", ruleField.getHeader(), ruleField.getBody())
                 ))
                 .collect(toList());
     }

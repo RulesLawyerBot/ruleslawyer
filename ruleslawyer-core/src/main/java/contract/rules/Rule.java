@@ -1,13 +1,9 @@
 package contract.rules;
 
 
-import contract.Searchable;
 import contract.rules.enums.RuleSource;
-import contract.searchRequests.SearchRequest;
-import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import java.util.List;
-import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -51,9 +47,9 @@ public class Rule extends AbstractRule {
     }
 
     @Override
-    public List<PrintedRule> getPrintedRules() {
+    public List<PrintableRule> getPrintedRules() {
         return singletonList(
-                new PrintedRule(
+                new PrintableRule(
                     this.getRuleSource() + " " + this.getHeader().getText() + " " + this.getSubHeader().getText(),
                     this.getText()
             )

@@ -278,5 +278,5 @@ public abstract class AbstractRule implements Searchable {
 
     public abstract RuleSource getRuleSource();
 
-    public abstract List<PrintedRule> getPrintedRules();
+    public abstract List<PrintableRule> getPrintedRules();
 }

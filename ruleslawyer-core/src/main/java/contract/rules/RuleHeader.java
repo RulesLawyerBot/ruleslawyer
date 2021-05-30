@@ -3,7 +3,6 @@ package contract.rules;
 import contract.rules.enums.RuleSource;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
@@ -28,17 +27,17 @@ public class RuleHeader extends AbstractRule {
     }
 
     @Override
-    public List<PrintedRule> getPrintedRules() {
+    public List<PrintableRule> getPrintedRules() {
         if (this.getSubRules().stream().allMatch(subRule -> subRule.getSubRules().size() == 0)) {
             return singletonList(
-                    new PrintedRule(
+                    new PrintableRule(
                         this.getRuleSource() + " " + this.getText(),
                         this.getSubRules().stream().map(AbstractRule::getText).collect(joining("\n"))
                 )
             );
         }
         return this.getSubRules().stream().map(
-                subrule -> new PrintedRule(
+                subrule -> new PrintableRule(
                         this.getRuleSource() + " " + this.getText() + " " + subrule.getText(),
                         subrule.getSubRules().stream().map(AbstractRule::getText).collect(joining("\n"))
                 )

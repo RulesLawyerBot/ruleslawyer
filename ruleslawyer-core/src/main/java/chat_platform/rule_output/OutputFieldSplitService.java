@@ -1,7 +1,9 @@
 package chat_platform.rule_output;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import contract.rules.AbstractRule;
-import contract.rules.PrintedRule;
+import contract.rules.PrintableRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +31,7 @@ public class OutputFieldSplitService {
                 .collect(toList());
     }
 
-    public List<GenericRuleOutputField> getGenericRuleBlocks(PrintedRule rule) {
+    public List<GenericRuleOutputField> getGenericRuleBlocks(PrintableRule rule) {
         String fieldHeader = rule.getHeader();
         String fieldText = rule.getBodyText();
 
@@ -46,12 +48,12 @@ public class OutputFieldSplitService {
                 .collect(toList());
         else {
             List<String> splitFieldText = splitFieldText(fieldText);
-            if (splitFieldText.size() < 2) {
+            if (splitFieldText.size() == 2) {
                 return singletonList(new GenericRuleOutputField(finalFieldHeader, splitFieldText.get(0)));
             } else {
                 List<GenericRuleOutputField> output = splitFieldText.stream()
-                        .map(field ->
-                                new GenericRuleOutputField(finalFieldHeader.substring(0, 9), field)
+                        .map(text ->
+                                new GenericRuleOutputField(finalFieldHeader.substring(0, 9), text)
                         )
                         .collect(toList());
                 output.add(0,

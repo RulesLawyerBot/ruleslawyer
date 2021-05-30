@@ -36,17 +36,17 @@ public class RuleSubheader extends AbstractRule {
     }
 
     @Override
-    public List<PrintedRule> getPrintedRules() {
+    public List<PrintableRule> getPrintedRules() {
         if (this.getSubRules().size() == 0) {
             return singletonList(
-                    new PrintedRule(
+                    new PrintableRule(
                             this.getRuleSource() + " " + this.getHeader().getText(),
                             this.getText()
                     )
             );
         } else {
             return singletonList(
-                    new PrintedRule(
+                    new PrintableRule(
                             this.getRuleSource() + " " + this.getHeader().getText() + " " + this.getText(),
                             this.getSubRules().stream().map(AbstractRule::getText).collect(joining("\n"))
                     )

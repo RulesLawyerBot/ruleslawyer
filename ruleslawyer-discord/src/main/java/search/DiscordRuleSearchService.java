@@ -204,15 +204,14 @@ public class DiscordRuleSearchService {
 
     private List<DiscordEmbedField> getFieldsForRawResult(SearchResult<AbstractRule> result) {
         AbstractRule rule = result.getEntry();
-        List<DiscordEmbedField> output = rule.getPrintedRules().stream()
+        return rule.getPrintedRules().stream()
                 .map(this::makeEmbedFieldsForRawText)
                 .flatMap(Collection::stream)
                 .peek(field -> field.setRelevancy(result.getRelevancy()))
                 .collect(toList());
-        return output;
     }
 
-    private List<DiscordEmbedField> makeEmbedFieldsForRawText(PrintedRule rule) {
+    private List<DiscordEmbedField> makeEmbedFieldsForRawText(PrintableRule rule) {
         return outputFieldSplitService.getGenericRuleBlocks(rule).stream()
                 .map(genericField -> new DiscordEmbedField(genericField.getHeader(), genericField.getBody()))
                 .collect(toList());

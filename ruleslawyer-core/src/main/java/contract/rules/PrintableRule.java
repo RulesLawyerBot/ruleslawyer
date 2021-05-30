@@ -1,10 +1,10 @@
 package contract.rules;
 
-public class PrintedRule {
+public class PrintableRule {
     private String header;
     private String bodyText;
 
-    public PrintedRule(String header, String bodyText) {
+    public PrintableRule(String header, String bodyText) {
         this.header = header;
         this.bodyText = bodyText;
     }
