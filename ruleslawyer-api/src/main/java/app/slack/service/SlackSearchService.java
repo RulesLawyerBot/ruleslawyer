@@ -4,6 +4,7 @@ import app.slack.contract.SlackAttachment;
 import app.slack.contract.SlackBlock;
 import app.slack.contract.SlackField;
 import app.slack.contract.SlackResponse;
+import chat_platform.rule_output.OutputFieldSplitService;
 import contract.rules.*;
 import contract.searchRequests.RuleSearchRequest;
 import contract.searchResults.RawRuleSearchResult;
@@ -26,12 +27,14 @@ import static java.util.stream.Collectors.toList;
 public class SlackSearchService {
 
     private static final Integer MAX_HEADER_LENGTH = 150;
-    private static final Integer MAX_TEXT_LENGTH = 3000;
+    private static final Integer MAX_TEXT_LENGTH = 1800;
 
     private RawRuleSearchService rawRuleSearchService;
+    private OutputFieldSplitService outputFieldSplitService;
 
     public SlackSearchService() {
-        this.rawRuleSearchService = new RawRuleSearchService();
+        rawRuleSearchService = new RawRuleSearchService();
+        outputFieldSplitService = new OutputFieldSplitService(MAX_HEADER_LENGTH, MAX_TEXT_LENGTH);
     }
 
     public SlackResponse searchRules(String query) {
@@ -70,14 +73,16 @@ public class SlackSearchService {
                 .map(result -> result.getEntry().getPrintedRules())
                 .flatMap(Collection::stream)
                 .map(this::getBlocksForRule)
+                .flatMap(Collection::stream)
                 .limit(6)
                 .collect(toList());
     }
 
-    private SlackField getBlocksForRule(PrintedRule rule) {
-        return new SlackField(
-                "mrkdwn",
-                format("*%s*\n%s", rule.getHeader(), rule.getBodyText())
-        );
+    private List<SlackField> getBlocksForRule(PrintedRule rule) {
+        return outputFieldSplitService.getGenericRuleBlocks(rule).stream()
+                .map(ruleField -> new SlackField(
+                        "mrkdwn", format("*%s*\n%s", rule.getHeader(), rule.getBodyText())
+                ))
+                .collect(toList());
     }
 }

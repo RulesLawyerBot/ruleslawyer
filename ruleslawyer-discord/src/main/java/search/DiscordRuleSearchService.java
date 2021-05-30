@@ -1,6 +1,7 @@
 package search;
 
 import chat_platform.HelpMessageService;
+import chat_platform.rule_output.OutputFieldSplitService;
 import contract.rules.*;
 import contract.rules.enums.RuleRequestCategory;
 import contract.rules.enums.RuleSource;
@@ -36,6 +37,7 @@ public class DiscordRuleSearchService {
 
     private HelpMessageService helpMessageService;
     private RawRuleSearchService rawRuleSearchService;
+    private OutputFieldSplitService outputFieldSplitService;
 
     public static final Integer MAX_PAYLOAD_SIZE = 3000;
     public static final Integer MAX_FIELD_NAME_SIZE = 256;
@@ -54,6 +56,7 @@ public class DiscordRuleSearchService {
                 .collect(toList());
         this.helpMessageService = new HelpMessageService();
         this.rawRuleSearchService = new RawRuleSearchService(rules, digitalRules);
+        this.outputFieldSplitService = new OutputFieldSplitService(MAX_FIELD_NAME_SIZE, MAX_FIELD_VALUE_SIZE);
     }
 
     public DiscordSearchResult getSearchResult(String author, String text) {
@@ -210,60 +213,9 @@ public class DiscordRuleSearchService {
     }
 
     private List<DiscordEmbedField> makeEmbedFieldsForRawText(PrintedRule rule) {
-        String rawFieldName = rule.getHeader();
-        String rawFieldText = rule.getBodyText();
-        if (rawFieldName.length() < MAX_FIELD_NAME_SIZE && rawFieldText.length() < MAX_FIELD_VALUE_SIZE) {
-            return singletonList(new DiscordEmbedField(rawFieldName, rawFieldText));
-        }
-        if (rawFieldName.length() > MAX_FIELD_NAME_SIZE) {
-            Integer split = rawFieldName.substring(0, MAX_FIELD_NAME_SIZE).lastIndexOf(" ");
-            String fieldName = rawFieldName.substring(0, split);
-            String fieldNameRemainder = "..." + rawFieldName.substring(split+1);
-            if (fieldNameRemainder.length() + rawFieldText.length() < MAX_FIELD_VALUE_SIZE-1) {
-                return singletonList(new DiscordEmbedField(fieldName, fieldNameRemainder + "\n" + rawFieldText));
-            } else {
-                return getSplitDiscordEmbedFields(fieldNameRemainder + "\n" + rawFieldText, fieldName);
-            }
-        }
-        return getSplitDiscordEmbedFields(rawFieldText, rawFieldName);
-    }
-
-    private List<DiscordEmbedField> getSplitDiscordEmbedFields(String rawFieldText, String fieldName) {
-        List<String> splitFieldText = splitFieldText(rawFieldText, MAX_FIELD_VALUE_SIZE);
-        if (fieldName.length() < 128) {
-            return splitFieldText.stream()
-                    .map(fieldText -> new DiscordEmbedField(fieldName, fieldText))
-                    .collect(toList()
-                    );
-        } else {
-            List<DiscordEmbedField> embedFields = new ArrayList<>();
-            embedFields.add(new DiscordEmbedField(fieldName, splitFieldText.get(0)));
-            splitFieldText.remove(0);
-            embedFields.addAll(splitFieldText.stream()
-                    .map(text -> new DiscordEmbedField(fieldName.substring(0, 9), text))
-                    .collect(toList())
-            );
-            return embedFields;
-        }
-    }
-
-    private List<String> splitFieldText(String rawFieldText, Integer maxSize) {
-        ArrayList<String> output = new ArrayList<>();
-
-        while (true) {
-            if (rawFieldText.length() < maxSize) {
-                output.add(rawFieldText);
-                break;
-            }
-            Integer split = rawFieldText.substring(0, maxSize).lastIndexOf("\n");
-            if (split == -1) {
-                split = rawFieldText.substring(0, maxSize).lastIndexOf(" ");
-            }
-            output.add(rawFieldText.substring(0, split));
-            rawFieldText = rawFieldText.substring(split+1);
-        }
-
-        return output;
+        return outputFieldSplitService.getGenericRuleBlocks(rule).stream()
+                .map(genericField -> new DiscordEmbedField(genericField.getHeader(), genericField.getBody()))
+                .collect(toList());
     }
 
     private List<List<DiscordEmbedField>> splitResultPages(List<DiscordEmbedField> embedFields) {
