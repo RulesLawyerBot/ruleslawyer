@@ -57,9 +57,10 @@ public class OutputFieldSplitService {
                 output.add(0,
                         new GenericRuleOutputField(
                             finalFieldHeader,
-                            splitFieldText.remove(0)
+                            splitFieldText.get(0)
                         )
                 );
+                output.remove(1);
                 return output;
             }
         }

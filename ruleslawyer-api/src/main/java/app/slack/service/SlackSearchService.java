@@ -5,6 +5,8 @@ import app.slack.contract.SlackBlock;
 import app.slack.contract.SlackField;
 import app.slack.contract.SlackResponse;
 import chat_platform.rule_output.OutputFieldSplitService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import contract.rules.*;
 import contract.searchRequests.RuleSearchRequest;
 import contract.searchResults.RawRuleSearchResult;
@@ -49,6 +51,15 @@ public class SlackSearchService {
         List<SlackBlock> attachments = getBlocksForResults(rawResult.getRawResults()).stream()
                 .map(block -> new SlackBlock("section", singletonList(block)))
                 .collect(toList());
+        ObjectMapper mapper = new ObjectMapper();
+        attachments.forEach(block -> {
+            try {
+                System.out.println(block.getFields().get(0).getText().length());
+                System.out.println(mapper.writeValueAsString(block));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        });
         return new SlackResponse(
                 "in_channel",
                 singletonList(
