@@ -40,11 +40,10 @@ public class ApiSearchController {
 
     @RequestMapping(value="/citation", method = {GET, POST})
     public ApiNormalizedRule getCitation(
-            @RequestParam(value="keywords") List<String> keywords,
-            @RequestParam(value="ruleSource") RuleSource ruleSource
+            @RequestParam(value="index") Integer index
     ) {
-        RuleSearchRequest ruleSearchRequest = getRuleSearchRequest(keywords, ruleSource, ANY_RULE_TYPE);
-        return apiSearchService.getCitation(ruleSearchRequest);
+        System.out.println(index + "");
+        return apiSearchService.getCitation(index);
     }
 
     private RuleSearchRequest getRuleSearchRequest(

@@ -7,6 +7,9 @@ import org.apache.commons.text.similarity.LevenshteinDistance;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -36,5 +39,14 @@ public class SearchRepository<T extends Searchable> {
                 .map(result -> new SearchResult<>(result, result.getFuzzyRelevancy(searchRequest.getKeywords(), fuzzyDistance)))
                 .sorted()
                 .collect(toList());
+    }
+
+    public T findByIndex(Integer index) throws NoSuchElementException {
+        return searchSpace.stream()
+                .map(searchObject -> searchObject.findByIndex(index))
+                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
+                .map(elem -> (T)elem)
+                .findFirst()
+                .get();
     }
 }

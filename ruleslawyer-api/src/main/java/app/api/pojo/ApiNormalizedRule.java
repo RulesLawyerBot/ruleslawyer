@@ -11,30 +11,42 @@ import static com.fasterxml.jackson.databind.annotation.JsonSerialize.Inclusion.
 public class ApiNormalizedRule {
 
     private String parentText;
+    private List<Integer> parentIndices;
     private String text;
     private List<ApiNormalizedRule> subRules;
     private RuleSource ruleSource;
+    private Integer ruleIndex;
 
-    public ApiNormalizedRule(List<ApiNormalizedRule> subRules, String text, String parentText, RuleSource ruleSource) {
-        this.subRules = subRules;
-        this.text = text;
+    public ApiNormalizedRule(String parentText, List<Integer> parentIndices, String text, List<ApiNormalizedRule> subRules, RuleSource ruleSource, Integer ruleIndex) {
         this.parentText = parentText;
+        this.parentIndices = parentIndices;
+        this.text = text;
+        this.subRules = subRules;
         this.ruleSource = ruleSource;
-    }
-
-    public List<ApiNormalizedRule> getSubRules() {
-        return subRules;
-    }
-
-    public String getText() {
-        return text;
+        this.ruleIndex = ruleIndex;
     }
 
     public String getParentText() {
         return parentText;
     }
 
+    public List<Integer> getParentIndices() {
+        return parentIndices;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public List<ApiNormalizedRule> getSubRules() {
+        return subRules;
+    }
+
     public RuleSource getRuleSource() {
         return ruleSource;
+    }
+
+    public Integer getRuleIndex() {
+        return ruleIndex;
     }
 }

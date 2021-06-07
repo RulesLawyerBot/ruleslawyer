@@ -8,10 +8,8 @@ import exception.NotYetImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.OptionalInt;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
 import static java.lang.String.join;
@@ -22,7 +20,6 @@ import static java.util.Collections.singletonList;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.*;
 import static java.util.stream.IntStream.range;
-import static org.apache.commons.lang3.StringUtils.countMatches;
 
 public abstract class AbstractRule implements Searchable {
     protected static Integer ruleCount = 0;
@@ -54,6 +51,10 @@ public abstract class AbstractRule implements Searchable {
 
     public List<AbstractRule> getSubRules() {
         return this.subRules;
+    }
+
+    public Integer getIndex() {
+        return this.index;
     }
 
     /* Normal searching starts here */
@@ -267,6 +268,17 @@ public abstract class AbstractRule implements Searchable {
             return this.text.length();
         }
         return this.text.length() + this.subRules.stream().mapToInt(AbstractRule::getLength).sum();
+    }
+
+    @Override
+    public Optional<AbstractRule> findByIndex(Integer index) {
+        if (this.index.equals(index)) {
+            return Optional.of(this);
+        }
+        return this.subRules.stream()
+                .map(subrule -> subrule.findByIndex(index))
+                .flatMap(o -> o.map(Stream::of).orElseGet(Stream::empty))
+                .findAny();
     }
 
     @Override

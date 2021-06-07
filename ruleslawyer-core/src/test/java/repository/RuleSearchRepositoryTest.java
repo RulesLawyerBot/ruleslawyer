@@ -15,6 +15,7 @@ import static contract.rules.enums.RuleSource.CR;
 import static contract.rules.enums.RuleSource.IPG;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -67,5 +68,13 @@ public class RuleSearchRepositoryTest {
         assertThat(output.get(0).getEntry().getText(), is("613.3 Within layer 7, apply effects in a series of sublayers in the order described below. Within each sublayer, apply effects in timestamp order. (See rule 613.6.) Note that dependency may alter the order in which effects are applied within a sublayer. (See rule 613.7.)"));
         assertThat(output.get(1).getEntry().getText(), is("613.1g Layer 7: Power- and/or toughness-changing effects are applied."));
 
+    }
+
+    @Ignore
+    @Test
+    public void searchByIndex_ExpectFound() {
+        AbstractRule rule = ruleSearchRepository.findByIndex(10);
+
+        assertThat(rule, is(notNullValue()));
     }
 }

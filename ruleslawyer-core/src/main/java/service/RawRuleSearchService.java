@@ -7,11 +7,14 @@ import contract.searchResults.SearchResult;
 import repository.SearchRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static contract.rules.enums.RuleRequestCategory.DIGITAL;
 import static contract.rules.enums.RuleRequestCategory.PAPER;
 import static ingestion.rule.JsonRuleIngestionService.getRawDigitalRulesData;
 import static ingestion.rule.JsonRuleIngestionService.getRawRulesData;
+import static java.util.Optional.empty;
 
 public class RawRuleSearchService {
 
@@ -71,5 +74,17 @@ public class RawRuleSearchService {
 
     public List<SearchResult<AbstractRule>> getFuzzyRawDigitalResult(RuleSearchRequest request) {
         return digitalRuleSearchRepository.getFuzzySearchResult(request, request.getKeywords().size() * 2);
+    }
+
+    public Optional<AbstractRule> findByIndex(Integer index) {
+        try {
+            return Optional.of(ruleSearchRepository.findByIndex(index));
+        } catch (NoSuchElementException ex1) {
+            try {
+                return Optional.of(digitalRuleSearchRepository.findByIndex(index));
+            } catch (NoSuchElementException ex2) {
+                return empty();
+            }
+        }
     }
 }

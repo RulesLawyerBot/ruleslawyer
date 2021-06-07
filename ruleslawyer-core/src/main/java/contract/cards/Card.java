@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import contract.Searchable;
 import contract.searchRequests.CardSearchRequest;
 import contract.searchRequests.SearchRequest;
+import exception.NotYetImplementedException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static contract.cards.FormatLegality.ANY_FORMAT;
 import static contract.searchRequests.CardSearchRequestType.DEFAULT;
@@ -131,6 +133,11 @@ public class Card implements Searchable {
     @Override
     public Integer getFuzzyRelevancy(List<String> keywords, Integer fuzzyDistance) {
         return null;
+    }
+
+    @Override
+    public Optional<?> findByIndex(Integer index) {
+        throw new NotYetImplementedException();
     }
 
     @Override

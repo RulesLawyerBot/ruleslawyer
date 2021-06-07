@@ -3,7 +3,6 @@ package app.api.service;
 import app.api.pojo.ApiNormalizedRule;
 import app.api.pojo.ApiRulesPayload;
 import contract.rules.AbstractRule;
-import contract.rules.enums.RuleRequestCategory;
 import contract.searchRequests.RuleSearchRequest;
 import contract.searchResults.RawRuleSearchResult;
 import contract.searchResults.SearchResult;
@@ -17,6 +16,9 @@ import static contract.rules.enums.RuleRequestCategory.DIGITAL;
 import static contract.rules.enums.RuleRequestCategory.PAPER;
 import static contract.rules.enums.RuleSource.DIPG;
 import static contract.rules.enums.RuleSource.DMTR;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
 
@@ -48,16 +50,8 @@ public class ApiSearchService {
         );
     }
 
-    public ApiNormalizedRule getCitation(RuleSearchRequest ruleSearchRequest) {
-        List<AbstractRule> rawOutput = rawRuleSearchService.getRawResult(ruleSearchRequest)
-                .getRawResults()
-                .stream()
-                .map(SearchResult::getEntry)
-                .collect(toList());
-        if (rawOutput.size() == 0) {
-            return null;
-        }
-        return normalizeRule(rawOutput.get(0));
+    public ApiNormalizedRule getCitation(Integer index) {
+        return rawRuleSearchService.findByIndex(index).map(this::normalizeRule).orElse(null);
     }
 
     private List<ApiNormalizedRule> normalizeRules(List<AbstractRule> rules) {
@@ -68,10 +62,12 @@ public class ApiSearchService {
 
     private ApiNormalizedRule normalizeRule(AbstractRule rule) {
         return new ApiNormalizedRule(
-                normalizeRules(rule.getSubRules()),
-                rule.getText(),
                 getParentText(rule).orElse(null),
-                rule.getRuleSource()
+                getParentIndices(rule),
+                rule.getText(),
+                normalizeRules(rule.getSubRules()),
+                rule.getRuleSource(),
+                rule.getIndex()
         );
     }
 
@@ -87,5 +83,16 @@ public class ApiSearchService {
                         )
                         .orElse(rule.getParentRule().getText())
         );
+    }
+
+    private List<Integer> getParentIndices(AbstractRule rule) {
+        if (rule.getParentRule() == null) {
+            return emptyList();
+        }
+
+        Integer parentIndex = rule.getParentRule().getIndex();
+        return rule.getParentRule().getParentRule() == null ?
+                singletonList(parentIndex) :
+                asList(parentIndex, rule.getParentRule().getParentRule().getIndex());
     }
 }
