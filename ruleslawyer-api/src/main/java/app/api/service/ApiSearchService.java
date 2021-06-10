@@ -6,11 +6,14 @@ import contract.rules.AbstractRule;
 import contract.searchRequests.RuleSearchRequest;
 import contract.searchResults.RawRuleSearchResult;
 import contract.searchResults.SearchResult;
+import exception.NotYetImplementedException;
 import org.springframework.stereotype.Service;
 import service.RawRuleSearchService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.stream.IntStream;
 
 import static contract.rules.enums.RuleRequestCategory.DIGITAL;
 import static contract.rules.enums.RuleRequestCategory.PAPER;
@@ -21,6 +24,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.range;
 
 @Service
 public class ApiSearchService {
@@ -67,7 +71,9 @@ public class ApiSearchService {
                 rule.getText(),
                 normalizeRules(rule.getSubRules()),
                 rule.getRuleSource(),
-                rule.getIndex()
+                rule.getIndex(),
+                getPreviousRule(rule),
+                getNextRule(rule)
         );
     }
 
@@ -94,5 +100,51 @@ public class ApiSearchService {
         return rule.getParentRule().getParentRule() == null ?
                 singletonList(parentIndex) :
                 asList(parentIndex, rule.getParentRule().getParentRule().getIndex());
+    }
+
+    private Integer getPreviousRule(AbstractRule rule) {
+        if (rule.getParentRule() == null) {
+            Optional<AbstractRule> previousRule = rawRuleSearchService.findByIndex(rule.getIndex()-1);
+            if (!previousRule.isPresent()) {
+                return null;
+            } else {
+                List<Integer> parentIndices = getParentIndices(previousRule.get());
+                return parentIndices.size() == 0 ?
+                        previousRule.get().getIndex() :
+                        parentIndices.get(parentIndices.size() - 1);
+            }
+        } else {
+            List<AbstractRule> siblingRules = rule.getParentRule().getSubRules();
+            OptionalInt index = range(0, siblingRules.size())
+                    .filter(ind -> siblingRules.get(ind).getIndex().equals(rule.getIndex()))
+                    .findAny();
+            return !index.isPresent() || index.getAsInt() == 0 ?
+                    null :
+                    siblingRules.get(index.getAsInt()-1).getIndex();
+        }
+    }
+
+    private Integer getNextRule(AbstractRule rule) {
+        if (rule.getParentRule() == null) {
+            Integer maxSubruleIndex = getSubruleMaxIndex(rule);
+            return rawRuleSearchService.findByIndex(maxSubruleIndex+1).isPresent() ?
+                    maxSubruleIndex + 1 :
+                    null;
+        } else {
+            List<AbstractRule> siblingRules = rule.getParentRule().getSubRules();
+            OptionalInt index = range(0, siblingRules.size())
+                    .filter(ind -> siblingRules.get(ind).getIndex().equals(rule.getIndex()))
+                    .findAny();
+            return !index.isPresent() || index.getAsInt() == siblingRules.size()-1 ?
+                    null :
+                    siblingRules.get(index.getAsInt()+1).getIndex();
+        }
+    }
+
+    private Integer getSubruleMaxIndex(AbstractRule rule) {
+        return rule.getSubRules().stream()
+                .mapToInt(this::getSubruleMaxIndex)
+                .max()
+                .orElse(rule.getIndex());
     }
 }

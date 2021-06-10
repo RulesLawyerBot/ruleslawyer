@@ -1,6 +1,7 @@
 package app.api.pojo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import contract.rules.AbstractRule;
 import contract.rules.enums.RuleSource;
 
 import java.util.List;
@@ -16,14 +17,18 @@ public class ApiNormalizedRule {
     private List<ApiNormalizedRule> subRules;
     private RuleSource ruleSource;
     private Integer ruleIndex;
+    private Integer previousIndex;
+    private Integer nextIndex;
 
-    public ApiNormalizedRule(String parentText, List<Integer> parentIndices, String text, List<ApiNormalizedRule> subRules, RuleSource ruleSource, Integer ruleIndex) {
+    public ApiNormalizedRule(String parentText, List<Integer> parentIndices, String text, List<ApiNormalizedRule> subRules, RuleSource ruleSource, Integer ruleIndex, Integer previousIndex, Integer nextIndex) {
         this.parentText = parentText;
         this.parentIndices = parentIndices;
         this.text = text;
         this.subRules = subRules;
         this.ruleSource = ruleSource;
         this.ruleIndex = ruleIndex;
+        this.previousIndex = previousIndex;
+        this.nextIndex = nextIndex;
     }
 
     public String getParentText() {
@@ -48,5 +53,13 @@ public class ApiNormalizedRule {
 
     public Integer getRuleIndex() {
         return ruleIndex;
+    }
+
+    public Integer getPreviousIndex() {
+        return previousIndex;
+    }
+
+    public Integer getNextIndex() {
+        return nextIndex;
     }
 }
