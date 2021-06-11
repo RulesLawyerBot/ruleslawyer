@@ -70,7 +70,6 @@ public class RuleSearchRepositoryTest {
 
     }
 
-    @Ignore
     @Test
     public void searchByIndex_ExpectFound() {
         AbstractRule rule = ruleSearchRepository.findByIndex(10);
