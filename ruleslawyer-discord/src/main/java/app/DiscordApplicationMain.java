@@ -14,6 +14,7 @@ import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
 import service.reaction_pagination.ReactionPaginationService;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static chat_platform.HelpMessageService.MAIN_HELP;
@@ -29,7 +30,7 @@ public class DiscordApplicationMain {
     private static ReactionPaginationService reactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.9.5 / STX / {{help|dev}}";
+    private static final String CURRENT_VERSION = "Version 1.10.3 / STX / {{help|dev}}";
 
     public static void main(String[] args) {
         String discordToken = getDiscordKey(args[0]);
@@ -45,7 +46,7 @@ public class DiscordApplicationMain {
         discordRuleSearchService = new DiscordRuleSearchService(api);
 
         System.out.println("Setting listeners...");
-        api.updateActivity(CURRENT_VERSION);
+
         api.addMessageCreateListener(DiscordApplicationMain::handleMessageCreateEvent);
         api.addReactionAddListener(DiscordApplicationMain::handleReactionEvent);
         api.addReactionRemoveListener(DiscordApplicationMain::handleReactionEvent);
@@ -53,20 +54,29 @@ public class DiscordApplicationMain {
         api.addMessageEditListener(DiscordApplicationMain::handleMessageEditEvent);
 
         System.out.println("Final setup...");
-        messageDeletionService = new MessageDeletionService(api);
-        messageLoggingService = new MessageLoggingService(api);
-        administratorCommandsService = new AdministratorCommandsService(api);
-        reactionPaginationService = new ReactionPaginationService(discordRuleSearchService, messageLoggingService);
+        try {
+            messageDeletionService = new MessageDeletionService(api);
+            messageLoggingService = new MessageLoggingService(api);
+            administratorCommandsService = new AdministratorCommandsService(api);
+            reactionPaginationService = new ReactionPaginationService(discordRuleSearchService, messageLoggingService);
+        } catch (NoSuchElementException e) {
+            System.out.println("Error in initialization");
+            e.printStackTrace();
+        }
 
         System.out.println("Initialization complete");
+        api.updateActivity(CURRENT_VERSION);
     }
 
     private static void handleServerJoinEvent(ServerJoinEvent event) {
         messageLoggingService.logJoin(event.getServer());
 
         Optional<ServerTextChannel> generalChannel = ServerJoinHelpService.getChannelToSendMessage(event);
-        generalChannel.ifPresent(channel -> channel.sendMessage(MAIN_HELP));
-        generalChannel.ifPresent(channel -> messageLoggingService.logJoinMessageSuccess(channel.getServer()));
+        generalChannel.ifPresent(channel -> {
+            channel.sendMessage(MAIN_HELP);
+            messageLoggingService.logJoinMessageSuccess(channel.getServer());
+        }
+        );
     }
 
     private static void handleMessageCreateEvent(MessageCreateEvent event) {

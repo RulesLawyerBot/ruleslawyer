@@ -40,16 +40,20 @@ public class HelpMessageService {
 
     public static final String HELP_DEV = "```\n" +
             "--RulesLawyer patch notes--\n" +
-            "Current rules version: Strixhaven\n" +
-            "Last updated: 09-05-2021\n" +
+            "Current rules version: Modern Horizons 2\n" +
+            "Last updated: 18-06-2021\n" +
+            "--v1.10.3--\n" +
+            "Updated rules to MH2.\n" +
+            "Slack and webapp versions in closed alpha.\n" +
+            "Fixed: parsing bugs with unprintable characters.\n" +
+            "Fixed: various pagination bugs.\n" +
+            "Fixed: Bot shoudl no longer auto-delete its own messages (in rare situations).\n" +
             "--v1.10.0--\n" +
             "Fuzzy searching! It probably still needs some tuning so let me know if it outputs any weird results.\n" +
             "Fuzzy searching will only be used if the bot would otherwise return no results so it shouldn't interfere with any already-working searches.\n" +
             "Overhauled the relevancy algorithm so that you hopefully get better results now.\n" +
-            "Fixed various issues with unprintable characters.\n" +
-            "Fixed a bug where I didn't actually update the rules version to Strixhaven because I am really stupid\n" +
             "--Future development and known issues--\n" +
-            "Slash/application commands will be added once javacord adds support for it.\n" +
+            "Slash/application commands will be added once Javacord adds support for it.\n" +
             "Enough people have requested card search that I'm considering just adding it.\n" +
             "Android version is actively being worked on.\n" +
             "Slack version is in alpha; please let me know if you want to test it.\n" +

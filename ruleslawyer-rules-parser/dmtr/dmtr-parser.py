@@ -1,9 +1,10 @@
 import sys
 sys.path.append("..")
-from simple_io import getPDF
-from simple_io import write
-from simple_io import clear
-from filedata import FileData
+from utils.simple_io import getPDF
+from utils.simple_io import write
+from utils.simple_io import clear
+from utils.filedata import FileData
+from utils.unprintable_remover import replace_unprintable
 from contract.rules import RuleHeader
 from contract.rules import RuleSubHeader
 from contract.rules import Rule
@@ -21,18 +22,18 @@ def main():
 
     # parse into lines
     while file.has_line():
-        line = file.next_line().replace("  ", " ").replace("—", "-").replace("●", "*").replace("’", "'").replace("•", "*")
+        line = replace_unprintable(file.next_line())
         for elem in NONSENSE_LINKS:
             line = line.replace(elem, "")
         print(line)
         if len(line) < 2:
             continue
-        is_new_line = (line[0].isupper() or not line[0].isalpha()) and (emptyline_flag or (len(line_builder) == 0 or not line_builder[-2].isalpha()) or len(line_builder) < 75) or (len(line) > 3 and not line[0].isalpha() and line[1] == ".")
+        is_new_line = (line[0].isupper() or not line[0].isalpha()) and (emptyline_flag or (len(line_builder) == 0 or not line_builder[-1].isalpha()) or len(line_builder) < 75) or (len(line) > 3 and not line[0].isalpha() and line[1] == ".")
 
         if is_new_line and len(line_builder) != 0:
             normalized_text.append(line_builder)
             line_builder = ""
-        line_builder = line_builder + line
+        line_builder = line if len(line_builder) == 0 else line_builder + " " + line
         emptyline_flag = False
 
     for line in normalized_text:
@@ -46,7 +47,7 @@ def main():
         if line.startswith("Appendix"):
             break
 
-        if ((line[0].isnumeric() and line[1] == ".") or (line[0:1].isnumeric() and line[2] == ".")) and line[-2].isalpha():  # header
+        if ((line[0].isnumeric() and line[1] == ".") or (line[0:1].isnumeric() and line[2] == ".")) and line[-1].isalpha():  # header
             if current_subheader:
                 current_header.subrules.append(current_subheader)
                 current_subheader = None

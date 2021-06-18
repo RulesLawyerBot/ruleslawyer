@@ -32,24 +32,30 @@ public class RawRuleSearchService {
     }
 
     public RawRuleSearchResult getRawResult(RuleSearchRequest request) {
-        List<SearchResult<AbstractRule>> paperResult = getRawPaperResult(request);
-        List<SearchResult<AbstractRule>> digitalResult = getRawDigitalResult(request);
-        if (digitalResult.size() == 0) {
-            if (paperResult.size() == 0) {
-                return getFuzzyResult(request);
-            }
-            return new RawRuleSearchResult(paperResult, PAPER, false, false);
+        List<SearchResult<AbstractRule>> paperResult = getNonFuzzyPaperResult(request);
+        List<SearchResult<AbstractRule>> digitalResult = getNonFuzzyDigitalResult(request);
+        if (request.getRuleRequestCategory() == PAPER) {
+            return new RawRuleSearchResult(paperResult, PAPER, digitalResult.size() > 0, false);
+        } else if (request.getRuleRequestCategory() == DIGITAL) {
+            return new RawRuleSearchResult(digitalResult, DIGITAL, paperResult.size() > 0, false);
         } else {
-            if (paperResult.size() == 0) {
-                return new RawRuleSearchResult(digitalResult, DIGITAL, false, false);
+            if (digitalResult.size() == 0) {
+                if (paperResult.size() == 0) {
+                    return getFuzzyResult(request);
+                }
+                return new RawRuleSearchResult(paperResult, PAPER, false, false);
+            } else {
+                if (paperResult.size() == 0) {
+                    return new RawRuleSearchResult(digitalResult, DIGITAL, false, false);
+                }
+                return new RawRuleSearchResult(paperResult, PAPER, true, false);
             }
-            return new RawRuleSearchResult(paperResult, PAPER, true, false);
         }
     }
 
     public RawRuleSearchResult getFuzzyResult(RuleSearchRequest request) {
-        List<SearchResult<AbstractRule>> paperResult = getFuzzyRawPaperResult(request);
-        List<SearchResult<AbstractRule>> digitalResult = getFuzzyRawDigitalResult(request);
+        List<SearchResult<AbstractRule>> paperResult = getFuzzyPaperResult(request);
+        List<SearchResult<AbstractRule>> digitalResult = getFuzzyDigitalResult(request);
         if (digitalResult.size() == 0) {
             return new RawRuleSearchResult(paperResult, PAPER, false, true);
         } else {
@@ -60,19 +66,19 @@ public class RawRuleSearchService {
         }
     }
 
-    public List<SearchResult<AbstractRule>> getRawPaperResult(RuleSearchRequest request) {
+    private List<SearchResult<AbstractRule>> getNonFuzzyPaperResult(RuleSearchRequest request) {
         return ruleSearchRepository.getSearchResult(request);
     }
 
-    public List<SearchResult<AbstractRule>> getFuzzyRawPaperResult(RuleSearchRequest request) {
+    private List<SearchResult<AbstractRule>> getFuzzyPaperResult(RuleSearchRequest request) {
         return ruleSearchRepository.getFuzzySearchResult(request, request.getKeywords().size() * 2);
     }
 
-    public List<SearchResult<AbstractRule>> getRawDigitalResult(RuleSearchRequest request) {
+    private List<SearchResult<AbstractRule>> getNonFuzzyDigitalResult(RuleSearchRequest request) {
         return digitalRuleSearchRepository.getSearchResult(request);
     }
 
-    public List<SearchResult<AbstractRule>> getFuzzyRawDigitalResult(RuleSearchRequest request) {
+    private List<SearchResult<AbstractRule>> getFuzzyDigitalResult(RuleSearchRequest request) {
         return digitalRuleSearchRepository.getFuzzySearchResult(request, request.getKeywords().size() * 2);
     }
 

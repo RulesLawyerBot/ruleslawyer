@@ -1,9 +1,10 @@
 import sys
 sys.path.append("..")
-from simple_io import getPDF
-from simple_io import write
-from simple_io import clear
-from filedata import FileData
+from utils.simple_io import getPDF
+from utils.simple_io import write
+from utils.simple_io import clear
+from utils.filedata import FileData
+from utils.unprintable_remover import replace_unprintable
 from contract.rules import RuleHeader
 from contract.rules import RuleSubHeader
 from contract.rules import Rule
@@ -19,24 +20,24 @@ def main():
 
     # parse into blocks
     while file.has_line():
-        line = file.next_line().replace("  ", " ").replace("—", "-").replace("•", "*").replace("’", "'").replace("™", "")
+        line = replace_unprintable(file.next_line())
         if len(line) < 4:
             emptyline_flag = True
             continue
 
-        is_new_line = (line[0].isupper() or not line[0].isalpha()) and (emptyline_flag or (len(line_builder) == 0 or line_builder[-2] in LINE_ENDINGS) or len(line_builder) < 75)
+        is_new_line = (line[0].isupper() or not line[0].isalpha()) and (emptyline_flag or (len(line_builder) == 0 or line_builder[-1] in LINE_ENDINGS) or len(line_builder) < 75)
 
         if is_new_line and len(line_builder) != 0:
             normalized_text.append(line_builder)
             line_builder = ""
-        line_builder = line_builder + line
+        line_builder = line if len(line_builder) == 0 else line_builder + " " + line
         emptyline_flag = False
     normalized_text.append(line_builder)
 
     for line in normalized_text:
         print(line)
 
-    start_index = normalized_text.index("Introduction ")
+    start_index = normalized_text.index("Introduction")
     rules = []
     current_header = RuleHeader("Introduction", [])
     current_subheader = None

@@ -1,9 +1,10 @@
 import sys
 sys.path.append("..")
-from simple_io import open_file
-from simple_io import write
-from simple_io import clear
-from filedata import FileData
+from utils.simple_io import write
+from utils.simple_io import clear
+from utils.simple_io import open_file
+from utils.filedata import FileData
+from utils.unprintable_remover import replace_unprintable
 from contract.rules import RuleSuperHeader
 from contract.rules import RuleHeader
 from contract.rules import RuleSubHeader
@@ -30,7 +31,7 @@ def main():
     superheader = None
     header = None
     while True:
-        line = file.next_line().strip().replace('“', '"').replace('”', '"').replace("’", "'").replace("—", "-")
+        line = replace_unprintable(file.next_line())
         if line == "Glossary":
             output.append(superheader)
             break

@@ -49,9 +49,6 @@ public class ReactionPaginationService {
             messageLoggingService.logEditInput(pageDirection.get(), embed);
             messageLoggingService.logOutput(result.getEmbed());
             event.getMessage().get().edit(result.getEmbed());
-            if (event instanceof ReactionAddEvent) {
-                ((ReactionAddEvent)event).removeReaction();
-            }
         }
     }
 

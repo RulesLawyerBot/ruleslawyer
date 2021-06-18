@@ -1,9 +1,10 @@
 import sys
 sys.path.append("..")
-from simple_io import getPDF
-from simple_io import write
-from simple_io import clear
-from filedata import FileData
+from utils.simple_io import getPDF
+from utils.simple_io import write
+from utils.simple_io import clear
+from utils.filedata import FileData
+from utils.unprintable_remover import replace_unprintable
 from contract.rules import RuleHeader
 from contract.rules import RuleSubHeader
 
@@ -14,19 +15,19 @@ def main():
     line_builder = ""
     emptyline_flag = True
     while file.has_line():
-        line = file.next_line().replace("  ", " ").replace("—", "-").replace("•", "*").replace("’", "'").replace("™", "")
+        line = replace_unprintable(file.next_line())
         if len(line) == 0:
             emptyline_flag = True
             continue
         else:
             emptyline_flag = False
 
-        is_new_line = (line[0].isupper() or not line[0].isalpha()) and (emptyline_flag or (len(line_builder) == 0 or not line_builder[-2].isalpha()) or len(line_builder) < 30)
+        is_new_line = (line[0].isupper() or not line[0].isalpha()) and (emptyline_flag or (len(line_builder) == 0 or not line_builder[-1].isalpha()) or len(line_builder) < 30)
 
         if is_new_line and len(line_builder) != 0:
             normalized_text.append(line_builder)
             line_builder = ""
-        line_builder = line_builder + line
+        line_builder = line if len(line_builder) == 0 else line_builder + " " + line
         if line.startswith("All trademarks are property of Wizards of the Coast"):
             break
     normalized_text.append(line_builder)

@@ -1,8 +1,8 @@
 import sys
 sys.path.append("..")
-from simple_io import open_file
-from simple_io import write
-from simple_io import clear
+from utils.simple_io import open_file
+from utils.simple_io import write
+from utils.simple_io import clear
 from contract.rules import RuleSuperHeader
 from contract.rules import RuleHeader
 from contract.rules import RuleSubHeader
