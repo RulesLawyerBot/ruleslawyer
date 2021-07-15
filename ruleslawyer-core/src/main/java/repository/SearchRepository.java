@@ -49,4 +49,8 @@ public class SearchRepository<T extends Searchable> {
                 .findFirst()
                 .get();
     }
+
+    public List<T> getSearchSpace() {
+        return this.searchSpace;
+    }
 }

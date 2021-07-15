@@ -59,4 +59,9 @@ public class ApiSearchController {
         );
     }
 
+    @RequestMapping(value="/index", method = {GET, POST})
+    public List<ApiNormalizedRule> getIndex() {
+        return apiSearchService.getRuleIndex();
+    }
+
 }

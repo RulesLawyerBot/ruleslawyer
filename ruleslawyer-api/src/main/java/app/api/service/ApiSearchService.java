@@ -147,4 +147,19 @@ public class ApiSearchService {
                 .max()
                 .orElse(rule.getIndex());
     }
+
+    public List<ApiNormalizedRule> getRuleIndex() {
+        return rawRuleSearchService.getSearchSpace().stream()
+                .map(abstractRule -> new ApiNormalizedRule(
+                        null,
+                        emptyList(),
+                        abstractRule.getText(),
+                        null,
+                        abstractRule.getRuleSource(),
+                        abstractRule.getIndex(),
+                        getPreviousRule(abstractRule),
+                        getNextRule(abstractRule)
+                ))
+                .collect(toList());
+    }
 }

@@ -93,4 +93,8 @@ public class RawRuleSearchService {
             }
         }
     }
+
+    public List<AbstractRule> getSearchSpace() {
+        return ruleSearchRepository.getSearchSpace();
+    }
 }
