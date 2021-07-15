@@ -25,7 +25,7 @@ def main():
             emptyline_flag = True
             continue
 
-        is_new_line = (line[0].isupper() or not line[0].isalpha()) and (emptyline_flag or (len(line_builder) == 0 or line_builder[-1] in LINE_ENDINGS) or len(line_builder) < 75)
+        is_new_line = (line[0].isupper() or not line[0].isalpha()) and (emptyline_flag or (len(line_builder) == 0 or line_builder[-1] in LINE_ENDINGS) or len(line_builder) < 75) and (line_builder.find(")") > -1 or line_builder.find("(") == -1)
 
         if is_new_line and len(line_builder) != 0:
             normalized_text.append(line_builder)
@@ -46,7 +46,7 @@ def main():
         if line.startswith("Appendix"):
             break
 
-        if ((line[0].isnumeric() and line[1] == ".") or (line[0:1].isnumeric() and line[2] == ".")) and line[-2].isalpha():  # header
+        if verify_header(current_header, line):  # header
             print(line)
             if current_subheader:
                 current_header.subrules.append(current_subheader)
@@ -66,6 +66,23 @@ def main():
 
     clear("MTR-parsed.json")
     write("MTR-parsed.json", rules)
+
+
+def verify_header(previous_header, line):
+    if not line[-1].isalpha():
+        return False
+    if not (line[0].isnumeric() and line[1] == "." or (line[0:1].isnumeric() and line[2] == ".")):
+        return False
+    if not all([(not x[0].isalpha() or x[0].isupper()) for x in line.split(" ")]):
+        return False
+    if previous_header:
+        try:
+            return float(previous_header.text.split(" ")[0][:-1]) <= float(line.split(" ")[0][:-1])
+        except ValueError:
+            return True
+    else:
+        return False
+    return False
 
 
 if __name__ == "__main__":
