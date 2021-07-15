@@ -3,14 +3,14 @@ package search.contract;
 import contract.rules.enums.RuleRequestCategory;
 import contract.rules.enums.RuleSource;
 import contract.searchRequests.RuleSearchRequest;
-import service.reaction_pagination.PageDirection;
+import service.interaction_pagination.PageDirection;
 
 import java.util.List;
 import java.util.Objects;
 
 import static contract.rules.enums.RuleRequestCategory.DIGITAL;
 import static contract.rules.enums.RuleRequestCategory.PAPER;
-import static service.reaction_pagination.PageDirection.*;
+import static service.interaction_pagination.PageDirection.*;
 
 public class DiscordSearchRequest extends RuleSearchRequest {
 

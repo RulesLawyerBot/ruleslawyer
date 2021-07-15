@@ -4,12 +4,13 @@ import app.DiscordApplicationMain;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.channel.ServerChannel;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
-import service.reaction_pagination.PageDirection;
+import service.interaction_pagination.PageDirection;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,10 +61,16 @@ public class MessageLoggingService {
         loggingChannel.sendMessage(output);
     }
 
+    public void logOutput(MessageBuilder message) {
+        message.send(loggingChannel);
+    }
+
+    @Deprecated
     public void logOutput(EmbedBuilder message) {
         loggingChannel.sendMessage(message);
     }
 
+    @Deprecated
     public void logOutput(String message) {
         loggingChannel.sendMessage(message);
     }

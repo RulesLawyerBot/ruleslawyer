@@ -1,6 +1,5 @@
 package search;
 
-import chat_platform.HelpMessageService;
 import chat_platform.rule_output.OutputFieldSplitService;
 import contract.rules.*;
 import contract.rules.enums.RuleRequestCategory;
@@ -14,7 +13,9 @@ import search.contract.DiscordSearchRequest;
 import search.contract.DiscordSearchResult;
 import search.contract.EmbedBuilderBuilder;
 import search.contract.builder.DiscordSearchRequestBuilder;
+import service.HelpMessageSearchService;
 import service.RawRuleSearchService;
+import service.interaction_pagination.ActionRowBuilder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,10 +33,11 @@ import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static search.contract.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
+import static service.interaction_pagination.InteractionPaginationStatics.DELETE_COMPONENT;
 
 public class DiscordRuleSearchService {
 
-    private HelpMessageService helpMessageService;
+    private HelpMessageSearchService helpMessageSearchService;
     private RawRuleSearchService rawRuleSearchService;
     private OutputFieldSplitService outputFieldSplitService;
 
@@ -54,20 +56,24 @@ public class DiscordRuleSearchService {
         List<AbstractRule> digitalRules = getRawDigitalRulesData().stream()
                 .map(manaEmojiService::replaceManaSymbols)
                 .collect(toList());
-        this.helpMessageService = new HelpMessageService();
+        this.helpMessageSearchService = new HelpMessageSearchService();
         this.rawRuleSearchService = new RawRuleSearchService(rules, digitalRules);
         this.outputFieldSplitService = new OutputFieldSplitService(MAX_FIELD_NAME_SIZE, MAX_FIELD_VALUE_SIZE);
     }
 
     public DiscordSearchResult getSearchResult(String author, String text) {
         String query = getQuery(text);
+        return getSearchResultFromPlainQuery(author, query);
+    }
+
+    public DiscordSearchResult getSearchResultFromPlainQuery(String author, String query) {
         if (query.equals(""))
             return null;
 
         if (query.startsWith("help")) {
             return query.equals("help") ?
-                    new DiscordSearchResult(helpMessageService.getHelpFile()) :
-                    new DiscordSearchResult(helpMessageService.getHelpFile(query.substring(5)));
+                    new DiscordSearchResult(helpMessageSearchService.getHelpFile()).setComponents(DELETE_COMPONENT) :
+                    new DiscordSearchResult(helpMessageSearchService.getHelpFile(query.substring(5))).setComponents(DELETE_COMPONENT);
         }
 
         DiscordSearchRequest discordSearchRequest = getSearchRequest(author, query);
@@ -94,12 +100,14 @@ public class DiscordRuleSearchService {
                                     new DiscordEmbedField("Quick help", NO_RESULTS_FOUND_HELP_MESSAGE)
                             ))
                             .build()
-            );
+            )
+                    .setComponents(DELETE_COMPONENT);
         }
 
         EmbedBuilderBuilder result = new EmbedBuilderBuilder()
                 .setAuthor("RulesLawyer Rules Search")
                 .setTitle(getEmbedTitle(discordSearchRequest));
+        ActionRowBuilder buttonRow = new ActionRowBuilder().setHasDelete();
 
         List<DiscordEmbedField> embedFields = rawResults.getRawResults().stream()
                 .map(this::getFieldsForRawResult)
@@ -110,40 +118,35 @@ public class DiscordRuleSearchService {
         Integer moddedPageNumber = (discordSearchRequest.getPageNumber() + pages.size()) % pages.size();
         result.addFields(pages.get(moddedPageNumber));
 
+        if (pages.size() > 1) {
+            buttonRow.setHasPages();
+        }
+
+        if (rawResults.hasOtherCategory()) {
+            buttonRow.setHasSourceSwap();
+        }
+
         String footer = getFooter(
                 discordSearchRequest.getRequester(),
                 moddedPageNumber+1,
                 pages.size(),
-                rawResults.getRuleRequestCategory(),
-                rawResults.hasOtherCategory(),
                 rawResults.isFuzzy()
         );
 
         result.setFooter(footer);
 
-        return new DiscordSearchResult(result.build());
-
+        return new DiscordSearchResult(result.build())
+                .setComponents(buttonRow.build());
     }
 
     private String getFooter(
             String requester,
             Integer pageNumber,
             Integer pageSize,
-            RuleRequestCategory ruleRequestCategory,
-            boolean availableRuleSwap,
             boolean isFuzzy
     ) {
-        String baseFooter;
-        if (ruleRequestCategory == DIGITAL && availableRuleSwap) {
-            baseFooter =  format("Requested by: %s | page %s of %s | paper rules available | paginate with arrow reactions",
+        String baseFooter = format("Requested by: %s | page %s of %s",
                     requester, pageNumber, pageSize);
-        } else if (ruleRequestCategory == PAPER && availableRuleSwap) {
-            baseFooter =  format("Requested by: %s | page %s of %s | digital rules available | paginate with arrow reactions",
-                    requester, pageNumber, pageSize);
-        } else {
-            baseFooter = format("Requested by: %s | page %s of %s | paginate with arrow reactions",
-                    requester, pageNumber, pageSize);
-        }
         return isFuzzy ?
                 baseFooter + " | No exact match found. Automatically using experimental fuzzy search" :
                 baseFooter;

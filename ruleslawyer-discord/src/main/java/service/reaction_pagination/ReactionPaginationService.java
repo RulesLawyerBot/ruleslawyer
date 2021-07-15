@@ -6,7 +6,6 @@ import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.event.message.MessageEditEvent;
-import org.javacord.api.event.message.reaction.ReactionAddEvent;
 import org.javacord.api.event.message.reaction.SingleReactionEvent;
 import search.DiscordRuleSearchService;
 import search.contract.DiscordSearchRequest;
@@ -14,6 +13,7 @@ import search.contract.DiscordSearchResult;
 import search.contract.builder.DiscordSearchRequestBuilder;
 import service.MessageDeletionService;
 import service.MessageLoggingService;
+import service.interaction_pagination.PageDirection;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,11 +21,12 @@ import java.util.Optional;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
-import static service.reaction_pagination.PageDirection.*;
+import static service.interaction_pagination.PageDirection.*;
 import static search.contract.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
 import static utils.DiscordUtils.*;
 import static utils.StaticEmojis.*;
 
+@Deprecated
 public class ReactionPaginationService {
 
     private DiscordRuleSearchService searchService;

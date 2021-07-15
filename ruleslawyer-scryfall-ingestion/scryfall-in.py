@@ -10,7 +10,8 @@ def parse_card_oracle(card_json):
     if "oracle_text" in card_json:
         oracle = card_json["oracle_text"]
     else:
-        oracle = parse_card_oracle(card_json["card_faces"][0]) + "\n//\n" + parse_card_oracle(card_json["card_faces"][1])
+        oracle = parse_card_oracle(card_json["card_faces"][0]) + "\n//\n" + parse_card_oracle(
+            card_json["card_faces"][1])
     if "power" in card_json:
         oracle = oracle + "\n" + str(card_json["power"]) + "/" + str(card_json["toughness"])
     if "loyalty" in card_json:
@@ -21,12 +22,9 @@ def parse_card_oracle(card_json):
 def main():
     all_cards = {}
 
-    f = open("default-cards.json", "r", encoding="utf-8")
-    text = f.read()
-    print(type(text))
-    raw_data = json.loads(text)
-    print(type(raw_data))
-    print(type(raw_data[0]))
+    cards_file = open("default-cards.json", "r", encoding="utf-8")
+    cards_raw = cards_file.read()
+    raw_data = json.loads(cards_raw)
 
     for (count, card_json) in enumerate(raw_data):
         if not card_json["lang"] == "en" or card_json["set_type"] in ["token", "memorabilia"]:
@@ -34,13 +32,14 @@ def main():
 
         card_name = card_json["name"].replace('"', "'")
         card_set = card_json["set_name"]
-        if not card_json["prices"]["usd"]:
-            continue  # means its not a paper product
-        card_price = float(card_json["prices"]["usd"])
-        print(str(count) + " " + card_name)
+        oracle_id = card_json["oracle_id"]
+        if not card_json["prices"]["usd"] and not card_json["prices"]["usd_foil"]:  # means its not a paper product
+            continue
+        card_price = float(
+            card_json["prices"]["usd"] if card_json["prices"]["usd"] else card_json["prices"]["usd_foil"])
 
-        if all_cards.get(card_name):
-            all_cards[card_name].add_set(card_set, card_price)
+        if all_cards.get(oracle_id):
+            all_cards[oracle_id].add_set(card_set, card_price)
         else:
             if "mana_cost" in card_json:
                 mana_cost = card_json["mana_cost"]
@@ -48,13 +47,29 @@ def main():
                 mana_cost = card_json["card_faces"][0]["mana_cost"]
             type_line = card_json["type_line"].replace("�", "-")
             oracle = parse_card_oracle(card_json).replace('"', "'")
-            rulings = get_rulings(card_json["rulings_uri"])
             legalities = [k for k in card_json["legalities"] if card_json["legalities"][k] == "legal" and k in FORMATS]
 
-            card = Card(card_name, mana_cost, type_line, oracle, rulings, card_set, legalities, card_price)
-            all_cards[card_name] = card
+            card = Card(card_name, mana_cost, type_line, oracle, [], card_set, legalities, card_price)
+            all_cards[oracle_id] = card
+            print(card)
 
-        print(card)
+    rulings_file = open("rulings.json", "r", encoding="utf-8")
+    rulings_raw = rulings_file.read()
+    rulings_data = json.loads(rulings_raw)
+
+    clear("rulingless-cards.json")
+    write("rulingless-cards.json", [all_cards[k] for k in all_cards])
+
+    for (count, rulings_json) in enumerate(rulings_data):
+        if not all_cards.get(rulings_json["oracle_id"]):
+            continue
+        ruling = rulings_json["comment"]
+        card = all_cards[rulings_json["oracle_id"]]
+        card.rulings.append(ruling)
+        try:
+            print(ruling)
+        except:
+            pass
 
     output = [all_cards[k] for k in all_cards]
 
