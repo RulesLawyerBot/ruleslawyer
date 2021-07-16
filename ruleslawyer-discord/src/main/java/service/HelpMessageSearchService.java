@@ -11,7 +11,6 @@ public class HelpMessageSearchService {
     public static final String HELP_MAIN_IDENTIFIER = "main";
     public static final String HELP_ADD_IDENTIFIER = "add";
     public static final String HELP_DEV_IDENTIFIER = "dev";
-    public static final String HELP_ADVANCED_IDENTIFIER = "advanced"; //todo
     public static final String HELP_ABOUT_IDENTIFIER = "about";
 
     public static final EmbedBuilder MAIN_HELP_EMBED = new EmbedBuilderBuilder()
@@ -63,7 +62,7 @@ public class HelpMessageSearchService {
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
                             "Last updated: 2021-07-15\n" +
-                                    "Rules version: Adventures of the Forgotton Realms"
+                                    "Rules version: Strixhaven"
                     ),
                     new DiscordEmbedField(
                             "v1.11.0",
@@ -75,7 +74,8 @@ public class HelpMessageSearchService {
                     ),
                     new DiscordEmbedField(
                             "Future Development",
-                            "Slack and webapp versions are very close to release.\n" +
+                            "AFR rules will be added as v1.11.1 when they are released.\n" +
+                                    "Slack and webapp versions are very close to release.\n" +
                                     "Card searching (with /card) is being worked on. It would have been in this release but this release was already very big and I wanted to get it out.\n" +
                                     "Android version is kind of on hold given that there will be a webapp soon."
                     )

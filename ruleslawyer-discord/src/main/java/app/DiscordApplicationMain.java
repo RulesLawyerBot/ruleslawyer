@@ -31,7 +31,7 @@ public class DiscordApplicationMain {
     private static InteractionPaginationService interactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.11.0 / AFR / {{help|dev}}";
+    private static final String CURRENT_VERSION = "Version 1.11.0 | STX | \"/help\"";
 
     public static void main(String[] args) {
         String discordToken = getDiscordKey(args[0]);

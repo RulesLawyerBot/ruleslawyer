@@ -23,7 +23,7 @@ import static service.HelpMessageSearchService.*;
 public class SlashCommandSearchService {
 
     public static final String RULE_SLASH_COMMAND_IDENTIFIER = "rule";
-    public static final String CARD_SLASH_COMMAND_IDENTIFIER = "card";
+    public static final String CARD_SLASH_COMMAND_IDENTIFIER = "card"; //TODO
     public static final String HELP_SLASH_COMMAND_IDENTIFIER = "help";
 
     private DiscordApi api;
@@ -60,13 +60,12 @@ public class SlashCommandSearchService {
                         createWithChoices(
                                 STRING,
                                 "Query",
-                                "Blank for main help, or \"add\" \"dev\" \"advanced\" \"about\"",
+                                "Blank for main help, or \"add\" \"dev\" \"about\"",
                                 false,
                                 asList(
                                         SlashCommandOptionChoice.create("main: main help file", HELP_MAIN_IDENTIFIER),
                                         SlashCommandOptionChoice.create("add: how to add this to your server", HELP_ADD_IDENTIFIER),
                                         SlashCommandOptionChoice.create("dev: patch notes", HELP_DEV_IDENTIFIER),
-                                        SlashCommandOptionChoice.create("advanced: advanced help", HELP_ADVANCED_IDENTIFIER),
                                         SlashCommandOptionChoice.create("about: about the author", HELP_ABOUT_IDENTIFIER)
                                 )
                         )
@@ -88,10 +87,11 @@ public class SlashCommandSearchService {
     }
 
     public void respondtoRuleCommand(SlashCommandCreateEvent event) {
-        String query = event.getSlashCommandInteraction().getFirstOptionStringValue().orElse("");
-        String user = event.getSlashCommandInteraction().getUser().getDiscriminatedName();
-        System.out.println(query + " " + user);
-        DiscordSearchResult searchResult = discordRuleSearchService.getSearchResultFromPlainQuery(user, query);
+        DiscordSearchResult searchResult =
+                discordRuleSearchService.getSearchResultFromPlainQuery(
+                        event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
+                        event.getSlashCommandInteraction().getFirstOptionStringValue().orElse("")
+                );
         if (searchResult.isEmbed()) {
             event.getSlashCommandInteraction().createImmediateResponder()
                     .addEmbed(searchResult.getEmbed())
