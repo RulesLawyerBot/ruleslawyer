@@ -3,6 +3,7 @@ package app.api.service;
 import app.api.pojo.ApiNormalizedRule;
 import app.api.pojo.ApiRulesPayload;
 import contract.rules.AbstractRule;
+import contract.rules.enums.RuleSource;
 import contract.searchRequests.RuleSearchRequest;
 import contract.searchResults.RawRuleSearchResult;
 import contract.searchResults.SearchResult;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static contract.rules.enums.RuleRequestCategory.DIGITAL;
 import static contract.rules.enums.RuleRequestCategory.PAPER;
@@ -149,17 +151,29 @@ public class ApiSearchService {
     }
 
     public List<ApiNormalizedRule> getRuleIndex() {
-        return rawRuleSearchService.getSearchSpace().stream()
-                .map(abstractRule -> new ApiNormalizedRule(
-                        null,
-                        emptyList(),
-                        abstractRule.getText(),
-                        null,
-                        abstractRule.getRuleSource(),
-                        abstractRule.getIndex(),
-                        getPreviousRule(abstractRule),
-                        getNextRule(abstractRule)
-                ))
+        return getRuleIndexStream()
                 .collect(toList());
+    }
+
+    public List<ApiNormalizedRule> getRuleIndex(RuleSource ruleSource) {
+        return getRuleIndexStream()
+                .filter(rule -> rule.getRuleSource() == ruleSource)
+                .collect(toList());
+    }
+
+    private Stream<ApiNormalizedRule> getRuleIndexStream() {
+        return rawRuleSearchService.getSearchSpace().stream()
+                .map(abstractRule ->
+                                new ApiNormalizedRule(
+                                    null,
+                                    emptyList(),
+                                    abstractRule.getText(),
+                                    null,
+                                    abstractRule.getRuleSource(),
+                                    abstractRule.getIndex(),
+                                    getPreviousRule(abstractRule),
+                                    getNextRule(abstractRule)
+                                )
+                );
     }
 }

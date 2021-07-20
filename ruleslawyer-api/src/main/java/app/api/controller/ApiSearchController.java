@@ -16,6 +16,7 @@ import java.util.List;
 
 import static contract.rules.enums.RuleRequestCategory.ANY_RULE_TYPE;
 import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -42,7 +43,6 @@ public class ApiSearchController {
     public ApiNormalizedRule getCitation(
             @RequestParam(value="index") Integer index
     ) {
-        System.out.println(index + "");
         return apiSearchService.getCitation(index);
     }
 
@@ -60,8 +60,17 @@ public class ApiSearchController {
     }
 
     @RequestMapping(value="/index", method = {GET, POST})
-    public List<ApiNormalizedRule> getIndex() {
-        return apiSearchService.getRuleIndex();
+    public List<ApiNormalizedRule> getTopLevelRules(
+            @RequestParam(value="ruleSource", required = false) RuleSource ruleSource
+    ) {
+        return ruleSource == null ?
+                apiSearchService.getRuleIndex() :
+                apiSearchService.getRuleIndex(ruleSource);
+    }
+
+    @RequestMapping(value="/index/documents", method = {GET, POST})
+    public List<RuleSource> getRuleSources() {
+        return asList(RuleSource.values());
     }
 
 }
