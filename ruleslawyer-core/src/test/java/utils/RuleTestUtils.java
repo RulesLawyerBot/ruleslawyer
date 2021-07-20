@@ -1,4 +1,4 @@
-package service;
+package utils;
 
 import contract.rules.Rule;
 import contract.rules.RuleHeader;

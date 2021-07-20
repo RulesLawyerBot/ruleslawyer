@@ -2,35 +2,25 @@ package search.contract;
 
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.component.ActionRow;
-import org.javacord.api.entity.message.component.LowLevelComponent;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 
-import java.util.List;
-
-import static java.util.Arrays.asList;
-
-public class DiscordSearchResult {
+public class DiscordReturnPayload {
     private boolean isEmbed;
     private String text;
     private EmbedBuilder embed;
-    private List<LowLevelComponent> components;
+    private ActionRow components;
 
-    public DiscordSearchResult(String text) {
+    public DiscordReturnPayload(String text) {
         isEmbed = false;
         this.text = text;
     }
 
-    public DiscordSearchResult(EmbedBuilder embed) {
+    public DiscordReturnPayload(EmbedBuilder embed) {
         isEmbed = true;
         this.embed = embed;
     }
 
-    public DiscordSearchResult setComponents(LowLevelComponent ... components) {
-        this.components = asList(components);
-        return this;
-    }
-
-    public DiscordSearchResult setComponents(List<LowLevelComponent> components) {
+    public DiscordReturnPayload setComponents(ActionRow components) {
         this.components = components;
         return this;
     }
@@ -47,12 +37,12 @@ public class DiscordSearchResult {
         return embed;
     }
 
-    public List<LowLevelComponent> getComponents() {
+    public ActionRow getComponents() {
         return components;
     }
 
     public MessageBuilder getMessage() {
-        return getMessageWithoutButtons().addComponents(ActionRow.of(components));
+        return getMessageWithoutButtons().addComponents(components);
     }
 
     public MessageBuilder getMessageWithoutButtons() {

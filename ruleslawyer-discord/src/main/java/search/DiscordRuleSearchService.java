@@ -9,13 +9,12 @@ import contract.searchResults.SearchResult;
 import init_utils.ManaEmojiService;
 import org.javacord.api.DiscordApi;
 import search.contract.DiscordEmbedField;
-import search.contract.DiscordSearchRequest;
-import search.contract.DiscordSearchResult;
+import search.contract.request.DiscordRuleSearchRequest;
+import search.contract.DiscordReturnPayload;
 import search.contract.EmbedBuilderBuilder;
-import search.contract.builder.DiscordSearchRequestBuilder;
+import search.contract.request.builder.DiscordSearchRequestBuilder;
 import service.HelpMessageSearchService;
 import service.RawRuleSearchService;
-import service.interaction_pagination.ActionRowBuilder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,8 +31,8 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
-import static search.contract.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
-import static service.interaction_pagination.InteractionPaginationStatics.DELETE_COMPONENT;
+import static search.contract.request.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
+import static service.interaction_pagination.InteractionPaginationStatics.*;
 
 public class DiscordRuleSearchService {
 
@@ -41,6 +40,7 @@ public class DiscordRuleSearchService {
     private RawRuleSearchService rawRuleSearchService;
     private OutputFieldSplitService outputFieldSplitService;
 
+    public static final String RULE_SEARCH_AUTHOR_TEXT = "RulesLawyer Rules Search";
     public static final Integer MAX_PAYLOAD_SIZE = 3000;
     public static final Integer MAX_FIELD_NAME_SIZE = 256;
     public static final Integer MAX_FIELD_VALUE_SIZE = 1024;
@@ -61,23 +61,23 @@ public class DiscordRuleSearchService {
         this.outputFieldSplitService = new OutputFieldSplitService(MAX_FIELD_NAME_SIZE, MAX_FIELD_VALUE_SIZE);
     }
 
-    public DiscordSearchResult getSearchResult(String author, String text) {
+    public DiscordReturnPayload getSearchResult(String author, String text) {
         String query = getQuery(text);
         return getSearchResultFromPlainQuery(author, query);
     }
 
-    public DiscordSearchResult getSearchResultFromPlainQuery(String author, String query) {
+    public DiscordReturnPayload getSearchResultFromPlainQuery(String author, String query) {
         if (query.equals(""))
             return null;
 
         if (query.startsWith("help")) {
             return query.equals("help") ?
-                    new DiscordSearchResult(helpMessageSearchService.getHelpFile()).setComponents(DELETE_COMPONENT) :
-                    new DiscordSearchResult(helpMessageSearchService.getHelpFile(query.substring(5))).setComponents(DELETE_COMPONENT);
+                    new DiscordReturnPayload(helpMessageSearchService.getHelpFile()).setComponents(DELETE_ONLY_ROW) :
+                    new DiscordReturnPayload(helpMessageSearchService.getHelpFile(query.substring(5))).setComponents(DELETE_ONLY_ROW);
         }
 
-        DiscordSearchRequest discordSearchRequest = getSearchRequest(author, query);
-        return getSearchResult(discordSearchRequest);
+        DiscordRuleSearchRequest discordRuleSearchRequest = getSearchRequest(author, query);
+        return getSearchResult(discordRuleSearchRequest);
     }
 
     private String getQuery(String message) {
@@ -88,26 +88,25 @@ public class DiscordRuleSearchService {
         return message.substring(indexLeft+2, indexRight).toLowerCase();
     }
 
-    public DiscordSearchResult getSearchResult(DiscordSearchRequest discordSearchRequest) {
-        RawRuleSearchResult rawResults = rawRuleSearchService.getRawResult(discordSearchRequest);
+    public DiscordReturnPayload getSearchResult(DiscordRuleSearchRequest discordRuleSearchRequest) {
+        RawRuleSearchResult rawResults = rawRuleSearchService.getRawResult(discordRuleSearchRequest);
 
         if (rawResults.getRawResults().size() == 0) {
-            return new DiscordSearchResult(
+            return new DiscordReturnPayload(
                     new EmbedBuilderBuilder()
                             .setAuthor("RulesLawyer")
                             .addFields(asList(
-                                    new DiscordEmbedField(getEmbedTitle(discordSearchRequest), "No Results Found"),
+                                    new DiscordEmbedField(getEmbedTitle(discordRuleSearchRequest), "No Results Found"),
                                     new DiscordEmbedField("Quick help", NO_RESULTS_FOUND_HELP_MESSAGE)
                             ))
                             .build()
             )
-                    .setComponents(DELETE_COMPONENT);
+                    .setComponents(DELETE_ONLY_ROW);
         }
 
         EmbedBuilderBuilder result = new EmbedBuilderBuilder()
-                .setAuthor("RulesLawyer Rules Search")
-                .setTitle(getEmbedTitle(discordSearchRequest));
-        ActionRowBuilder buttonRow = new ActionRowBuilder().setHasDelete();
+                .setAuthor(RULE_SEARCH_AUTHOR_TEXT)
+                .setTitle(getEmbedTitle(discordRuleSearchRequest));
 
         List<DiscordEmbedField> embedFields = rawResults.getRawResults().stream()
                 .map(this::getFieldsForRawResult)
@@ -115,19 +114,11 @@ public class DiscordRuleSearchService {
                 .collect(toList());
         List<List<DiscordEmbedField>> pages = splitResultPages(embedFields);
 
-        Integer moddedPageNumber = (discordSearchRequest.getPageNumber() + pages.size()) % pages.size();
+        Integer moddedPageNumber = (discordRuleSearchRequest.getPageNumber() + pages.size()) % pages.size();
         result.addFields(pages.get(moddedPageNumber));
 
-        if (pages.size() > 1) {
-            buttonRow.setHasPages();
-        }
-
-        if (rawResults.hasOtherCategory()) {
-            buttonRow.setHasSourceSwap();
-        }
-
         String footer = getFooter(
-                discordSearchRequest.getRequester(),
+                discordRuleSearchRequest.getRequester(),
                 moddedPageNumber+1,
                 pages.size(),
                 rawResults.isFuzzy()
@@ -135,8 +126,12 @@ public class DiscordRuleSearchService {
 
         result.setFooter(footer);
 
-        return new DiscordSearchResult(result.build())
-                .setComponents(buttonRow.build());
+        return new DiscordReturnPayload(result.build())
+                .setComponents(
+                        rawResults.hasOtherCategory() ?
+                                RULE_ROW_WITH_SOURCE_SWAP :
+                                RULE_ROW_WITHOUT_SOURCE_SWAP
+                );
     }
 
     private String getFooter(
@@ -152,7 +147,7 @@ public class DiscordRuleSearchService {
                 baseFooter;
     }
 
-    private DiscordSearchRequest getSearchRequest(String author, String query) {
+    private DiscordRuleSearchRequest getSearchRequest(String author, String query) {
         DiscordSearchRequestBuilder ruleSearchRequest = aDiscordSearchRequest().setRequester(author);
 
         List<String> commands = asList(query.split("\\|"));
@@ -194,13 +189,13 @@ public class DiscordRuleSearchService {
         }
     }
 
-    private String getEmbedTitle(DiscordSearchRequest discordSearchRequest) {
-        String output = join("/", discordSearchRequest.getKeywords());
-        if (discordSearchRequest.getRuleSource() != ANY_DOCUMENT) {
-            output = discordSearchRequest.getRuleSource() + " | " + output;
+    private String getEmbedTitle(DiscordRuleSearchRequest discordRuleSearchRequest) {
+        String output = join("/", discordRuleSearchRequest.getKeywords());
+        if (discordRuleSearchRequest.getRuleSource() != ANY_DOCUMENT) {
+            output = discordRuleSearchRequest.getRuleSource() + " | " + output;
         }
-        if (discordSearchRequest.getRuleRequestCategory() != ANY_RULE_TYPE) {
-            output = discordSearchRequest.getRuleRequestCategory().toString().toLowerCase() + " | " + output;
+        if (discordRuleSearchRequest.getRuleRequestCategory() != ANY_RULE_TYPE) {
+            output = discordRuleSearchRequest.getRuleRequestCategory().toString().toLowerCase() + " | " + output;
         }
         return output;
     }

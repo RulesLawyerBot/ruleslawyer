@@ -5,15 +5,20 @@ import contract.cards.FormatLegality;
 
 import java.util.List;
 
+import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
+import static contract.searchRequests.CardSearchRequestType.TITLE_ONLY;
+
 public class CardSearchRequest extends SearchRequest<Card> {
 
     private CardSearchRequestType cardSearchRequestType;
     private FormatLegality formatLegality;
+    private boolean isFuzzy;
 
-    public CardSearchRequest(List<String> keywords, CardSearchRequestType cardSearchRequestType, FormatLegality formatLegality) {
+    public CardSearchRequest(List<String> keywords, FormatLegality formatLegality) {
         this.keywords = keywords;
-        this.cardSearchRequestType = cardSearchRequestType;
         this.formatLegality = formatLegality;
+        this.cardSearchRequestType = TITLE_ONLY;
+        this.isFuzzy = false;
     }
 
     public CardSearchRequestType getCardSearchRequestType() {
@@ -22,5 +27,19 @@ public class CardSearchRequest extends SearchRequest<Card> {
 
     public FormatLegality getFormatLegality() {
         return formatLegality;
+    }
+
+    public boolean isFuzzy() {
+        return this.isFuzzy;
+    }
+
+    public CardSearchRequest makeFuzzy() {
+        this.isFuzzy = true;
+        return this;
+    }
+
+    public CardSearchRequest includeOracle() {
+        this.cardSearchRequestType = INCLUDE_ORACLE;
+        return this;
     }
 }

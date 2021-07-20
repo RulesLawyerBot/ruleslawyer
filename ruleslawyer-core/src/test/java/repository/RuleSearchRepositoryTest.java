@@ -7,7 +7,7 @@ import contract.searchRequests.RuleSearchRequest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import service.RuleTestUtils;
+import utils.RuleTestUtils;
 
 import java.util.List;
 
@@ -73,7 +73,6 @@ public class RuleSearchRepositoryTest {
         assertThat(output.size(), is(2));
         assertThat(output.get(0).getEntry().getText(), is("613.3 Within layer 7, apply effects in a series of sublayers in the order described below. Within each sublayer, apply effects in timestamp order. (See rule 613.6.) Note that dependency may alter the order in which effects are applied within a sublayer. (See rule 613.7.)"));
         assertThat(output.get(1).getEntry().getText(), is("613.1g Layer 7: Power- and/or toughness-changing effects are applied."));
-
     }
 
     @Test

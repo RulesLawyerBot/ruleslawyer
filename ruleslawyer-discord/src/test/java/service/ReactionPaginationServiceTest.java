@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import search.DiscordRuleSearchService;
-import search.contract.DiscordSearchRequest;
+import search.contract.request.DiscordRuleSearchRequest;
 import service.reaction_pagination.ReactionPaginationService;
 
 import static contract.rules.enums.RuleRequestCategory.ANY_RULE_TYPE;
@@ -31,12 +31,12 @@ public class ReactionPaginationServiceTest {
 
     @Test
     public void ParseEmbeddedRequest() {
-        DiscordSearchRequest nonspecificSearchRequest = reactionPaginationService.getSearchRequestFromEmbed("mana/symbol", "Requested by: Elaine | page 1 of 10 | Use arrow reactions for pagination");
-        DiscordSearchRequest expectedNonspecificResult = new DiscordSearchRequest("Elaine", "TO BE IMPLEMENTED", asList("mana", "symbol"), ANY_DOCUMENT, 1, ANY_RULE_TYPE);
+        DiscordRuleSearchRequest nonspecificSearchRequest = reactionPaginationService.getSearchRequestFromEmbed("mana/symbol", "Requested by: Elaine | page 1 of 10 | Use arrow reactions for pagination");
+        DiscordRuleSearchRequest expectedNonspecificResult = new DiscordRuleSearchRequest("Elaine", "TO BE IMPLEMENTED", asList("mana", "symbol"), ANY_DOCUMENT, 1, ANY_RULE_TYPE);
         assertThat(nonspecificSearchRequest, is(expectedNonspecificResult));
 
-        DiscordSearchRequest specificSearchRequest = reactionPaginationService.getSearchRequestFromEmbed("CR | mana/symbol\n", "Requested by: Elaine | page 1 of 10 | Use arrow reactions for pagination");
-        DiscordSearchRequest expectedSpecificResult = new DiscordSearchRequest("Elaine", "TO BE IMPLEMENTED", asList("mana", "symbol"), CR, 1, ANY_RULE_TYPE);
+        DiscordRuleSearchRequest specificSearchRequest = reactionPaginationService.getSearchRequestFromEmbed("CR | mana/symbol\n", "Requested by: Elaine | page 1 of 10 | Use arrow reactions for pagination");
+        DiscordRuleSearchRequest expectedSpecificResult = new DiscordRuleSearchRequest("Elaine", "TO BE IMPLEMENTED", asList("mana", "symbol"), CR, 1, ANY_RULE_TYPE);
         assertThat(specificSearchRequest, is(expectedSpecificResult));
     }
 }

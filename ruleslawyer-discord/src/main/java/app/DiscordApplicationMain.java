@@ -5,9 +5,10 @@ import org.javacord.api.event.interaction.MessageComponentCreateEvent;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.server.ServerJoinEvent;
 import org.javacord.api.util.logging.FallbackLoggerConfiguration;
+import search.DiscordCardSearchService;
 import search.DiscordRuleSearchService;
 import search.SlashCommandSearchService;
-import search.contract.DiscordSearchResult;
+import search.contract.DiscordReturnPayload;
 import service.*;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
@@ -25,13 +26,14 @@ import static utils.DiscordUtils.*;
 public class DiscordApplicationMain {
 
     private static DiscordRuleSearchService discordRuleSearchService;
+    private static DiscordCardSearchService discordCardSearchService;
     private static MessageLoggingService messageLoggingService;
     private static AdministratorCommandsService administratorCommandsService;
     private static SlashCommandSearchService slashCommandSearchService;
     private static InteractionPaginationService interactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.11.0 | STX | \"/help\"";
+    private static final String CURRENT_VERSION = "Version 1.x.x-SNAP | STX | \"/help\"";
 
     public static void main(String[] args) {
         String discordToken = getDiscordKey(args[0]);
@@ -48,6 +50,7 @@ public class DiscordApplicationMain {
 
         System.out.println("Loading rules...");
         discordRuleSearchService = new DiscordRuleSearchService(api);
+        discordCardSearchService = new DiscordCardSearchService();
 
         System.out.println("Setting listeners...");
 
@@ -59,7 +62,7 @@ public class DiscordApplicationMain {
         System.out.println("Final setup...");
         try {
             messageLoggingService = new MessageLoggingService(api);
-            slashCommandSearchService = new SlashCommandSearchService(api, discordRuleSearchService);
+            slashCommandSearchService = new SlashCommandSearchService(api, discordRuleSearchService, discordCardSearchService);
             interactionPaginationService = new InteractionPaginationService(discordRuleSearchService);
             administratorCommandsService = new AdministratorCommandsService(api, slashCommandSearchService);
 
@@ -87,7 +90,7 @@ public class DiscordApplicationMain {
         if (isLoggingChannel(event) || !event.getMessageAuthor().isUser()) {
             return;
         }
-        DiscordSearchResult result = discordRuleSearchService.getSearchResult(
+        DiscordReturnPayload result = discordRuleSearchService.getSearchResult(
                 getUsernameForMessageCreateEvent(event).get(),
                 event.getMessageContent()
         );
@@ -104,7 +107,7 @@ public class DiscordApplicationMain {
     }
 
     private static void handleSlashCommandCreateEvent(SlashCommandCreateEvent event) {
-        slashCommandSearchService.respondtoSlashCommand(event);
+        slashCommandSearchService.respondToSlashCommand(event);
     }
 
     private static void handleMessageComponentCreateEvent(MessageComponentCreateEvent event) {

@@ -1,23 +1,24 @@
-package search.contract;
+package search.contract.request;
 
+import contract.rules.AbstractRule;
 import contract.rules.enums.RuleRequestCategory;
 import contract.rules.enums.RuleSource;
 import contract.searchRequests.RuleSearchRequest;
-import service.interaction_pagination.PageDirection;
+import service.interaction_pagination.pagination_enum.PageDirection;
 
 import java.util.List;
 import java.util.Objects;
 
 import static contract.rules.enums.RuleRequestCategory.DIGITAL;
 import static contract.rules.enums.RuleRequestCategory.PAPER;
-import static service.interaction_pagination.PageDirection.*;
+import static service.interaction_pagination.pagination_enum.PageDirection.*;
 
-public class DiscordSearchRequest extends RuleSearchRequest {
+public class DiscordRuleSearchRequest extends RuleSearchRequest implements DiscordSearchRequestInterface<AbstractRule> {
 
     private String requester;
     private String channelName;
 
-    public DiscordSearchRequest(
+    public DiscordRuleSearchRequest(
             String requester,
             String channelName,
             List<String> keywords,
@@ -38,7 +39,7 @@ public class DiscordSearchRequest extends RuleSearchRequest {
         return channelName;
     }
 
-    public DiscordSearchRequest getNextPage(PageDirection pageDirection) {
+    public DiscordRuleSearchRequest getNextPage(PageDirection pageDirection) {
         if (pageDirection == NEXT_PAGE) {
             this.pageNumber++;
         } else if (pageDirection == PREVIOUS_PAGE) {
@@ -54,9 +55,9 @@ public class DiscordSearchRequest extends RuleSearchRequest {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DiscordSearchRequest)) return false;
+        if (!(o instanceof DiscordRuleSearchRequest)) return false;
         if (!super.equals(o)) return false;
-        DiscordSearchRequest that = (DiscordSearchRequest) o;
+        DiscordRuleSearchRequest that = (DiscordRuleSearchRequest) o;
         return Objects.equals(requester, that.requester) &&
                 Objects.equals(channelName, that.channelName);
     }

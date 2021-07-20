@@ -7,9 +7,10 @@ import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.event.interaction.MessageComponentCreateEvent;
 import search.DiscordRuleSearchService;
-import search.contract.DiscordSearchRequest;
-import search.contract.DiscordSearchResult;
-import search.contract.builder.DiscordSearchRequestBuilder;
+import search.contract.request.DiscordRuleSearchRequest;
+import search.contract.DiscordReturnPayload;
+import search.contract.request.builder.DiscordSearchRequestBuilder;
+import service.interaction_pagination.pagination_enum.PageDirection;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -17,9 +18,9 @@ import java.util.NoSuchElementException;
 import static contract.rules.enums.RuleRequestCategory.DIGITAL;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
-import static search.contract.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
+import static search.contract.request.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
 import static service.interaction_pagination.InteractionPaginationStatics.*;
-import static service.interaction_pagination.PageDirection.*;
+import static service.interaction_pagination.pagination_enum.PageDirection.*;
 
 
 public class InteractionPaginationService {
@@ -49,12 +50,12 @@ public class InteractionPaginationService {
         try {
             Message message = event.getMessageComponentInteraction().getMessage().get();
             Embed embed = message.getEmbeds().get(0);
-            DiscordSearchRequest searchRequest = getSearchRequestFromEmbed(
+            DiscordRuleSearchRequest searchRequest = getSearchRequestFromEmbed(
                     embed.getTitle().get(),
                     embed.getFooter().get().getText().get()
             );
             searchRequest.getNextPage(getPaginationDirection(searchRequest, event.getMessageComponentInteraction().getCustomId()));
-            DiscordSearchResult searchResult = discordRuleSearchService.getSearchResult(searchRequest);
+            DiscordReturnPayload searchResult = discordRuleSearchService.getSearchResult(searchRequest);
             message.edit(searchResult.getEmbed());
         } catch (IndexOutOfBoundsException | NoSuchElementException e) {
             e.printStackTrace();
@@ -62,7 +63,7 @@ public class InteractionPaginationService {
         event.getMessageComponentInteraction().createImmediateResponder().respond();
     }
 
-    private DiscordSearchRequest getSearchRequestFromEmbed(String header, String footer) {
+    private DiscordRuleSearchRequest getSearchRequestFromEmbed(String header, String footer) {
         DiscordSearchRequestBuilder discordSearchRequest = aDiscordSearchRequest();
         List<String> headerParts = asList(header.split(" \\| "));
         headerParts.subList(0, headerParts.size()-1).forEach(
@@ -87,7 +88,7 @@ public class InteractionPaginationService {
         }
     }
 
-    private PageDirection getPaginationDirection(DiscordSearchRequest searchRequest, String commandId) {
+    private PageDirection getPaginationDirection(DiscordRuleSearchRequest searchRequest, String commandId) {
         if (commandId.equals(LEFT_PAGINATION_STRING)) {
             return PREVIOUS_PAGE;
         } else if (commandId.equals(RIGHT_PAGINATION_STRING)) {

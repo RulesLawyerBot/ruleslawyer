@@ -8,12 +8,12 @@ import org.javacord.api.event.message.MessageCreateEvent;
 import org.javacord.api.event.message.MessageEditEvent;
 import org.javacord.api.event.message.reaction.SingleReactionEvent;
 import search.DiscordRuleSearchService;
-import search.contract.DiscordSearchRequest;
-import search.contract.DiscordSearchResult;
-import search.contract.builder.DiscordSearchRequestBuilder;
+import search.contract.request.DiscordRuleSearchRequest;
+import search.contract.DiscordReturnPayload;
+import search.contract.request.builder.DiscordSearchRequestBuilder;
 import service.MessageDeletionService;
 import service.MessageLoggingService;
-import service.interaction_pagination.PageDirection;
+import service.interaction_pagination.pagination_enum.PageDirection;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +21,8 @@ import java.util.Optional;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
-import static service.interaction_pagination.PageDirection.*;
-import static search.contract.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
+import static service.interaction_pagination.pagination_enum.PageDirection.*;
+import static search.contract.request.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
 import static utils.DiscordUtils.*;
 import static utils.StaticEmojis.*;
 
@@ -35,22 +35,6 @@ public class ReactionPaginationService {
     public ReactionPaginationService(DiscordRuleSearchService searchService, MessageLoggingService messageLoggingService) {
         this.searchService = searchService;
         this.messageLoggingService = messageLoggingService;
-    }
-
-    public void handleReactionPaginationEvent(SingleReactionEvent event) {
-        Optional<PageDirection> pageDirection = getPaginationDirection(event);
-        if (isOwnReaction(event) || !isOwnMessage(event) || !pageDirection.isPresent())
-            return;
-        Embed embed = event.getMessage().get().getEmbeds().get(0);
-        DiscordSearchRequest searchRequest = getSearchRequestFromEmbed(embed.getTitle().get(), embed.getFooter().get().getText().get());
-
-        if (hasPaginationPermissions(searchRequest, event)) {
-            searchRequest.getNextPage(pageDirection.get());
-            DiscordSearchResult result = searchService.getSearchResult(searchRequest);
-            messageLoggingService.logEditInput(pageDirection.get(), embed);
-            messageLoggingService.logOutput(result.getEmbed());
-            event.getMessage().get().edit(result.getEmbed());
-        }
     }
 
     private Optional<PageDirection> getPaginationDirection(SingleReactionEvent event) {
@@ -71,7 +55,7 @@ public class ReactionPaginationService {
         return empty();
     }
 
-    public DiscordSearchRequest getSearchRequestFromEmbed(String header, String footer) {
+    public DiscordRuleSearchRequest getSearchRequestFromEmbed(String header, String footer) {
         DiscordSearchRequestBuilder discordSearchRequest = aDiscordSearchRequest();
         List<String> headerParts = asList(header.split(" \\| "));
         headerParts.subList(0, headerParts.size()-1).forEach(
@@ -96,7 +80,7 @@ public class ReactionPaginationService {
         }
     }
 
-    private boolean hasPaginationPermissions(DiscordSearchRequest searchRequest, SingleReactionEvent event) {
+    private boolean hasPaginationPermissions(DiscordRuleSearchRequest searchRequest, SingleReactionEvent event) {
         return event.getUser().map(
                     user -> (event.getServer().isPresent()
                             && event.getServer().get().canBanUsers(user)) ||

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static contract.cards.FormatLegality.ANY_FORMAT;
-import static contract.searchRequests.CardSearchRequestType.DEFAULT;
+import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
 import static contract.searchRequests.CardSearchRequestType.TITLE_ONLY;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -83,7 +83,7 @@ public class Card implements Searchable {
                 .allMatch(searchElement -> {
                     if (cardSearchRequest.getCardSearchRequestType() == TITLE_ONLY) {
                         return keywordExistsInTitle(searchElement);
-                    } else if (cardSearchRequest.getCardSearchRequestType() == DEFAULT) {
+                    } else if (cardSearchRequest.getCardSearchRequestType() == INCLUDE_ORACLE) {
                         return keywordExistsInOracle(searchElement);
                     } else {
                         return keywordExistsInFullSpace(searchElement);
@@ -95,12 +95,12 @@ public class Card implements Searchable {
 
     @Override
     public List<? extends Searchable> searchForKeywords(List<String> keywords) {
-        return searchForKeywords(new CardSearchRequest(keywords, DEFAULT, ANY_FORMAT));
+        return searchForKeywords(new CardSearchRequest(keywords, ANY_FORMAT));
     }
 
     @Override
     public List<? extends Searchable> fuzzySearchForKeywords(SearchRequest searchRequest, Integer fuzzyDistance) {
-        return null;
+        return null; //TODO
     }
 
     private boolean keywordExistsInTitle(String keyword) {
@@ -116,7 +116,7 @@ public class Card implements Searchable {
     }
 
     @Override
-    public Integer getRelevancy(List<String> keywords) {
+    public Integer getRelevancy(List<String> keywords) { //TODO rewrite this
         Integer relevancy = (int)(this.totalPrice*-100);
         Boolean nameStartsWithKeyword = keywords.stream()
                 .anyMatch(keyword -> cardName.toLowerCase().startsWith(keyword.toLowerCase()));
@@ -132,7 +132,7 @@ public class Card implements Searchable {
 
     @Override
     public Integer getFuzzyRelevancy(List<String> keywords, Integer fuzzyDistance) {
-        return null;
+        return null; //TODO
     }
 
     @Override

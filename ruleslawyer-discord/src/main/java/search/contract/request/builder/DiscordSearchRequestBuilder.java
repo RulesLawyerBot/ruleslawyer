@@ -1,8 +1,8 @@
-package search.contract.builder;
+package search.contract.request.builder;
 
 import contract.rules.enums.RuleRequestCategory;
 import contract.rules.enums.RuleSource;
-import search.contract.DiscordSearchRequest;
+import search.contract.request.DiscordRuleSearchRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class DiscordSearchRequestBuilder {
         return discordSearchRequestBuilder;
     }
 
-    public static DiscordSearchRequestBuilder fromDiscordSearchRequest(DiscordSearchRequest request) {
+    public static DiscordSearchRequestBuilder fromDiscordSearchRequest(DiscordRuleSearchRequest request) {
         return aDiscordSearchRequest()
                 .setRequester(request.getRequester())
                 .setChannelName(request.getChannelName())
@@ -69,7 +69,7 @@ public class DiscordSearchRequestBuilder {
         return this;
     }
 
-    public DiscordSearchRequest build() {
-        return new DiscordSearchRequest(requester, channelName, keywords, ruleSource, pageNumber, ruleRequestCategory);
+    public DiscordRuleSearchRequest build() {
+        return new DiscordRuleSearchRequest(requester, channelName, keywords, ruleSource, pageNumber, ruleRequestCategory);
     }
 }

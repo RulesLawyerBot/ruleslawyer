@@ -14,7 +14,7 @@ import java.util.List;
 import static contract.cards.FormatLegality.ANY_FORMAT;
 import static contract.rules.enums.RuleRequestCategory.ANY_RULE_TYPE;
 import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
-import static contract.searchRequests.CardSearchRequestType.DEFAULT;
+import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 
@@ -40,7 +40,7 @@ public class AndroidSearchService {
     }
 
     public static List<Card> getCardSearchResults(String input) {
-        CardSearchRequest cardSearchRequest = new CardSearchRequest(asList(input.split(" ")), DEFAULT, ANY_FORMAT);
+        CardSearchRequest cardSearchRequest = new CardSearchRequest(asList(input.split(" ")), INCLUDE_ORACLE, ANY_FORMAT);
         return cardRepository.getSearchResult(cardSearchRequest)
                 .stream()
                 .map(SearchResult::getEntry)

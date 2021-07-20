@@ -2,15 +2,13 @@ package search;
 
 import exception.NotYetImplementedException;
 import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.entity.message.component.ActionRow;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandOptionChoice;
-import search.contract.DiscordSearchResult;
+import search.contract.DiscordReturnPayload;
 import service.HelpMessageSearchService;
-import service.interaction_pagination.ActionRowBuilder;
 
 import java.util.List;
 
@@ -19,20 +17,23 @@ import static java.util.Collections.singletonList;
 import static org.javacord.api.interaction.SlashCommandOption.*;
 import static org.javacord.api.interaction.SlashCommandOptionType.STRING;
 import static service.HelpMessageSearchService.*;
+import static service.interaction_pagination.InteractionPaginationStatics.DELETE_ONLY_ROW;
 
 public class SlashCommandSearchService {
 
     public static final String RULE_SLASH_COMMAND_IDENTIFIER = "rule";
-    public static final String CARD_SLASH_COMMAND_IDENTIFIER = "card"; //TODO
+    public static final String CARD_SLASH_COMMAND_IDENTIFIER = "card";
     public static final String HELP_SLASH_COMMAND_IDENTIFIER = "help";
 
     private DiscordApi api;
     private DiscordRuleSearchService discordRuleSearchService;
+    private DiscordCardSearchService discordCardSearchService;
     private HelpMessageSearchService helpMessageSearchService;
 
-    public SlashCommandSearchService(DiscordApi api, DiscordRuleSearchService discordRuleSearchService) {
+    public SlashCommandSearchService(DiscordApi api, DiscordRuleSearchService discordRuleSearchService, DiscordCardSearchService discordCardSearchService) {
         this.api = api;
         this.discordRuleSearchService = discordRuleSearchService;
+        this.discordCardSearchService = discordCardSearchService;
         this.helpMessageSearchService = new HelpMessageSearchService();
     }
 
@@ -48,6 +49,32 @@ public class SlashCommandSearchService {
                                 "Query",
                                 "Query parameters (surround with \"quotes\" for exact match)",
                                 true
+                        )
+                )
+        )
+                .createGlobal(api)
+                .join();
+        SlashCommand.with(
+                CARD_SLASH_COMMAND_IDENTIFIER,
+                "search RulesLawyer for a card",
+                asList(
+                        create(
+                                STRING,
+                                "Query",
+                                "Card name",
+                                true
+                        ),
+                        createWithChoices(
+                                STRING,
+                                "Options",
+                                "Blank for card oracle, or \"rulings\" \"legality\" \"art\"",
+                                false,
+                                asList(
+                                        SlashCommandOptionChoice.create("Rulings: Oracle rulings on this card", "blah"),
+                                        SlashCommandOptionChoice.create("Legality: What formats this card is legal in", "blah"),
+                                        SlashCommandOptionChoice.create("Art: Full art of the card", "blah"),
+                                        SlashCommandOptionChoice.create("Price: prices in USD, EUR, and TIX", "blah")
+                                )
                         )
                 )
         )
@@ -75,10 +102,12 @@ public class SlashCommandSearchService {
                 .join();
     }
 
-    public void respondtoSlashCommand(SlashCommandCreateEvent event) {
+    public void respondToSlashCommand(SlashCommandCreateEvent event) {
         String commandName = event.getSlashCommandInteraction().getCommandName();
         if (commandName.equals(RULE_SLASH_COMMAND_IDENTIFIER)) {
-            respondtoRuleCommand(event);
+            respondToRuleCommand(event);
+        } else if (commandName.equals(CARD_SLASH_COMMAND_IDENTIFIER)) {
+            respondToCardCommand(event);
         } else if (commandName.equals(HELP_SLASH_COMMAND_IDENTIFIER)) {
             respondToHelpCommand(event);
         } else {
@@ -86,8 +115,8 @@ public class SlashCommandSearchService {
         }
     }
 
-    public void respondtoRuleCommand(SlashCommandCreateEvent event) {
-        DiscordSearchResult searchResult =
+    public void respondToRuleCommand(SlashCommandCreateEvent event) {
+        DiscordReturnPayload searchResult =
                 discordRuleSearchService.getSearchResultFromPlainQuery(
                         event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
                         event.getSlashCommandInteraction().getFirstOptionStringValue().orElse("")
@@ -95,14 +124,25 @@ public class SlashCommandSearchService {
         if (searchResult.isEmbed()) {
             event.getSlashCommandInteraction().createImmediateResponder()
                     .addEmbed(searchResult.getEmbed())
-                    .addComponents(ActionRow.of(searchResult.getComponents()))
+                    .addComponents(searchResult.getComponents())
                     .respond();
         } else {
             event.getSlashCommandInteraction().createImmediateResponder()
                     .setContent(searchResult.getText())
-                    .addComponents(ActionRow.of(searchResult.getComponents()))
+                    .addComponents(searchResult.getComponents())
                     .respond();
         }
+    }
+
+    private void respondToCardCommand(SlashCommandCreateEvent event) {
+        EmbedBuilder embed = discordCardSearchService.getSearchResult(
+                event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
+                event.getSlashCommandInteraction().getFirstOptionStringValue().orElse(""),
+                event.get
+        );
+        event.getSlashCommandInteraction().createImmediateResponder()
+                .addEmbed(embed)
+                .respond();
     }
 
     private void respondToHelpCommand(SlashCommandCreateEvent event) {
@@ -113,7 +153,7 @@ public class SlashCommandSearchService {
         event.getSlashCommandInteraction()
                 .createImmediateResponder()
                 .addEmbed(helpFile)
-                .addComponents(new ActionRowBuilder().setHasDelete().buildToRow())
+                .addComponents(DELETE_ONLY_ROW)
                 .respond();
     }
 }
