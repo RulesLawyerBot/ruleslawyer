@@ -48,8 +48,7 @@ public class DiscordRuleSearchService {
             "Much like a traditional search engine, if your query does not appear in these documents, no results will be returned. It is suggested that you only use words that you think are likely to appear in these documents.\n" +
             "For additional help, do {{help}} or {{help|advanced}}.";
 
-    public DiscordRuleSearchService(DiscordApi api) {
-        ManaEmojiService manaEmojiService = new ManaEmojiService(api);
+    public DiscordRuleSearchService(ManaEmojiService manaEmojiService) {
         List<AbstractRule> rules = getRawRulesData().stream()
                 .map(manaEmojiService::replaceManaSymbols)
                 .collect(toList());

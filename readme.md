@@ -8,4 +8,14 @@ The application will not run locally without an API key with access to my person
 
 **Installation**
 
-Click the following link to add RulesLawyer to your Discord server: https://discordapp.com/oauth2/authorize?client_id=590184543684788253&scope=bot&permissions=346112
+Discord: https://discordapp.com/oauth2/authorize?client_id=590184543684788253&scope=bot&permissions=346112
+
+Slack: Closed alpha (for now, feel free to contact me for access)
+
+API: Installed privately (for now)
+
+**Credits**
+
+RulesLawyer uses content that is copyrighted to Wizards of the Coast and is used under the Fan Content Policy: https://company.wizards.com/en/legal/fancontentpolicy
+
+Card data is provided by Scryfall via the same policy.

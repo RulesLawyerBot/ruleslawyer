@@ -20,7 +20,7 @@ public class JsonCardIngestionService {
         try {
             InputStream in = JsonCardIngestionService.class.getResourceAsStream("/cards.json");
             BufferedReader br = new BufferedReader(new InputStreamReader(in, UTF_8));
-            char[] buffer = new char[20000000];
+            char[] buffer = new char[90000000];
             br.read(buffer);
             in.close();
             ObjectMapper mapper = new ObjectMapper();

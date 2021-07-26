@@ -1,6 +1,8 @@
 package init_utils;
 
 import app.DiscordApplicationMain;
+import contract.cards.Card;
+import contract.cards.FormatLegality;
 import contract.rules.AbstractRule;
 import contract.rules.Rule;
 import contract.rules.RuleHeader;
@@ -13,6 +15,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.Character.isLetter;
 import static java.lang.String.join;
+import static java.lang.String.valueOf;
 import static java.util.regex.Pattern.compile;
 import static java.util.stream.Collectors.toList;
 
@@ -73,10 +76,25 @@ public class ManaEmojiService {
         return outputRule;
     }
 
-    public String replaceManaSymbols(String ruleText) {
+    public Card replaceManaSymbols(Card card) {
+        return new Card(
+                card.getCardName(),
+                replaceManaSymbols(card.getManaCost()),
+                card.getTypeLine(),
+                replaceManaSymbols(card.getOracleText()),
+                card.getRulings().stream().map(ruling -> replaceManaSymbols(ruling)).collect(toList()),
+                card.getSets(),
+                card.getFormatLegalities().stream().map(String::valueOf).collect(toList()),
+                card.getEdhrecRank(),
+                card.getScryfallUri(),
+                card.getImage_urls()
+        );
+    }
+
+    public String replaceManaSymbols(String text) {
         String patternString = "\\{(" + join("|", manaSymbolEmojis.keySet()) + ")\\}";
         Pattern pattern = compile(patternString);
-        Matcher matcher = pattern.matcher(ruleText);
+        Matcher matcher = pattern.matcher(text);
 
         StringBuffer sb = new StringBuffer();
         while(matcher.find()) {

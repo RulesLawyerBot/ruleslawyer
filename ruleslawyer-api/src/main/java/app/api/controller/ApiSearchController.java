@@ -72,5 +72,4 @@ public class ApiSearchController {
     public List<RuleSource> getRuleSources() {
         return asList(RuleSource.values());
     }
-
 }

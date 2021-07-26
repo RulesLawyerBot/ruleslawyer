@@ -11,6 +11,7 @@ import java.util.Optional;
 import static utils.DiscordUtils.isOwnMessage;
 import static utils.DiscordUtils.isOwnReaction;
 
+@Deprecated
 public class MessageDeletionService {
     public static final Long DELETE_EMOTE_ID = 719583524176265256L;
     private CustomEmoji DELETE_EMOJI;

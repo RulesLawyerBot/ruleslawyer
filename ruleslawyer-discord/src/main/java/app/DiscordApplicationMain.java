@@ -1,5 +1,6 @@
 package app;
 
+import init_utils.ManaEmojiService;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.event.interaction.MessageComponentCreateEvent;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
@@ -36,21 +37,22 @@ public class DiscordApplicationMain {
     private static final String CURRENT_VERSION = "Version 1.x.x-SNAP | STX | \"/help\"";
 
     public static void main(String[] args) {
-        String discordToken = getDiscordKey(args[0]);
-        System.out.println("Logging in with " + discordToken);
-
         if (!args[0].equals("prod")) {
             FallbackLoggerConfiguration.setDebug(true);
         }
+        String discordToken = getDiscordKey(args[0]);
+
+        System.out.println("Logging in with " + discordToken);
         DiscordApi api = new DiscordApiBuilder()
                 .setToken(discordToken)
                 .setAllIntentsExcept(GUILD_PRESENCES)
                 .login()
                 .join();
 
-        System.out.println("Loading rules...");
-        discordRuleSearchService = new DiscordRuleSearchService(api);
-        discordCardSearchService = new DiscordCardSearchService();
+        System.out.println("Loading rules amd cards...");
+        ManaEmojiService manaEmojiService = new ManaEmojiService(api);
+        discordRuleSearchService = new DiscordRuleSearchService(manaEmojiService);
+        discordCardSearchService = new DiscordCardSearchService(manaEmojiService);
 
         System.out.println("Setting listeners...");
 
@@ -63,7 +65,7 @@ public class DiscordApplicationMain {
         try {
             messageLoggingService = new MessageLoggingService(api);
             slashCommandSearchService = new SlashCommandSearchService(api, discordRuleSearchService, discordCardSearchService);
-            interactionPaginationService = new InteractionPaginationService(discordRuleSearchService);
+            interactionPaginationService = new InteractionPaginationService(discordRuleSearchService, discordCardSearchService);
             administratorCommandsService = new AdministratorCommandsService(api, slashCommandSearchService);
 
         } catch (NoSuchElementException e) {

@@ -25,7 +25,9 @@ public class Card implements Searchable {
     private List<String> rulings;
     private List<String> sets;
     private List<FormatLegality> formatLegalities;
-    private Float totalPrice;
+    private Integer edhrecRank;
+    private String scryfallUri;
+    private List<String> image_urls;
 
     public Card(
             @JsonProperty("cardName") String cardName,
@@ -35,7 +37,9 @@ public class Card implements Searchable {
             @JsonProperty("rulings") List<String> rulings,
             @JsonProperty("sets") List<String> sets,
             @JsonProperty("legalities") List<String> formatLegalities,
-            @JsonProperty("totalPrice") Float totalPrice
+            @JsonProperty("edhrec_rank") Integer edhrecRank,
+            @JsonProperty("scryfall_uri") String scryfallUri,
+            @JsonProperty("image_url") List<String> image_urls
     ) {
         this.cardName = cardName;
         this.manaCost = manaCost;
@@ -46,7 +50,9 @@ public class Card implements Searchable {
         this.formatLegalities = formatLegalities.stream()
                 .map(str -> FormatLegality.valueOf(str.toUpperCase()))
                 .collect(toList());
-        this.totalPrice = totalPrice;
+        this.edhrecRank = edhrecRank;
+        this.scryfallUri = scryfallUri;
+        this.image_urls = image_urls;
     }
 
     public String getCardName() {
@@ -71,6 +77,22 @@ public class Card implements Searchable {
 
     public List<String> getSets() {
         return sets;
+    }
+
+    public List<FormatLegality> getFormatLegalities() {
+        return formatLegalities;
+    }
+
+    public Integer getEdhrecRank() {
+        return edhrecRank;
+    }
+
+    public String getScryfallUri() {
+        return scryfallUri;
+    }
+
+    public List<String> getImage_urls() {
+        return image_urls;
     }
 
     @Override
@@ -116,8 +138,8 @@ public class Card implements Searchable {
     }
 
     @Override
-    public Integer getRelevancy(List<String> keywords) { //TODO rewrite this
-        Integer relevancy = (int)(this.totalPrice*-100);
+    public Integer getRelevancy(List<String> keywords) {
+        Integer relevancy = this.edhrecRank;
         Boolean nameStartsWithKeyword = keywords.stream()
                 .anyMatch(keyword -> cardName.toLowerCase().startsWith(keyword.toLowerCase()));
         if (typeLine.contains("Legendary") && nameStartsWithKeyword) {
@@ -127,6 +149,7 @@ public class Card implements Searchable {
                 .allMatch(keyword -> cardName.toLowerCase().contains(keyword.toLowerCase()));
         if (!matchesName)
             relevancy += 10000;
+        relevancy -= (this.sets.size()*1000);
         return relevancy;
     }
 

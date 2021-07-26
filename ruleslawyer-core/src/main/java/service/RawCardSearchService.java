@@ -14,8 +14,8 @@ public class RawCardSearchService {
 
     SearchRepository<Card> repository;
 
-    public RawCardSearchService() {
-        repository = new SearchRepository<>(getCards());
+    public RawCardSearchService(List<Card> cards) {
+        repository = new SearchRepository<>(cards);
     }
 
     public List<Card> getCardsWithOracleFallback(CardSearchRequest request) {

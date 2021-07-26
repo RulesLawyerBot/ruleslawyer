@@ -18,12 +18,18 @@ public class EmbedBuilderBuilder {
     private String title;
     private List<DiscordEmbedField> fields;
     private String footer;
+    private String imageUrl;
+    private boolean imageIsThumbnail;
+    private boolean hasInlineFields;
 
     public EmbedBuilderBuilder() {
         fields = new ArrayList<>();
         this.author = "";
         this.title = "";
         this.footer = "";
+        this.imageUrl = "";
+        this.imageIsThumbnail = true;
+        this.hasInlineFields = false;
     }
 
     public EmbedBuilderBuilder setAuthor(String author) {
@@ -38,6 +44,23 @@ public class EmbedBuilderBuilder {
 
     public EmbedBuilderBuilder setFooter(String footer) {
         this.footer = footer;
+        return this;
+    }
+
+    public EmbedBuilderBuilder setThumbnail(String url) {
+        this.imageUrl = url;
+        this.imageIsThumbnail = true;
+        return this;
+    }
+
+    public EmbedBuilderBuilder setImage(String url) {
+        this.imageUrl = url;
+        this.imageIsThumbnail = false;
+        return this;
+    }
+
+    public EmbedBuilderBuilder setHasInlineFields(boolean hasInlineFields) {
+        this.hasInlineFields = hasInlineFields;
         return this;
     }
 
@@ -71,7 +94,18 @@ public class EmbedBuilderBuilder {
                 .setAuthor(author)
                 .setFooter(footer)
                 .setColor(EMBED_COLOR);
-        fields.forEach(field -> output.addField(field.getFieldName(), field.getFieldText()));
+        if (hasInlineFields) {
+            fields.forEach(field -> output.addInlineField(field.getFieldName(), field.getFieldText()));
+        } else {
+            fields.forEach(field -> output.addField(field.getFieldName(), field.getFieldText()));
+        }
+        if (imageUrl.length() > 0) {
+            if (imageIsThumbnail) {
+                output.setThumbnail(imageUrl);
+            } else {
+                output.setImage(imageUrl);
+            }
+        }
         return output;
     }
 }

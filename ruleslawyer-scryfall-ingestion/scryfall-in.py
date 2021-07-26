@@ -19,6 +19,12 @@ def parse_card_oracle(card_json):
     return oracle
 
 
+def get_image_urls(card_json):
+    if "image_uris" in card_json:
+        return [card_json["image_uris"]["large"] if "large" in card_json["image_uris"] else card_json["image_uris"][0]]
+    return [get_image_urls(v)[0] for v in card_json["card_faces"]]
+
+
 def main():
     all_cards = {}
 
@@ -35,21 +41,21 @@ def main():
         oracle_id = card_json["oracle_id"]
         if not card_json["prices"]["usd"] and not card_json["prices"]["usd_foil"]:  # means its not a paper product
             continue
-        card_price = float(
-            card_json["prices"]["usd"] if card_json["prices"]["usd"] else card_json["prices"]["usd_foil"])
 
         if all_cards.get(oracle_id):
-            all_cards[oracle_id].add_set(card_set, card_price)
+            all_cards[oracle_id].add_set(card_set)
         else:
             if "mana_cost" in card_json:
                 mana_cost = card_json["mana_cost"]
             else:
                 mana_cost = card_json["card_faces"][0]["mana_cost"]
-            type_line = card_json["type_line"].replace("�", "-")
+            type_line = card_json["type_line"].replace("—", "-")
             oracle = parse_card_oracle(card_json).replace('"', "'")
             legalities = [k for k in card_json["legalities"] if card_json["legalities"][k] == "legal" and k in FORMATS]
-
-            card = Card(card_name, mana_cost, type_line, oracle, [], card_set, legalities, card_price)
+            edhrec_rank = card_json["edhrec_rank"] if "edhrec_rank" in card_json else 9999999
+            scryfall_uri = card_json["uri"]
+            image_url = get_image_urls(card_json)
+            card = Card(card_name, mana_cost, type_line, oracle, [], card_set, legalities, edhrec_rank, scryfall_uri, image_url)
             all_cards[oracle_id] = card
             print(card)
 

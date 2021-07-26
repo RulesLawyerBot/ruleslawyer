@@ -23,7 +23,9 @@ public class CardTestUtils {
                 singletonList("You can choose to find fewer than four cards if you want. If you find one or two cards, your opponent must choose for them to be put into your graveyard, even if they don’t want to."),
                 singletonList("Something Kamigawa"),
                 Collections.emptyList(),
-                4.2F
+                42,
+                "",
+                singletonList("")
             );
     }
 
@@ -39,7 +41,9 @@ public class CardTestUtils {
                 ),
                 asList("Secret Lair: Thalia", "Dark Ascension"),
                 Collections.emptyList(),
-                4.2F
+                42,
+                "",
+                singletonList("")
         );
     }
 
@@ -60,7 +64,9 @@ public class CardTestUtils {
                 ),
                 singletonList("War of the Spark"),
                 Collections.emptyList(),
-                4.2F
+                42,
+                "",
+                singletonList("")
         );
     }
 

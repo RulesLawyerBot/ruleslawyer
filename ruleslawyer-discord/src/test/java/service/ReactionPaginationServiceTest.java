@@ -1,6 +1,7 @@
 package service;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import search.DiscordRuleSearchService;
@@ -14,6 +15,8 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+@Deprecated
+@Ignore
 public class ReactionPaginationServiceTest {
 
     @Mock
