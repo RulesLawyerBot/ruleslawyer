@@ -62,7 +62,11 @@ public class HelpMessageSearchService {
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
                             "Last updated: 2021-07-15\n" +
-                                    "Rules version: Strixhaven"
+                                    "Rules version: Adventures in the Forgotten Realms"
+                    ),
+                    new DiscordEmbedField(
+                            "v1.11.2",
+                            "Updated rules to AFR."
                     ),
                     new DiscordEmbedField(
                             "v1.11.0",
