@@ -23,10 +23,9 @@ public class Card implements Searchable {
     private String typeLine;
     private String oracleText;
     private List<String> rulings;
-    private List<String> sets;
+    private List<List<String>> sets;
     private List<FormatLegality> formatLegalities;
     private Integer edhrecRank;
-    private String scryfallUri;
     private List<String> image_urls;
 
     public Card(
@@ -35,10 +34,9 @@ public class Card implements Searchable {
             @JsonProperty("typeLine") String typeLine,
             @JsonProperty("oracleText") String oracleText,
             @JsonProperty("rulings") List<String> rulings,
-            @JsonProperty("sets") List<String> sets,
+            @JsonProperty("sets") List<List<String>> sets,
             @JsonProperty("legalities") List<String> formatLegalities,
             @JsonProperty("edhrec_rank") Integer edhrecRank,
-            @JsonProperty("scryfall_uri") String scryfallUri,
             @JsonProperty("image_url") List<String> image_urls
     ) {
         this.cardName = cardName;
@@ -51,7 +49,6 @@ public class Card implements Searchable {
                 .map(str -> FormatLegality.valueOf(str.toUpperCase()))
                 .collect(toList());
         this.edhrecRank = edhrecRank;
-        this.scryfallUri = scryfallUri;
         this.image_urls = image_urls;
     }
 
@@ -75,7 +72,7 @@ public class Card implements Searchable {
         return rulings;
     }
 
-    public List<String> getSets() {
+    public List<List<String>> getSets() {
         return sets;
     }
 
@@ -85,10 +82,6 @@ public class Card implements Searchable {
 
     public Integer getEdhrecRank() {
         return edhrecRank;
-    }
-
-    public String getScryfallUri() {
-        return scryfallUri;
     }
 
     public List<String> getImage_urls() {

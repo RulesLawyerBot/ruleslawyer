@@ -2,8 +2,10 @@ import json
 from simple_io import write
 from simple_io import clear
 from contract.cards import Card
+import datetime
 
 FORMATS = ["standard", "brawl", "historic", "pioneer", "modern", "legacy", "vintage", "commander", "pauper"]
+all_cards = {}
 
 
 def parse_card_oracle(card_json):
@@ -25,39 +27,52 @@ def get_image_urls(card_json):
     return [get_image_urls(v)[0] for v in card_json["card_faces"]]
 
 
-def main():
-    all_cards = {}
+def parse_card(card_json):
+    card_name = card_json["name"].replace('"', "'")
+    scryfall_uri = card_json["uri"]
+    card_set = (card_json["set_name"], scryfall_uri)
+    oracle_id = card_json["oracle_id"]
+    if all_cards.get(oracle_id):
+        all_cards[oracle_id].add_set(card_set)
+        image_age = datetime.datetime.strptime(card_json["released_at"], "%Y-%m-%d")
+        image_url = get_image_urls(card_json)
+        if all_cards[oracle_id].image_age < image_age:
+            all_cards[oracle_id].image_url = image_url
+    else:
+        mana_cost = card_json["mana_cost"] if "mana_cost" in card_json else card_json["card_faces"][0]["mana_cost"]
+        type_line = card_json["type_line"].replace("—", "-")
+        oracle = parse_card_oracle(card_json).replace('"', "'")
+        legalities = [k for k in card_json["legalities"] if card_json["legalities"][k] == "legal" and k in FORMATS]
+        edhrec_rank = card_json["edhrec_rank"] if "edhrec_rank" in card_json else 9999999
+        image_url = get_image_urls(card_json)
+        image_age = datetime.datetime.strptime(card_json["released_at"], "%Y-%m-%d")
+        card = Card(card_name, mana_cost, type_line, oracle, [], card_set, legalities, edhrec_rank, image_url, image_age)
+        all_cards[oracle_id] = card
+        print(card)
 
+
+def main():
     cards_file = open("default-cards.json", "r", encoding="utf-8")
     cards_raw = cards_file.read()
     raw_data = json.loads(cards_raw)
+    skipped_cards = []
 
     for (count, card_json) in enumerate(raw_data):
         if not card_json["lang"] == "en" or card_json["set_type"] in ["token", "memorabilia"]:
             continue
 
-        card_name = card_json["name"].replace('"', "'")
-        card_set = card_json["set_name"]
-        oracle_id = card_json["oracle_id"]
         if not card_json["prices"]["usd"] and not card_json["prices"]["usd_foil"]:  # means its not a paper product
+            skipped_cards.append(card_json)
             continue
 
+        parse_card(card_json)
+
+    for card_json in skipped_cards:
+        scryfall_uri = card_json["uri"]
+        card_set = (card_json["set_name"], scryfall_uri)
+        oracle_id = card_json["oracle_id"]
         if all_cards.get(oracle_id):
             all_cards[oracle_id].add_set(card_set)
-        else:
-            if "mana_cost" in card_json:
-                mana_cost = card_json["mana_cost"]
-            else:
-                mana_cost = card_json["card_faces"][0]["mana_cost"]
-            type_line = card_json["type_line"].replace("—", "-")
-            oracle = parse_card_oracle(card_json).replace('"', "'")
-            legalities = [k for k in card_json["legalities"] if card_json["legalities"][k] == "legal" and k in FORMATS]
-            edhrec_rank = card_json["edhrec_rank"] if "edhrec_rank" in card_json else 9999999
-            scryfall_uri = card_json["uri"]
-            image_url = get_image_urls(card_json)
-            card = Card(card_name, mana_cost, type_line, oracle, [], card_set, legalities, edhrec_rank, scryfall_uri, image_url)
-            all_cards[oracle_id] = card
-            print(card)
 
     rulings_file = open("rulings.json", "r", encoding="utf-8")
     rulings_raw = rulings_file.read()

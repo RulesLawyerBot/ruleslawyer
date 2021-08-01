@@ -91,7 +91,7 @@ public class EmbedBuilderBuilder {
     public EmbedBuilder build() {
         EmbedBuilder output = new EmbedBuilder()
                 .setTitle(title)
-                .setAuthor(author)
+                .setAuthor(author, "https://www.ruleslawyer.app", "https://www.ruleslawyer.app/favicon.png")
                 .setFooter(footer)
                 .setColor(EMBED_COLOR);
         if (hasInlineFields) {

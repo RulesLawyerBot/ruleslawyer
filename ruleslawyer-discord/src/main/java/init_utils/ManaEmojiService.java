@@ -86,7 +86,6 @@ public class ManaEmojiService {
                 card.getSets(),
                 card.getFormatLegalities().stream().map(String::valueOf).collect(toList()),
                 card.getEdhrecRank(),
-                card.getScryfallUri(),
                 card.getImage_urls()
         );
     }

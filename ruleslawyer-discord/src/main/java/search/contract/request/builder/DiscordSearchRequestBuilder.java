@@ -13,7 +13,6 @@ import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
 public class DiscordSearchRequestBuilder {
 
     private String requester;
-    private String channelName;
     private List<String> keywords;
     private RuleSource ruleSource;
     private Integer pageNumber;
@@ -23,20 +22,9 @@ public class DiscordSearchRequestBuilder {
         DiscordSearchRequestBuilder discordSearchRequestBuilder = new DiscordSearchRequestBuilder()
                 .setRuleSource(ANY_DOCUMENT)
                 .setRuleRequestCategory(ANY_RULE_TYPE)
-                .setPageNumber(0)
-                .setChannelName("TO BE IMPLEMENTED");
+                .setPageNumber(0);
         discordSearchRequestBuilder.keywords = new ArrayList<>();
         return discordSearchRequestBuilder;
-    }
-
-    public static DiscordSearchRequestBuilder fromDiscordSearchRequest(DiscordRuleSearchRequest request) {
-        return aDiscordSearchRequest()
-                .setRequester(request.getRequester())
-                .setChannelName(request.getChannelName())
-                .appendKeywords(request.getKeywords())
-                .setRuleSource(request.getRuleSource())
-                .setPageNumber(request.getPageNumber())
-                .setRuleRequestCategory(request.getRuleRequestCategory());
     }
 
     public DiscordSearchRequestBuilder appendKeywords(List<String> keywords) {
@@ -46,11 +34,6 @@ public class DiscordSearchRequestBuilder {
 
     public DiscordSearchRequestBuilder setRequester(String requester) {
         this.requester = requester;
-        return this;
-    }
-
-    public DiscordSearchRequestBuilder setChannelName(String channelName) {
-        this.channelName = channelName;
         return this;
     }
 
@@ -70,6 +53,6 @@ public class DiscordSearchRequestBuilder {
     }
 
     public DiscordRuleSearchRequest build() {
-        return new DiscordRuleSearchRequest(requester, channelName, keywords, ruleSource, pageNumber, ruleRequestCategory);
+        return new DiscordRuleSearchRequest(requester, keywords, ruleSource, pageNumber, ruleRequestCategory);
     }
 }

@@ -10,7 +10,7 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
-import service.interaction_pagination.pagination_enum.PageDirection;
+import search.interaction_pagination.pagination_enum.PageDirection;
 
 import java.util.List;
 import java.util.Optional;

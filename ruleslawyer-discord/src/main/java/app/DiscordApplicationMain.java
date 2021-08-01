@@ -15,7 +15,7 @@ import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
-import service.interaction_pagination.InteractionPaginationService;
+import search.interaction_pagination.InteractionPaginationService;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -34,7 +34,7 @@ public class DiscordApplicationMain {
     private static InteractionPaginationService interactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.x.x-SNAP | STX | \"/help\"";
+    private static final String CURRENT_VERSION = "Version 1.12.0 | AFR | \"/help\"";
 
     public static void main(String[] args) {
         if (!args[0].equals("prod")) {

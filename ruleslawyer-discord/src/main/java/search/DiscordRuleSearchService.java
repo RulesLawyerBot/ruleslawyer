@@ -7,7 +7,6 @@ import contract.rules.enums.RuleSource;
 import contract.searchResults.RawRuleSearchResult;
 import contract.searchResults.SearchResult;
 import init_utils.ManaEmojiService;
-import org.javacord.api.DiscordApi;
 import search.contract.DiscordEmbedField;
 import search.contract.request.DiscordRuleSearchRequest;
 import search.contract.DiscordReturnPayload;
@@ -30,9 +29,10 @@ import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static search.contract.request.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
-import static service.interaction_pagination.InteractionPaginationStatics.*;
+import static search.interaction_pagination.InteractionPaginationStatics.*;
 
 public class DiscordRuleSearchService {
 
@@ -126,11 +126,16 @@ public class DiscordRuleSearchService {
         result.setFooter(footer);
 
         return new DiscordReturnPayload(result.build())
+                .setContent(getWebappURL(discordRuleSearchRequest.getKeywords()))
                 .setComponents(
                         rawResults.hasOtherCategory() ?
                                 RULE_ROW_WITH_SOURCE_SWAP :
                                 RULE_ROW_WITHOUT_SOURCE_SWAP
                 );
+    }
+
+    private String getWebappURL(List<String> query) {
+        return "https://www.ruleslawyer.app/search?q=" + join("+", query);
     }
 
     private String getFooter(

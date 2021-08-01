@@ -21,9 +21,13 @@ public class HelpMessageSearchService {
                                     "\n" +
                                     "RulesLawyer is a Discord bot that helps judges and players answer rules questions related to Magic: The Gathering. After reading this post, feel free to delete it by pressing the button. You can bring this up again by doing /help (and selecting the command associated with RulesLawyer, if there's other options associated with other bots on this server).\n" +
                                     "\n" +
-                                    "RulesLawyer is designed to be used like a search engine, where you can not only call it with specific citations, but with search terms. You can still call it with curly braces {{like this}}, roughly analogous to Scryfall, but it is recommended that you use the fancy new /rule command.\n" +
+                                    "RulesLawyer is designed to be used like a search engine, where you can not only call it with specific citations, but with search terms. You can still call it with curly braces {{like this}}, roughly analogous to Scryfall, but it is recommended that you use the fancy new /rule command. You can also call up cards with /card."
+                            ),
+                    new DiscordEmbedField(
+                            "About the search algorithm",
+                            "RulesLawyer Rule Search not only searches the Comprehensive Rules (CR), but also the Infraction Procedure Guide (IPG), Magic Tournament Rules (MTR), and many other documents. However, it will only find search terms that use words that are actually in the rules documents, so its recommended to not use extra \"filler\" words while searching. Card Search searches for card name and card oracle in any combination.\n" +
                                     "\n" +
-                                    "RulesLawyer not only searches the Comprehensive Rules (CR), but also the Infraction Procedure Guide (IPG), Magic Tournament Rules (MTR), and many other documents. However, it will only find search terms that use words that are actually in the rules documents, so its recommended to not use extra \"filler\" words while searching.\n"
+                                    "RulesLawyer uses fuzzy searching and relevancy heuristics so that the result you most likely want appears first, but this is an inexact science and not a guarantee. If there are too many results, it is suggested that you re-run the search with additional paramters."
                     ),
                     new DiscordEmbedField(
                             "For example, try the following searches:",
@@ -32,8 +36,12 @@ public class HelpMessageSearchService {
                                     "/rule two-headed giant poison\n" +
                                     "/rule dungeon\n" +
                                     "/rule \"attacks and isn't blocked\" (where the quotation marks forces it to search for an exact match instead of searching for each word individually)\n" +
+                                    "/card thalia\n" +
+                                    "/card cryptic (should bring up cryptic command instead of a random card with cryptic in the name)\n" +
                                     "\n" +
-                                    "More help files are at \"/help add\" to add this to your own server, \"/help about\" for contact information, or \"/help dev\" for the latest patch notes."
+                                    "More help files are at \"/help add\" to add this to your own server, \"/help about\" for contact information, or \"/help dev\" for the latest patch notes.\n" +
+                                    "\n" +
+                                    "Card search is still fairly new and I would appreciate bugs being reported with \"/help about\""
                     )
             )
             .build();
@@ -61,27 +69,19 @@ public class HelpMessageSearchService {
             .addFields(
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
-                            "Last updated: 2021-07-15\n" +
+                            "Last updated: 2021-08-01\n" +
                                     "Rules version: Adventures in the Forgotten Realms"
                     ),
                     new DiscordEmbedField(
-                            "v1.11.2",
-                            "Updated rules to AFR."
-                    ),
-                    new DiscordEmbedField(
-                            "v1.11.0",
-                            "Slash commands, finally! /help and /rule are available.\n" +
-                                    "{{curly braces}} can still be used to call the bot, but this might be deprecated in the future.\n" +
-                                    "Also buttons for deletion and pagination!\n" +
-                                    "Please let me know if you think that any of the messages are unclear, or could be worded better.\n" +
-                                    "And of course let me know if there's any bugs I missed. (I'm sure there are some)"
+                            "v1.12.0",
+                            "Card searching! /card is available.\n" +
+                                    "www.ruleslawyer.app is now available! Search using the core RulesLawyer engine in a webapp with greater clarity.\n" +
+                                    "Updated: /rule now supports rule source filtering (or skip the second argument to search everything)"
                     ),
                     new DiscordEmbedField(
                             "Future Development",
-                            "AFR rules will be added as v1.11.1 when they are released.\n" +
-                                    "Slack and webapp versions are very close to release.\n" +
-                                    "Card searching (with /card) is being worked on. It would have been in this release but this release was already very big and I wanted to get it out.\n" +
-                                    "Android version is kind of on hold given that there will be a webapp soon."
+                            "Slack is being worked on, but still in progress.\n" +
+                                    "Android version is on hold for now, though its one of the Patreon goals (www.patreon.com/ruleslawyer)"
                     )
             )
             .build();

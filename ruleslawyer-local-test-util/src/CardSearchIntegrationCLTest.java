@@ -22,7 +22,7 @@ public class CardSearchIntegrationCLTest {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
             String input = reader.readLine();
-            CardSearchRequest request = new CardSearchRequest(asList(input.split(" ")), INCLUDE_ORACLE, ANY_FORMAT);
+            CardSearchRequest request = new CardSearchRequest(asList(input.split(" ")), ANY_FORMAT);
             List<SearchResult<Card>> results = repository.getSearchResult(request);
             String output = results.stream()
                     .map(SearchResult::getEntry)
