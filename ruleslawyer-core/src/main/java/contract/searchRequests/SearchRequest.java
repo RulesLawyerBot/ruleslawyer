@@ -15,5 +15,4 @@ public abstract class SearchRequest<T extends Searchable> {
     public Integer getPageNumber() {
         return pageNumber;
     }
-
 }

@@ -5,7 +5,9 @@ import org.javacord.api.entity.message.component.Button;
 import org.javacord.api.entity.message.component.LowLevelComponent;
 
 import static java.lang.String.valueOf;
-import static search.interaction_pagination.pagination_enum.CardPage.*;
+import static search.interaction_pagination.pagination_enum.CardDataReturnType.*;
+import static search.interaction_pagination.pagination_enum.CardPageDirection.NEXT_CARD;
+import static search.interaction_pagination.pagination_enum.CardPageDirection.PREVIOUS_CARD;
 
 public class InteractionPaginationStatics {
 
@@ -26,6 +28,9 @@ public class InteractionPaginationStatics {
     public static final LowLevelComponent CARD_ART_COMPONENT = Button.secondary(valueOf(ART), "Full card art");
     public static final LowLevelComponent PRICE_COMPONENT = Button.secondary(valueOf(PRICE), "Price");
 
+    public static final LowLevelComponent PREVIOUS_CARD_COMPOENNT = Button.primary(valueOf(PREVIOUS_CARD), "Previous card");
+    public static final LowLevelComponent NEXT_CARD_COMPONENT = Button.primary(valueOf(NEXT_CARD), "Next card");
+
     public static final LowLevelComponent DELETE_COMPONENT = Button.danger(DELETE_STRING, "Delete");
     public static final LowLevelComponent WEBSITE_LINK_COMPONENT = Button.link(WEBSITE_LINK_STRING, "Browse");
 
@@ -33,4 +38,5 @@ public class InteractionPaginationStatics {
     public static final ActionRow RULE_ROW_WITHOUT_SOURCE_SWAP = ActionRow.of(LEFT_PAGINATION_COMPONENT, RIGHT_PAGINATION_COMPONENT, DELETE_COMPONENT);
     public static final ActionRow RULE_ROW_WITH_SOURCE_SWAP = ActionRow.of(LEFT_PAGINATION_COMPONENT, RIGHT_PAGINATION_COMPONENT, SWAP_SOURCE_COMPONENT, DELETE_COMPONENT);
     public static final ActionRow CARD_ROW = ActionRow.of(ORACLE_TEXT_COMPONENT, RULINGS_TEXT_COMPONENT, LEGALITY_COMPONENT, CARD_ART_COMPONENT, PRICE_COMPONENT);
+    public static final ActionRow CARD_PAGINATION_ROW = ActionRow.of(PREVIOUS_CARD_COMPOENNT, NEXT_CARD_COMPONENT);
 }

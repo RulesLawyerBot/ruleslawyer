@@ -110,7 +110,7 @@ public class Card implements Searchable {
 
     @Override
     public List<? extends Searchable> searchForKeywords(List<String> keywords) {
-        return searchForKeywords(new CardSearchRequest(keywords, ANY_FORMAT));
+        return searchForKeywords(new CardSearchRequest(keywords, ANY_FORMAT, 1));
     }
 
     @Override

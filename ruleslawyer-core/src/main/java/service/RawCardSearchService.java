@@ -24,7 +24,6 @@ public class RawCardSearchService {
         if (request.getKeywords().size() < 1 || request.getKeywords().stream().mapToInt(String::length).sum() < 1) {
             return emptyList();
         }
-        request.getKeywords().forEach(System.out::println);
         List<SearchResult<Card>> cardSearchResults = repository.getSearchResult(request.includeOracle());
         return cardSearchResults.stream()
                 .map(SearchResult::getEntry)

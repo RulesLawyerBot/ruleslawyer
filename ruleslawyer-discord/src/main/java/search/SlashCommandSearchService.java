@@ -8,7 +8,7 @@ import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandOptionChoice;
 import search.contract.DiscordReturnPayload;
 import service.HelpMessageSearchService;
-import search.interaction_pagination.pagination_enum.CardPage;
+import search.interaction_pagination.pagination_enum.CardDataReturnType;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import static org.javacord.api.interaction.SlashCommandOption.*;
 import static org.javacord.api.interaction.SlashCommandOptionType.STRING;
 import static service.HelpMessageSearchService.*;
 import static search.interaction_pagination.InteractionPaginationStatics.*;
-import static search.interaction_pagination.pagination_enum.CardPage.*;
+import static search.interaction_pagination.pagination_enum.CardDataReturnType.*;
 
 public class SlashCommandSearchService {
 
@@ -149,27 +149,27 @@ public class SlashCommandSearchService {
     }
 
     private void respondToCardCommand(SlashCommandCreateEvent event) {
-        CardPage cardPage = event.getSlashCommandInteraction().getSecondOptionStringValue().map(CardPage::valueOf).orElse(ORACLE);
-        if (cardPage == PRICE) {
+        CardDataReturnType cardDataReturnType = event.getSlashCommandInteraction().getSecondOptionStringValue().map(CardDataReturnType::valueOf).orElse(ORACLE);
+        if (cardDataReturnType == PRICE) {
             event.getSlashCommandInteraction().respondLater();
             EmbedBuilder embed = discordCardSearchService.getSearchResult(
                     event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
                     event.getSlashCommandInteraction().getFirstOptionStringValue().orElse(""),
-                    cardPage
+                    cardDataReturnType
             );
             event.getSlashCommandInteraction().createFollowupMessageBuilder()
                     .addEmbed(embed)
-                    .addComponents(CARD_ROW)
+                    .addComponents(CARD_ROW, CARD_PAGINATION_ROW)
                     .send();
         } else {
             EmbedBuilder embed = discordCardSearchService.getSearchResult(
                     event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
                     event.getSlashCommandInteraction().getFirstOptionStringValue().orElse(""),
-                    cardPage
+                    cardDataReturnType
             );
             event.getSlashCommandInteraction().createImmediateResponder()
                     .addEmbed(embed)
-                    .addComponents(CARD_ROW)
+                    .addComponents(CARD_ROW, CARD_PAGINATION_ROW)
                     .respond();
         }
     }

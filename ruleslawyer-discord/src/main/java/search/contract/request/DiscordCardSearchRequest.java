@@ -3,23 +3,28 @@ package search.contract.request;
 import contract.cards.Card;
 import contract.cards.FormatLegality;
 import contract.searchRequests.CardSearchRequest;
-import search.interaction_pagination.pagination_enum.CardPage;
+import search.interaction_pagination.pagination_enum.CardDataReturnType;
+import search.interaction_pagination.pagination_enum.CardPageDirection;
 
 import java.util.List;
+
+import static search.interaction_pagination.pagination_enum.CardPageDirection.PREVIOUS_CARD;
 
 public class DiscordCardSearchRequest extends CardSearchRequest implements DiscordSearchRequestInterface<Card> {
 
     private String requester;
-    private CardPage cardPage;
+    private CardDataReturnType cardDataReturnType;
 
     public DiscordCardSearchRequest(
             List<String> keywords,
             FormatLegality formatLegality,
             String requester,
-            CardPage cardPage) {
-        super(keywords, formatLegality);
+            CardDataReturnType cardDataReturnType,
+            Integer pageNumber
+    ) {
+        super(keywords, formatLegality, pageNumber);
         this.requester = requester;
-        this.cardPage = cardPage;
+        this.cardDataReturnType = cardDataReturnType;
     }
 
     @Override
@@ -27,7 +32,19 @@ public class DiscordCardSearchRequest extends CardSearchRequest implements Disco
         return requester;
     }
 
-    public CardPage getCardPage() {
-        return cardPage;
+    public CardDataReturnType getCardDataReturnType() {
+        return cardDataReturnType;
+    }
+
+    public void paginateSearchRequest(CardPageDirection cardPageDirection) {
+        if (cardPageDirection == PREVIOUS_CARD) {
+            pageNumber--;
+        } else {
+            pageNumber++;
+        }
+    }
+
+    public void setCardDataReturnType(CardDataReturnType cardDataReturnType) {
+        this.cardDataReturnType = cardDataReturnType;
     }
 }

@@ -6,20 +6,24 @@ import exception.NotYetImplementedException;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.Embed;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.message.embed.EmbedFooter;
 import org.javacord.api.event.interaction.MessageComponentCreateEvent;
 import search.DiscordCardSearchService;
 import search.DiscordRuleSearchService;
 import search.contract.DiscordReturnPayload;
 import search.contract.EmbedBuilderBuilder;
+import search.contract.request.DiscordCardSearchRequest;
 import search.contract.request.DiscordRuleSearchRequest;
 import search.contract.request.builder.DiscordSearchRequestBuilder;
-import search.interaction_pagination.pagination_enum.CardPage;
+import search.interaction_pagination.pagination_enum.CardDataReturnType;
+import search.interaction_pagination.pagination_enum.CardPageDirection;
 import search.interaction_pagination.pagination_enum.PageDirection;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import static contract.cards.FormatLegality.ANY_FORMAT;
 import static contract.rules.enums.RuleRequestCategory.DIGITAL;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
@@ -28,8 +32,8 @@ import static search.DiscordCardSearchService.CARD_SEARCH_AUTHOR_TEXT;
 import static search.DiscordRuleSearchService.RULE_SEARCH_AUTHOR_TEXT;
 import static search.contract.request.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
 import static search.interaction_pagination.InteractionPaginationStatics.*;
-import static search.interaction_pagination.pagination_enum.CardPage.ORACLE;
-import static search.interaction_pagination.pagination_enum.CardPage.PRICE;
+import static search.interaction_pagination.pagination_enum.CardDataReturnType.PRICE;
+import static search.interaction_pagination.pagination_enum.CardPageDirection.NEXT_CARD;
 import static search.interaction_pagination.pagination_enum.PageDirection.*;
 
 public class InteractionPaginationService {
@@ -64,11 +68,11 @@ public class InteractionPaginationService {
 
             Optional<DiscordReturnPayload> output = empty();
             if (authorText.equals(RULE_SEARCH_AUTHOR_TEXT)) {
-                output = Optional.of(paginateRules(event));
+                output = paginateRules(event);
                 event.getMessageComponentInteraction().createImmediateResponder().respond();
             }
             if (authorText.equals(CARD_SEARCH_AUTHOR_TEXT)) {
-                output = Optional.of(paginateCard(event));
+                output = paginateCard(event);
             }
             output.map(i -> message.edit(i.getEmbed()));
         } catch (IndexOutOfBoundsException | NoSuchElementException e) {
@@ -76,7 +80,7 @@ public class InteractionPaginationService {
         };
     }
 
-    private DiscordReturnPayload paginateRules(MessageComponentCreateEvent event) {
+    private Optional<DiscordReturnPayload> paginateRules(MessageComponentCreateEvent event) {
         Message message = event.getMessageComponentInteraction().getMessage().get();
         Embed embed = message.getEmbeds().get(0);
         DiscordRuleSearchRequest searchRequest = getRuleSearchRequestFromEmbed(
@@ -84,7 +88,7 @@ public class InteractionPaginationService {
                 embed.getFooter().get().getText().get()
         );
         searchRequest.getNextPage(getRulePaginationDirection(searchRequest, event.getMessageComponentInteraction().getCustomId()));
-        return discordRuleSearchService.getSearchResult(searchRequest);
+        return Optional.of(discordRuleSearchService.getSearchResult(searchRequest));
     }
 
     private DiscordRuleSearchRequest getRuleSearchRequestFromEmbed(String header, String footer) {
@@ -124,42 +128,77 @@ public class InteractionPaginationService {
         }
     }
 
-    private DiscordReturnPayload paginateCard(MessageComponentCreateEvent event) {
-        CardPage cardPage = Optional.of(event.getMessageComponentInteraction().getCustomId()).map(CardPage::valueOf).orElse(ORACLE);
-        if (cardPage == PRICE) {
+    private Optional<DiscordReturnPayload> paginateCard(MessageComponentCreateEvent event) {
+        if (!hasFooter(event)) {
+            event.getMessageComponentInteraction().createImmediateResponder().respond();
+            return empty();
+        }
+        try {
+            CardDataReturnType cardDataReturnType = Optional.of(event.getMessageComponentInteraction().getCustomId()).map(CardDataReturnType::valueOf).orElse(null);
+            return paginateCardDataReturnType(event, cardDataReturnType);
+        } catch (IllegalArgumentException ignored) {
+            CardPageDirection cardPageDirection = Optional.of(event.getMessageComponentInteraction().getCustomId()).map(CardPageDirection::valueOf).orElse(NEXT_CARD);
+            return paginateCardNumber(event, cardPageDirection);
+        }
+    }
+
+    private Optional<DiscordReturnPayload> paginateCardDataReturnType(MessageComponentCreateEvent event, CardDataReturnType cardDataReturnType) {
+        if (cardDataReturnType == PRICE) {
             event.getMessageComponentInteraction().createImmediateResponder().respond(); //TODO remove this in a future javacord version
-            String cardName = getCardNameFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0));
+            DiscordCardSearchRequest searchRequest = getSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0));
+            searchRequest.setCardDataReturnType(cardDataReturnType);
             event.getMessageComponentInteraction().getMessage().get().edit(
                     new EmbedBuilderBuilder()
                             .setAuthor(CARD_SEARCH_AUTHOR_TEXT)
                             .setTitle("Thinking...")
-                            .setFooter(cardName)
                             .build()
             );
             //event.getMessageComponentInteraction().respondLater(); this is bugged
-            EmbedBuilder embed = discordCardSearchService.getSearchResult(
-                    "",
-                    cardName,
-                    cardPage
-            );
+            EmbedBuilder embed = discordCardSearchService.getSearchResult(searchRequest);
             //event.getMessageComponentInteraction().createFollowupMessageBuilder().send(); this is bugged
-            return new DiscordReturnPayload(embed);
+            return Optional.of(new DiscordReturnPayload(embed));
         } else {
             event.getMessageComponentInteraction().createImmediateResponder().respond();
-            EmbedBuilder embed = discordCardSearchService.getSearchResult(
-                    "",
-                    getCardNameFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0)),
-                    cardPage
-            );
-            return new DiscordReturnPayload(embed);
+            DiscordCardSearchRequest searchRequest = getSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0));
+            searchRequest.setCardDataReturnType(cardDataReturnType);
+            EmbedBuilder embed = discordCardSearchService.getSearchResult(searchRequest);
+            return Optional.of(new DiscordReturnPayload(embed));
         }
     }
 
-    private String getCardNameFromFooter(Embed embed) {
-        if (!embed.getFooter().isPresent()) {
-            return "";
+    private Optional<DiscordReturnPayload> paginateCardNumber(MessageComponentCreateEvent event, CardPageDirection cardPageDirection) {
+        DiscordCardSearchRequest searchRequest = getSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0));
+        searchRequest.paginateSearchRequest(cardPageDirection);
+        EmbedBuilder embed = discordCardSearchService.getSearchResult(searchRequest);
+        event.getMessageComponentInteraction().createImmediateResponder().respond();
+        return Optional.of(new DiscordReturnPayload(embed));
+    }
+
+    private boolean hasFooter(MessageComponentCreateEvent event) {
+        Optional<Message> messageOptional = event.getMessageComponentInteraction().getMessage();
+        if (!messageOptional.isPresent()) {
+            return false;
         }
-        return embed.getFooter().get().getText().get();
+        List<Embed> embeds = messageOptional.get().getEmbeds();
+        if (embeds.size() < 1) {
+            return false;
+        }
+        Optional<EmbedFooter> embedFooterOptional = embeds.get(0).getFooter();
+        if (!embedFooterOptional.isPresent()) {
+            return false;
+        }
+        return embedFooterOptional.map(footer -> footer.getText().isPresent()).orElse(false);
+    }
+
+    private DiscordCardSearchRequest getSearchRequestFromFooter(Embed embed) {
+        List<String> footerParts = asList(embed.getFooter().get().getText().get().split(" \\| "));
+        return new DiscordCardSearchRequest(
+                asList(footerParts.get(1).split(" ")),
+                ANY_FORMAT,
+                footerParts.get(0),
+                CardDataReturnType .valueOf(footerParts.get(2).toUpperCase()),
+                parseInt(footerParts.get(3).substring(5))
+        );
     }
 
     private void deleteMessage(MessageComponentCreateEvent event) {

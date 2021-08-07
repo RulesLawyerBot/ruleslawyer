@@ -19,7 +19,7 @@ public class CardSearchRepositoryTest {
 
     @Test
     public void findWithKeyword_ExpectCardsFound() {
-        CardSearchRequest searchRequest = new CardSearchRequest(singletonList("noncreature"), ANY_FORMAT).includeOracle();
+        CardSearchRequest searchRequest = new CardSearchRequest(singletonList("noncreature"), ANY_FORMAT, 1).includeOracle();
 
         List<SearchResult<Card>> result = repository.getSearchResult(searchRequest);
 

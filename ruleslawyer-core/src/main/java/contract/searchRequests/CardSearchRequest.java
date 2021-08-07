@@ -14,11 +14,12 @@ public class CardSearchRequest extends SearchRequest<Card> {
     private FormatLegality formatLegality;
     private boolean isFuzzy;
 
-    public CardSearchRequest(List<String> keywords, FormatLegality formatLegality) {
+    public CardSearchRequest(List<String> keywords, FormatLegality formatLegality, Integer pageNumber) {
         this.keywords = keywords;
         this.formatLegality = formatLegality;
         this.cardSearchRequestType = TITLE_ONLY;
         this.isFuzzy = false;
+        this.pageNumber = pageNumber;
     }
 
     public CardSearchRequestType getCardSearchRequestType() {
