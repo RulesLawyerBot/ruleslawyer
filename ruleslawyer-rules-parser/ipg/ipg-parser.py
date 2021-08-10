@@ -73,6 +73,7 @@ def main():
                 current_subheader = RuleSubHeader(line, [])
             else:
                 current_subheader.subrules.append(Rule(line))
+    current_header.subrules.append(current_subheader)
     output.append(current_header)
 
     clear("IPG-parsed.json")

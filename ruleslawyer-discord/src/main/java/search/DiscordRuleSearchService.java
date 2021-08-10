@@ -98,7 +98,6 @@ public class DiscordRuleSearchService {
                                     new DiscordEmbedField(getEmbedTitle(discordRuleSearchRequest), "No Results Found"),
                                     new DiscordEmbedField("Quick help", NO_RESULTS_FOUND_HELP_MESSAGE)
                             ))
-                            .build()
             )
                     .setComponents(DELETE_ONLY_ROW);
         }
@@ -125,7 +124,7 @@ public class DiscordRuleSearchService {
 
         result.setFooter(footer);
 
-        return new DiscordReturnPayload(result.build())
+        return new DiscordReturnPayload(result)
                 .setContent(getWebappURL(discordRuleSearchRequest.getKeywords()))
                 .setComponents(
                         rawResults.hasOtherCategory() ?
@@ -153,7 +152,6 @@ public class DiscordRuleSearchService {
 
     private DiscordRuleSearchRequest getSearchRequest(String author, String query) {
         DiscordSearchRequestBuilder ruleSearchRequest = aDiscordSearchRequest().setRequester(author);
-
         List<String> commands = asList(query.split("\\|"));
 
         commands.forEach(

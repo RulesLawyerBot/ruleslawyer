@@ -7,6 +7,7 @@ import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandOptionChoice;
 import search.contract.DiscordReturnPayload;
+import search.contract.EmbedBuilderBuilder;
 import service.HelpMessageSearchService;
 import search.interaction_pagination.pagination_enum.CardDataReturnType;
 
@@ -80,7 +81,7 @@ public class SlashCommandSearchService {
                         create(
                                 STRING,
                                 "card_name",
-                                "Search card name or oracle - tab twice for additional parameters",
+                                "Search name or oracle (\"quotes\" for exact name match) - tab twice for additional parameters",
                                 true
                         ),
                         createWithChoices(
@@ -143,7 +144,7 @@ public class SlashCommandSearchService {
                 );
         event.getSlashCommandInteraction().createImmediateResponder()
                 .setContent(searchResult.getContent())
-                .addEmbed(searchResult.getEmbed())
+                .addEmbed(searchResult.getEmbed().build())
                 .addComponents(searchResult.getComponents())
                 .respond();
     }
@@ -152,36 +153,36 @@ public class SlashCommandSearchService {
         CardDataReturnType cardDataReturnType = event.getSlashCommandInteraction().getSecondOptionStringValue().map(CardDataReturnType::valueOf).orElse(ORACLE);
         if (cardDataReturnType == PRICE) {
             event.getSlashCommandInteraction().respondLater();
-            EmbedBuilder embed = discordCardSearchService.getSearchResult(
+            DiscordReturnPayload discordReturnPayload = discordCardSearchService.getSearchResult(
                     event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
                     event.getSlashCommandInteraction().getFirstOptionStringValue().orElse(""),
                     cardDataReturnType
             );
             event.getSlashCommandInteraction().createFollowupMessageBuilder()
-                    .addEmbed(embed)
-                    .addComponents(CARD_ROW, CARD_PAGINATION_ROW)
+                    .addEmbed(discordReturnPayload.getEmbed().build())
+                    .addComponents(discordReturnPayload.getComponents())
                     .send();
         } else {
-            EmbedBuilder embed = discordCardSearchService.getSearchResult(
+            DiscordReturnPayload discordReturnPayload = discordCardSearchService.getSearchResult(
                     event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
                     event.getSlashCommandInteraction().getFirstOptionStringValue().orElse(""),
                     cardDataReturnType
             );
             event.getSlashCommandInteraction().createImmediateResponder()
-                    .addEmbed(embed)
-                    .addComponents(CARD_ROW, CARD_PAGINATION_ROW)
+                    .addEmbed(discordReturnPayload.getEmbed().build())
+                    .addComponents(discordReturnPayload.getComponents())
                     .respond();
         }
     }
 
     private void respondToHelpCommand(SlashCommandCreateEvent event) {
-        EmbedBuilder helpFile = event.getSlashCommandInteraction()
+        EmbedBuilderBuilder helpFile = event.getSlashCommandInteraction()
                 .getFirstOptionStringValue()
                 .map(value -> helpMessageSearchService.getHelpFile(value))
                 .orElse(helpMessageSearchService.getHelpFile());
         event.getSlashCommandInteraction()
                 .createImmediateResponder()
-                .addEmbed(helpFile)
+                .addEmbed(helpFile.build())
                 .addComponents(DELETE_ONLY_ROW)
                 .respond();
     }

@@ -2,6 +2,7 @@ package app;
 
 import init_utils.ManaEmojiService;
 import org.javacord.api.entity.channel.ServerTextChannel;
+import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.event.interaction.MessageComponentCreateEvent;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.server.ServerJoinEvent;
@@ -21,6 +22,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.javacord.api.entity.intent.Intent.GUILD_PRESENCES;
+import static search.interaction_pagination.InteractionPaginationStatics.DELETE_ONLY_ROW;
 import static service.HelpMessageSearchService.MAIN_HELP_EMBED;
 import static utils.DiscordUtils.*;
 
@@ -34,7 +36,7 @@ public class DiscordApplicationMain {
     private static InteractionPaginationService interactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.12.0 | AFR | \"/help\"";
+    private static final String CURRENT_VERSION = "Version 1.12.1 | AFR | \"/help\"";
 
     public static void main(String[] args) {
         if (!args[0].equals("prod")) {
@@ -82,7 +84,7 @@ public class DiscordApplicationMain {
 
         Optional<ServerTextChannel> generalChannel = ServerJoinHelpService.getChannelToSendMessage(event);
         generalChannel.ifPresent(channel -> {
-            channel.sendMessage(MAIN_HELP_EMBED);
+            channel.sendMessage(MAIN_HELP_EMBED.build());
             messageLoggingService.logJoinMessageSuccess(channel.getServer());
         }
         );
@@ -103,6 +105,10 @@ public class DiscordApplicationMain {
         }
         if (event.getMessageAuthor().asUser().map(User::isBotOwner).orElse(false)) {
             administratorCommandsService.processCommand(event.getMessage().getContent(), event.getChannel());
+        }
+
+        if (event.getMessage().getMentionedUsers().stream().anyMatch(User::isYourself)) {
+            new MessageBuilder().setEmbed(MAIN_HELP_EMBED.build()).addComponents(DELETE_ONLY_ROW).send(event.getChannel());
         }
 
         event.getApi().updateActivity(CURRENT_VERSION);

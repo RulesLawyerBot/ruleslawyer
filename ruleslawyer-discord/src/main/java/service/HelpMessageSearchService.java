@@ -1,6 +1,5 @@
 package service;
 
-import org.javacord.api.entity.message.embed.EmbedBuilder;
 import search.contract.DiscordEmbedField;
 import search.contract.EmbedBuilderBuilder;
 
@@ -13,7 +12,7 @@ public class HelpMessageSearchService {
     public static final String HELP_DEV_IDENTIFIER = "dev";
     public static final String HELP_ABOUT_IDENTIFIER = "about";
 
-    public static final EmbedBuilder MAIN_HELP_EMBED = new EmbedBuilderBuilder()
+    public static final EmbedBuilderBuilder MAIN_HELP_EMBED = new EmbedBuilderBuilder()
             .addFields(
                     new DiscordEmbedField(
                             "RulesLawyer Help",
@@ -43,9 +42,8 @@ public class HelpMessageSearchService {
                                     "\n" +
                                     "Card search is still fairly new and I would appreciate bugs being reported with \"/help about\""
                     )
-            )
-            .build();
-    public static final EmbedBuilder HELP_ABOUT_EMBED = new EmbedBuilderBuilder()
+            );
+    public static final EmbedBuilderBuilder HELP_ABOUT_EMBED = new EmbedBuilderBuilder()
             .addFields(
                     new DiscordEmbedField(
                             "About RulesLawyer",
@@ -55,22 +53,25 @@ public class HelpMessageSearchService {
                                     "\n" +
                                     "Contact me with bugs, feedback, and other inquiries at @ RulesLawyerBot on Twitter or Oritart#0001 on Discord."
                     )
-            )
-            .build();
-    public static final EmbedBuilder HELP_ADD_EMBED = new EmbedBuilderBuilder()
+            );
+    public static final EmbedBuilderBuilder HELP_ADD_EMBED = new EmbedBuilderBuilder()
             .addFields(
                     new DiscordEmbedField(
                             "Add RulesLawyer to your own server",
                             "Add **RulesLawyer** to your own server by using this link: https://discordapp.com/oauth2/authorize?client_id=590184543684788253&scope=bot&permissions=2147838016"
                     )
-            )
-            .build();
-    public static final EmbedBuilder HELP_DEV_EMBED = new EmbedBuilderBuilder()
+            );
+    public static final EmbedBuilderBuilder HELP_DEV_EMBED = new EmbedBuilderBuilder()
             .addFields(
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
-                            "Last updated: 2021-08-01\n" +
+                            "Last updated: 2021-08-10\n" +
                                     "Rules version: Adventures in the Forgotten Realms"
+                    ),
+                    new DiscordEmbedField(
+                            "v1.12.1",
+                            "Fixed some bugs and confusion in card searching.\n" +
+                                    "Updated: /card now supports pagination and exact matches (use \"quotation marks\" to exact match the title)"
                     ),
                     new DiscordEmbedField(
                             "v1.12.0",
@@ -83,18 +84,16 @@ public class HelpMessageSearchService {
                             "Slack is being worked on, but still in progress.\n" +
                                     "Android version is on hold for now, though its one of the Patreon goals (www.patreon.com/ruleslawyer)"
                     )
-            )
-            .build();
-    public static final EmbedBuilder HELP_NOT_FOUND_EMBED = new EmbedBuilderBuilder()
+            );
+    public static final EmbedBuilderBuilder HELP_NOT_FOUND_EMBED = new EmbedBuilderBuilder()
             .addFields(
                     new DiscordEmbedField(
                             "Help file not found",
                             "I'm sorry, I don't have that help file. Use \"/help\" to get the main file. If you believe this is a bug, report it at \"/help dev\"."
                     )
-            )
-            .build();
+            );
 
-    private HashMap<String, EmbedBuilder> helpFiles;
+    private HashMap<String, EmbedBuilderBuilder> helpFiles;
 
     public HelpMessageSearchService() {
         helpFiles = new HashMap<>();
@@ -104,11 +103,11 @@ public class HelpMessageSearchService {
         helpFiles.put(HELP_DEV_IDENTIFIER, HELP_DEV_EMBED);
     }
 
-    public EmbedBuilder getHelpFile() {
+    public EmbedBuilderBuilder getHelpFile() {
         return MAIN_HELP_EMBED;
     }
 
-    public EmbedBuilder getHelpFile(String query) {
+    public EmbedBuilderBuilder getHelpFile(String query) {
         return helpFiles.getOrDefault(query, HELP_NOT_FOUND_EMBED);
     }
 }

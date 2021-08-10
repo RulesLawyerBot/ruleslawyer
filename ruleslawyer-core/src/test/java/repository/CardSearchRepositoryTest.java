@@ -9,6 +9,7 @@ import utils.CardTestUtils;
 import java.util.List;
 
 import static contract.cards.FormatLegality.ANY_FORMAT;
+import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -19,7 +20,7 @@ public class CardSearchRepositoryTest {
 
     @Test
     public void findWithKeyword_ExpectCardsFound() {
-        CardSearchRequest searchRequest = new CardSearchRequest(singletonList("noncreature"), ANY_FORMAT, 1).includeOracle();
+        CardSearchRequest searchRequest = new CardSearchRequest(singletonList("noncreature"), ANY_FORMAT, 1, INCLUDE_ORACLE);
 
         List<SearchResult<Card>> result = repository.getSearchResult(searchRequest);
 

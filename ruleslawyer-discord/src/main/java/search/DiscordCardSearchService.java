@@ -3,8 +3,8 @@ package search;
 import contract.cards.Card;
 import contract.cards.FormatLegality;
 import init_utils.ManaEmojiService;
-import org.javacord.api.entity.message.embed.EmbedBuilder;
 import search.contract.DiscordEmbedField;
+import search.contract.DiscordReturnPayload;
 import search.contract.EmbedBuilderBuilder;
 import search.contract.request.DiscordCardSearchRequest;
 import service.CardPriceReturnObject;
@@ -15,10 +15,16 @@ import search.interaction_pagination.pagination_enum.CardDataReturnType;
 import java.util.List;
 
 import static contract.cards.FormatLegality.ANY_FORMAT;
+import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
+import static contract.searchRequests.CardSearchRequestType.MATCH_TITLE;
 import static ingestion.card.JsonCardIngestionService.getCards;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
+import static search.interaction_pagination.InteractionPaginationStatics.CARD_PAGINATION_ROW;
+import static search.interaction_pagination.InteractionPaginationStatics.CARD_ROW;
 import static search.interaction_pagination.pagination_enum.CardDataReturnType.*;
 
 public class DiscordCardSearchService {
@@ -26,7 +32,7 @@ public class DiscordCardSearchService {
     private RawCardSearchService rawCardSearchService;
     private CardPriceSearchService cardPriceSearchService;
     public static final String CARD_SEARCH_AUTHOR_TEXT = "RulesLawyer Card Search";
-    private static final String NO_CARD_FOUND_TEXT = "No card found";
+    public static final String NO_CARD_FOUND_TEXT = "No card found";
 
     public DiscordCardSearchService(ManaEmojiService manaEmojiService) {
         List<Card> cards = getCards()
@@ -37,26 +43,43 @@ public class DiscordCardSearchService {
         this.cardPriceSearchService = new CardPriceSearchService();
     }
 
-    public EmbedBuilder getSearchResult(String author, String query, CardDataReturnType cardDataReturnType) {
-        DiscordCardSearchRequest request = new DiscordCardSearchRequest(
-                asList(query.split("\\P{Alpha}+")),
-                ANY_FORMAT, //TODO, or maybe not
-                author,
-                cardDataReturnType,
-                1
-        );
+    public DiscordReturnPayload getSearchResult(String author, String query, CardDataReturnType cardDataReturnType) {
+        DiscordCardSearchRequest request =
+                (query.startsWith("\"") && query.endsWith("\"")) ?
+                        new DiscordCardSearchRequest(
+                                singletonList(query.substring(1, query.length()-1).toLowerCase()),
+                                ANY_FORMAT, //TODO, or maybe not
+                                author,
+                                cardDataReturnType,
+                                MATCH_TITLE,
+                                1
+                        ) :
+                        new DiscordCardSearchRequest(
+                                asList(query.split("\\P{Alpha}+")),
+                                ANY_FORMAT,
+                                author,
+                                cardDataReturnType,
+                                INCLUDE_ORACLE,
+                                1
+                        );
         return getSearchResult(request);
     }
 
-    public EmbedBuilder getSearchResult(DiscordCardSearchRequest searchRequest) {
+    public DiscordReturnPayload getSearchResult(DiscordCardSearchRequest searchRequest) {
         List<Card> cards = rawCardSearchService.getCardsWithOracleFallback(searchRequest);
         Card card = cards.isEmpty() ?
                 null :
                 cards.get(
                         (searchRequest.getPageNumber()-1+cards.size()) % cards.size()
                 );
-        EmbedBuilderBuilder embedBuilder = getEmbedForCard(card, searchRequest.getCardDataReturnType());
-        return cards.isEmpty() ? embedBuilder.build() : embedBuilder.setFooter(getFooter(searchRequest, cards.size())).build();
+        EmbedBuilderBuilder embed = getEmbedForCard(card, searchRequest.getCardDataReturnType());
+        if (cards.isEmpty()) {
+            return new DiscordReturnPayload(embed);
+        }
+        if (searchRequest.getCardSearchRequestType() == MATCH_TITLE) {
+            return new DiscordReturnPayload(embed.setFooter(getFooter(searchRequest, cards.size()))).setComponents(CARD_ROW);
+        }
+        return new DiscordReturnPayload(embed.setFooter(getFooter(searchRequest, cards.size()))).setComponents(CARD_ROW, CARD_PAGINATION_ROW);
     }
 
     private EmbedBuilderBuilder getEmbedForCard(Card card, CardDataReturnType cardDataReturnType) {
@@ -70,9 +93,11 @@ public class DiscordCardSearchService {
                     .setAuthor(CARD_SEARCH_AUTHOR_TEXT)
                     .setTitle(card.getCardName())
                     .addFields(
+                            card.getRulings().size() > 0 ?
                             card.getRulings().stream()
                                     .map(ruling -> new DiscordEmbedField("Ruling", ruling))
-                                    .collect(toList())
+                                    .collect(toList()) :
+                            singletonList(new DiscordEmbedField(card.getCardName(), "No rulings for this card"))
                     )
                     .setThumbnail(card.getImage_urls().get(0));
         }
@@ -81,7 +106,7 @@ public class DiscordCardSearchService {
                     .setAuthor(CARD_SEARCH_AUTHOR_TEXT)
                     .setTitle(card.getCardName())
                     .addFields(
-                            asList(FormatLegality.values()).stream()
+                            stream(FormatLegality.values())
                                     .filter(format -> format != ANY_FORMAT)
                                     .map(
                                             format ->
@@ -128,6 +153,12 @@ public class DiscordCardSearchService {
     }
 
     private String getFooter(DiscordCardSearchRequest searchRequest, Integer cardListSize) {
+        if (searchRequest.getCardSearchRequestType() == MATCH_TITLE) {
+            return searchRequest.getRequester() +
+                    " | " + "\"" + searchRequest.getKeywords().get(0) + "\"" +
+                    " | " + searchRequest.getCardDataReturnType().toString().toLowerCase() +
+                    " | " + "exact match query";
+        }
         return searchRequest.getRequester() +
                 " | " + join(" ", searchRequest.getKeywords()) +
                 " | " + searchRequest.getCardDataReturnType().toString().toLowerCase() +

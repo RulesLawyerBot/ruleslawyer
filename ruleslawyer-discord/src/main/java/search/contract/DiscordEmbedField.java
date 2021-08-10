@@ -1,5 +1,7 @@
 package search.contract;
 
+import java.util.Objects;
+
 public class DiscordEmbedField {
     private String fieldName;
     private String fieldText;
@@ -39,5 +41,19 @@ public class DiscordEmbedField {
 
     public Integer getLength() {
         return fieldName.length() + fieldText.length();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DiscordEmbedField)) return false;
+        DiscordEmbedField that = (DiscordEmbedField) o;
+        return fieldName.equals(that.fieldName) &&
+                fieldText.equals(that.fieldText);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fieldName, fieldText);
     }
 }

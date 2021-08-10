@@ -6,10 +6,11 @@ import org.javacord.api.entity.message.embed.EmbedBuilder;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Arrays.asList;
 
-//blame javacord for the shitty naming of this class
+//this class name is terrible
 public class EmbedBuilderBuilder {
 
     private static final Color EMBED_COLOR = new Color(179, 219, 255);
@@ -81,6 +82,34 @@ public class EmbedBuilderBuilder {
         return this;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public List<DiscordEmbedField> getFields() {
+        return fields;
+    }
+
+    public String getFooter() {
+        return footer;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public boolean isImageIsThumbnail() {
+        return imageIsThumbnail;
+    }
+
+    public boolean isHasInlineFields() {
+        return hasInlineFields;
+    }
+
     public Integer getLength() {
         return title.length() + author.length() + footer.length()
                 + fields.stream()
@@ -107,5 +136,24 @@ public class EmbedBuilderBuilder {
             }
         }
         return output;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EmbedBuilderBuilder)) return false;
+        EmbedBuilderBuilder that = (EmbedBuilderBuilder) o;
+        return imageIsThumbnail == that.imageIsThumbnail &&
+                hasInlineFields == that.hasInlineFields &&
+                author.equals(that.author) &&
+                title.equals(that.title) &&
+                fields.equals(that.fields) &&
+                footer.equals(that.footer) &&
+                imageUrl.equals(that.imageUrl);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(author, title, fields, footer, imageUrl, imageIsThumbnail, hasInlineFields);
     }
 }

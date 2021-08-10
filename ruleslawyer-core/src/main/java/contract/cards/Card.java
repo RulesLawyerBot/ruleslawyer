@@ -11,7 +11,7 @@ import java.util.Optional;
 
 import static contract.cards.FormatLegality.ANY_FORMAT;
 import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
-import static contract.searchRequests.CardSearchRequestType.TITLE_ONLY;
+import static contract.searchRequests.CardSearchRequestType.MATCH_TITLE;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
@@ -96,8 +96,8 @@ public class Card implements Searchable {
         return cardSearchRequest.getKeywords().stream()
                 .map(String::toLowerCase)
                 .allMatch(searchElement -> {
-                    if (cardSearchRequest.getCardSearchRequestType() == TITLE_ONLY) {
-                        return keywordExistsInTitle(searchElement);
+                    if (cardSearchRequest.getCardSearchRequestType() == MATCH_TITLE) {
+                        return keywordMatchesTitle(searchElement);
                     } else if (cardSearchRequest.getCardSearchRequestType() == INCLUDE_ORACLE) {
                         return keywordExistsInOracle(searchElement);
                     } else {
@@ -110,12 +110,16 @@ public class Card implements Searchable {
 
     @Override
     public List<? extends Searchable> searchForKeywords(List<String> keywords) {
-        return searchForKeywords(new CardSearchRequest(keywords, ANY_FORMAT, 1));
+        return searchForKeywords(new CardSearchRequest(keywords, ANY_FORMAT, 1, INCLUDE_ORACLE));
     }
 
     @Override
     public List<? extends Searchable> fuzzySearchForKeywords(SearchRequest searchRequest, Integer fuzzyDistance) {
         return null; //TODO
+    }
+
+    private boolean keywordMatchesTitle(String keyword) {
+        return this.cardName.toLowerCase().equals(keyword.toLowerCase());
     }
 
     private boolean keywordExistsInTitle(String keyword) {

@@ -6,7 +6,7 @@ import contract.cards.FormatLegality;
 import java.util.List;
 
 import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
-import static contract.searchRequests.CardSearchRequestType.TITLE_ONLY;
+import static contract.searchRequests.CardSearchRequestType.MATCH_TITLE;
 
 public class CardSearchRequest extends SearchRequest<Card> {
 
@@ -14,10 +14,10 @@ public class CardSearchRequest extends SearchRequest<Card> {
     private FormatLegality formatLegality;
     private boolean isFuzzy;
 
-    public CardSearchRequest(List<String> keywords, FormatLegality formatLegality, Integer pageNumber) {
+    public CardSearchRequest(List<String> keywords, FormatLegality formatLegality, Integer pageNumber, CardSearchRequestType cardSearchRequestType) {
         this.keywords = keywords;
         this.formatLegality = formatLegality;
-        this.cardSearchRequestType = TITLE_ONLY;
+        this.cardSearchRequestType = cardSearchRequestType;
         this.isFuzzy = false;
         this.pageNumber = pageNumber;
     }
@@ -36,11 +36,6 @@ public class CardSearchRequest extends SearchRequest<Card> {
 
     public CardSearchRequest makeFuzzy() {
         this.isFuzzy = true;
-        return this;
-    }
-
-    public CardSearchRequest includeOracle() {
-        this.cardSearchRequestType = INCLUDE_ORACLE;
         return this;
     }
 }
