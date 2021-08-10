@@ -23,8 +23,7 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
-import static search.interaction_pagination.InteractionPaginationStatics.CARD_PAGINATION_ROW;
-import static search.interaction_pagination.InteractionPaginationStatics.CARD_ROW;
+import static search.interaction_pagination.InteractionPaginationStatics.*;
 import static search.interaction_pagination.pagination_enum.CardDataReturnType.*;
 
 public class DiscordCardSearchService {
@@ -77,9 +76,9 @@ public class DiscordCardSearchService {
             return new DiscordReturnPayload(embed);
         }
         if (searchRequest.getCardSearchRequestType() == MATCH_TITLE) {
-            return new DiscordReturnPayload(embed.setFooter(getFooter(searchRequest, cards.size()))).setComponents(CARD_ROW);
+            return new DiscordReturnPayload(embed.setFooter(getFooter(searchRequest, cards.size()))).setComponents(CARD_ROW, DELETE_ONLY_ROW);
         }
-        return new DiscordReturnPayload(embed.setFooter(getFooter(searchRequest, cards.size()))).setComponents(CARD_ROW, CARD_PAGINATION_ROW);
+        return new DiscordReturnPayload(embed.setFooter(getFooter(searchRequest, cards.size()))).setComponents(CARD_ROW, CARD_PAGINATION_ROW, DELETE_ONLY_ROW);
     }
 
     private EmbedBuilderBuilder getEmbedForCard(Card card, CardDataReturnType cardDataReturnType) {
