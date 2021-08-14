@@ -9,6 +9,7 @@ import exception.NotYetImplementedException;
 import java.util.List;
 import java.util.Optional;
 
+import static contract.cards.CardSetType.*;
 import static contract.cards.FormatLegality.ANY_FORMAT;
 import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
 import static contract.searchRequests.CardSearchRequestType.MATCH_TITLE;
@@ -23,7 +24,7 @@ public class Card implements Searchable {
     private String typeLine;
     private String oracleText;
     private List<String> rulings;
-    private List<List<String>> sets;
+    private List<CardSet> sets;
     private List<FormatLegality> formatLegalities;
     private Integer edhrecRank;
     private List<String> image_urls;
@@ -34,7 +35,7 @@ public class Card implements Searchable {
             @JsonProperty("typeLine") String typeLine,
             @JsonProperty("oracleText") String oracleText,
             @JsonProperty("rulings") List<String> rulings,
-            @JsonProperty("sets") List<List<String>> sets,
+            @JsonProperty("sets") List<CardSet> sets,
             @JsonProperty("legalities") List<String> formatLegalities,
             @JsonProperty("edhrec_rank") Integer edhrecRank,
             @JsonProperty("image_url") List<String> image_urls
@@ -72,7 +73,7 @@ public class Card implements Searchable {
         return rulings;
     }
 
-    public List<List<String>> getSets() {
+    public List<CardSet> getSets() {
         return sets;
     }
 
@@ -137,6 +138,10 @@ public class Card implements Searchable {
     @Override
     public Integer getRelevancy(List<String> keywords) {
         Integer relevancy = this.edhrecRank;
+        Integer normalSets = (int)this.sets.stream().filter(set->set.getCardSetType()==NORMAL_SET).count();
+        Integer foilSets = (int)this.sets.stream().filter(set->set.getCardSetType()==FOIL_ONLY_SET).count();
+        //Integer mtgoSets = (int)this.sets.stream().filter(set->set.getCardSetType()==MTGO_SET).count();
+        relevancy -= (normalSets * 2500 + foilSets * 5000);
         Boolean nameStartsWithKeyword = keywords.stream()
                 .anyMatch(keyword -> cardName.toLowerCase().startsWith(keyword.toLowerCase()));
         if (typeLine.contains("Legendary") && nameStartsWithKeyword) {
@@ -146,7 +151,6 @@ public class Card implements Searchable {
                 .allMatch(keyword -> cardName.toLowerCase().contains(keyword.toLowerCase()));
         if (!matchesName)
             relevancy += 10000;
-        relevancy -= (this.sets.size()*1000);
         return relevancy;
     }
 

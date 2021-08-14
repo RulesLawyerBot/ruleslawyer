@@ -2,10 +2,21 @@ import json
 from simple_io import write
 from simple_io import clear
 from contract.cards import Card
+from contract.cards import SetType
+from contract.cards import CardSet
 import datetime
 
 FORMATS = ["standard", "brawl", "historic", "pioneer", "modern", "legacy", "vintage", "commander", "pauper"]
 all_cards = {}
+
+
+def get_set_type(card_json):
+    card_prices = card_json["prices"]
+    if card_prices["usd"] or card_prices["eur"]:
+        return SetType.NORMAL_SET
+    if card_prices["usd_foil"] or card_prices["eur_foil"]:
+        return SetType.FOIL_ONLY_SET
+    return SetType.MTGO_SET
 
 
 def parse_card_oracle(card_json):
@@ -30,7 +41,7 @@ def get_image_urls(card_json):
 def parse_card(card_json):
     card_name = card_json["name"].replace('"', "'")
     scryfall_uri = card_json["uri"]
-    card_set = (card_json["set_name"], scryfall_uri)
+    card_set = CardSet(scryfall_uri, get_set_type(card_json), card_json["set_name"])
     oracle_id = card_json["oracle_id"]
     if all_cards.get(oracle_id):
         all_cards[oracle_id].add_set(card_set)
@@ -69,7 +80,7 @@ def main():
 
     for card_json in skipped_cards:
         scryfall_uri = card_json["uri"]
-        card_set = (card_json["set_name"], scryfall_uri)
+        card_set = CardSet(scryfall_uri, get_set_type(card_json), card_json["set_name"])
         oracle_id = card_json["oracle_id"]
         if all_cards.get(oracle_id):
             all_cards[oracle_id].add_set(card_set)

@@ -14,6 +14,7 @@ public class DiscordReturnPayload {
     private ActionRow[] components;
 
     public DiscordReturnPayload(EmbedBuilderBuilder embed) {
+        this.content = "";
         this.embed = embed;
         this.components = new ActionRow[0];
     }

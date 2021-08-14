@@ -38,7 +38,7 @@ public class DiscordCardSearchServiceTest {
     public void searchForCard_NoCardExists_VerifyReturnValue() {
         DiscordReturnPayload output = discordCardSearchService.getSearchResult("Elaine", "Blue Eyes White Dragon", ORACLE);
 
-        assertThat(output.getComponents().length, is(0));
+        assertThat(output.getComponents().length, is(1));
         assertThat(output.getEmbed().getFooter().length(), is(0));
         assertThat(output.getEmbed().getTitle(), is("No card found"));
     }

@@ -143,9 +143,9 @@ public class SlashCommandSearchService {
                         event.getSlashCommandInteraction().getFirstOptionStringValue().orElse("") + "|" + event.getSlashCommandInteraction().getSecondOptionStringValue().orElse("")
                 );
         event.getSlashCommandInteraction().createImmediateResponder()
-                .setContent(searchResult.getContent())
                 .addEmbed(searchResult.getEmbed().build())
                 .addComponents(searchResult.getComponents())
+                .setContent(searchResult.getContent())
                 .respond();
     }
 

@@ -73,7 +73,7 @@ public class DiscordCardSearchService {
                 );
         EmbedBuilderBuilder embed = getEmbedForCard(card, searchRequest.getCardDataReturnType());
         if (cards.isEmpty()) {
-            return new DiscordReturnPayload(embed);
+            return new DiscordReturnPayload(embed).setComponents(DELETE_ONLY_ROW);
         }
         if (searchRequest.getCardSearchRequestType() == MATCH_TITLE) {
             return new DiscordReturnPayload(embed.setFooter(getFooter(searchRequest, cards.size()))).setComponents(CARD_ROW, DELETE_ONLY_ROW);

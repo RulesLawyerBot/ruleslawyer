@@ -40,7 +40,7 @@ public class AndroidSearchService {
     }
 
     public static List<Card> getCardSearchResults(String input) {
-        CardSearchRequest cardSearchRequest = new CardSearchRequest(asList(input.split(" ")), ANY_FORMAT);
+        CardSearchRequest cardSearchRequest = new CardSearchRequest(asList(input.split(" ")), ANY_FORMAT, 1, INCLUDE_ORACLE);
         return cardRepository.getSearchResult(cardSearchRequest)
                 .stream()
                 .map(SearchResult::getEntry)

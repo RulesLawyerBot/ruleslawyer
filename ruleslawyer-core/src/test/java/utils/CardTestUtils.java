@@ -1,10 +1,12 @@
 package utils;
 
 import contract.cards.Card;
+import contract.cards.CardSet;
 
 import java.util.Collections;
 import java.util.List;
 
+import static contract.cards.CardSetType.NORMAL_SET;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
@@ -21,7 +23,7 @@ public class CardTestUtils {
                 "Instant",
                 "Search your library for up to four cards with different names and reveal them. Target opponent chooses two of those cards. Put the chosen cards into your graveyard and the rest into your hand. Then shuffle your library.",
                 singletonList("You can choose to find fewer than four cards if you want. If you find one or two cards, your opponent must choose for them to be put into your graveyard, even if they don’t want to."),
-                singletonList(asList("Something Kamigawa", "link")),
+                singletonList(new CardSet(NORMAL_SET, "test_set_url", "Something Kamigawa")),
                 Collections.emptyList(),
                 42,
                 singletonList("")
@@ -38,7 +40,7 @@ public class CardTestUtils {
                 asList("Thalia’s ability affects each spell that’s not a creature spell, including your own.",
                         "To determine the total cost of a spell, start with the mana cost or alternative cost you’re paying, add any cost increases, then apply any cost reductions. The converted mana cost of the spell remains unchanged, no matter what the total cost to cast it was."
                 ),
-                asList(asList("Secret Lair: Thalia", ""), asList("Dark Ascension", "link")),
+                asList(new CardSet(NORMAL_SET, "test_set_url", "Secret Lair: Thalia"), new CardSet(NORMAL_SET, "test_set_url", "Dark Ascension")),
                 Collections.emptyList(),
                 42,
                 singletonList("")
@@ -60,7 +62,7 @@ public class CardTestUtils {
                         "Narset will “see” cards drawn by opponents earlier in the turn she entered the battlefield, although Narset can’t affect cards drawn before she entered the battlefield. For example, if an opponent draws two cards, then Narset enters the battlefield, that opponent can’t draw more cards that turn, but the two drawn cards are unaffected.",
                         "Replacement effects (such as that of Underrealm Lich or the first ability of Jace, Wielder of Mysteries) can’t be used to replace draws that Narset disallows. However, if an opponent’s first draw is replaced (by Underrealm Lich’s ability, for example), that draw didn’t happen and Narset won’t stop the next draw (which may also be replaced by Underrealm Lich’s ability)."
                 ),
-                singletonList(asList("War of the Spark", "")),
+                singletonList(new CardSet(NORMAL_SET, "test_set_link", "War of the Spark")),
                 Collections.emptyList(),
                 42,
                 singletonList("")

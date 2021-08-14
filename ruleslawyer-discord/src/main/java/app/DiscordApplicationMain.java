@@ -2,6 +2,7 @@ package app;
 
 import init_utils.ManaEmojiService;
 import org.javacord.api.entity.channel.ServerTextChannel;
+import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.MessageBuilder;
 import org.javacord.api.event.interaction.MessageComponentCreateEvent;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
@@ -36,7 +37,7 @@ public class DiscordApplicationMain {
     private static InteractionPaginationService interactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.12.1 | AFR | \"/help\"";
+    private static final String CURRENT_VERSION = "Version 1.12.2 | AFR | \"/help\"";
 
     public static void main(String[] args) {
         if (!args[0].equals("prod")) {
@@ -84,7 +85,10 @@ public class DiscordApplicationMain {
 
         Optional<ServerTextChannel> generalChannel = ServerJoinHelpService.getChannelToSendMessage(event);
         generalChannel.ifPresent(channel -> {
-            channel.sendMessage(MAIN_HELP_EMBED.build());
+            new MessageBuilder()
+                    .setEmbed(MAIN_HELP_EMBED.build())
+                    .addComponents(DELETE_ONLY_ROW)
+                    .send(channel);
             messageLoggingService.logJoinMessageSuccess(channel.getServer());
         }
         );

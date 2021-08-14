@@ -1,6 +1,7 @@
 package service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import contract.cards.CardSet;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,12 +19,12 @@ public class CardPriceSearchService {
 
     }
 
-    public List<CardPriceReturnObject> getPrices(List<List<String>> scryfallURLs) {
-        return scryfallURLs.stream()
+    public List<CardPriceReturnObject> getPrices(List<CardSet> cardSets) {
+        return cardSets.stream()
                 .map(elem ->
                         {
                             try {
-                                return new CardPriceReturnObject(elem.get(0), makeStringForPriceMap(getPrice(elem.get(1))));
+                                return new CardPriceReturnObject(elem.getSetName(), makeStringForPriceMap(getPrice(elem.getSetUrl())));
                             } catch (IOException e) {
                                 return null;
                             }

@@ -69,6 +69,10 @@ public class HelpMessageSearchService {
                                     "Rules version: Adventures in the Forgotten Realms"
                     ),
                     new DiscordEmbedField(
+                            "v1.12.2",
+                            "Some card relevancy algorithm changes."
+                    ),
+                    new DiscordEmbedField(
                             "v1.12.1",
                             "Fixed some bugs and confusion in card searching.\n" +
                                     "Updated: /card now supports pagination and exact matches (use \"quotation marks\" to exact match the title)"

@@ -7,6 +7,8 @@ import contract.rules.enums.RuleSource;
 import contract.searchResults.RawRuleSearchResult;
 import contract.searchResults.SearchResult;
 import init_utils.ManaEmojiService;
+import org.javacord.api.entity.message.component.ActionRow;
+import org.javacord.api.entity.message.component.Button;
 import search.contract.DiscordEmbedField;
 import search.contract.request.DiscordRuleSearchRequest;
 import search.contract.DiscordReturnPayload;
@@ -46,7 +48,7 @@ public class DiscordRuleSearchService {
     public static final Integer MAX_FIELD_VALUE_SIZE = 1024;
     public static final String NO_RESULTS_FOUND_HELP_MESSAGE = "RulesLawyer searches the following rules documents: the Comprehensive Rules, Infraction Procedure Guide, Magic Tournament Rules, Judging at Regular document, Oathbreaker rules, Digital Infraction Procedure Guide, and Digital Magic Tournament rules.\n" +
             "Much like a traditional search engine, if your query does not appear in these documents, no results will be returned. It is suggested that you only use words that you think are likely to appear in these documents.\n" +
-            "For additional help, do {{help}} or {{help|advanced}}.";
+            "For additional help, do /help.";
 
     public DiscordRuleSearchService(ManaEmojiService manaEmojiService) {
         List<AbstractRule> rules = getRawRulesData().stream()
@@ -124,12 +126,15 @@ public class DiscordRuleSearchService {
 
         result.setFooter(footer);
 
+        String webappUrl = getWebappURL(discordRuleSearchRequest.getKeywords());
+
         return new DiscordReturnPayload(result)
-                .setContent(getWebappURL(discordRuleSearchRequest.getKeywords()))
+                .setContent(webappUrl)
                 .setComponents(
                         rawResults.hasOtherCategory() ?
                                 RULE_ROW_WITH_SOURCE_SWAP :
-                                RULE_ROW_WITHOUT_SOURCE_SWAP
+                                RULE_ROW_WITHOUT_SOURCE_SWAP,
+                        ActionRow.of(Button.link(webappUrl, "View this search on ruleslawyer.app"))
                 );
     }
 
