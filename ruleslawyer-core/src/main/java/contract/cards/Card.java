@@ -140,12 +140,11 @@ public class Card implements Searchable {
         Integer relevancy = this.edhrecRank;
         Integer normalSets = (int)this.sets.stream().filter(set->set.getCardSetType()==NORMAL_SET).count();
         Integer foilSets = (int)this.sets.stream().filter(set->set.getCardSetType()==FOIL_ONLY_SET).count();
-        //Integer mtgoSets = (int)this.sets.stream().filter(set->set.getCardSetType()==MTGO_SET).count();
         relevancy -= (normalSets * 2500 + foilSets * 5000);
         Boolean nameStartsWithKeyword = keywords.stream()
                 .anyMatch(keyword -> cardName.toLowerCase().startsWith(keyword.toLowerCase()));
         if (typeLine.contains("Legendary") && nameStartsWithKeyword) {
-            relevancy-=10000;
+            relevancy-=100000;
         }
         Boolean matchesName = keywords.stream()
                 .allMatch(keyword -> cardName.toLowerCase().contains(keyword.toLowerCase()));

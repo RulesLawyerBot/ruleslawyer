@@ -2,7 +2,6 @@ package search;
 
 import exception.NotYetImplementedException;
 import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandOptionChoice;
@@ -27,6 +26,7 @@ public class SlashCommandSearchService {
 
     public static final String RULE_SLASH_COMMAND_IDENTIFIER = "rule";
     public static final String CARD_SLASH_COMMAND_IDENTIFIER = "card";
+    public static final String CARD_PRICE_SLASH_COMMAND_IDENTIFIER = "price";
     public static final String HELP_SLASH_COMMAND_IDENTIFIER = "help";
 
     private DiscordApi api;
@@ -102,6 +102,20 @@ public class SlashCommandSearchService {
                 .createGlobal(api)
                 .join();
         SlashCommand.with(
+                CARD_PRICE_SLASH_COMMAND_IDENTIFIER,
+                "search RulesLawyer for a card price (alias of /card)",
+                singletonList(
+                        create(
+                                STRING,
+                                "card_name",
+                                "Search name or oracle (\"quotes\" for exact name match) - tab twice for additional parameters",
+                                true
+                        )
+                )
+        )
+                .createGlobal(api)
+                .join();
+        SlashCommand.with(
                 HELP_SLASH_COMMAND_IDENTIFIER,
                 "RulesLawyer help files (press tab for a list of optional arguments)",
                 singletonList(
@@ -129,6 +143,8 @@ public class SlashCommandSearchService {
             respondToRuleCommand(event);
         } else if (commandName.equals(CARD_SLASH_COMMAND_IDENTIFIER)) {
             respondToCardCommand(event);
+        } else if (commandName.equals(CARD_PRICE_SLASH_COMMAND_IDENTIFIER)) {
+            respondToPriceCommand(event);
         } else if (commandName.equals(HELP_SLASH_COMMAND_IDENTIFIER)) {
             respondToHelpCommand(event);
         } else {
@@ -152,16 +168,7 @@ public class SlashCommandSearchService {
     private void respondToCardCommand(SlashCommandCreateEvent event) {
         CardDataReturnType cardDataReturnType = event.getSlashCommandInteraction().getSecondOptionStringValue().map(CardDataReturnType::valueOf).orElse(ORACLE);
         if (cardDataReturnType == PRICE) {
-            event.getSlashCommandInteraction().respondLater();
-            DiscordReturnPayload discordReturnPayload = discordCardSearchService.getSearchResult(
-                    event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
-                    event.getSlashCommandInteraction().getFirstOptionStringValue().orElse(""),
-                    cardDataReturnType
-            );
-            event.getSlashCommandInteraction().createFollowupMessageBuilder()
-                    .addEmbed(discordReturnPayload.getEmbed().build())
-                    .addComponents(discordReturnPayload.getComponents())
-                    .send();
+            respondToPriceCommand(event);
         } else {
             DiscordReturnPayload discordReturnPayload = discordCardSearchService.getSearchResult(
                     event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
@@ -173,6 +180,19 @@ public class SlashCommandSearchService {
                     .addComponents(discordReturnPayload.getComponents())
                     .respond();
         }
+    }
+
+    private void respondToPriceCommand(SlashCommandCreateEvent event) {
+        event.getSlashCommandInteraction().respondLater();
+        DiscordReturnPayload discordReturnPayload = discordCardSearchService.getSearchResult(
+                event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
+                event.getSlashCommandInteraction().getFirstOptionStringValue().orElse(""),
+                PRICE
+        );
+        event.getSlashCommandInteraction().createFollowupMessageBuilder()
+                .addEmbed(discordReturnPayload.getEmbed().build())
+                .addComponents(discordReturnPayload.getComponents())
+                .send();
     }
 
     private void respondToHelpCommand(SlashCommandCreateEvent event) {

@@ -32,6 +32,7 @@ public class DiscordCardSearchService {
     private CardPriceSearchService cardPriceSearchService;
     public static final String CARD_SEARCH_AUTHOR_TEXT = "RulesLawyer Card Search";
     public static final String NO_CARD_FOUND_TEXT = "No card found";
+    private static final EmbedBuilderBuilder NO_CARD_FOUND_EMBED = new EmbedBuilderBuilder().setAuthor(CARD_SEARCH_AUTHOR_TEXT).setTitle(NO_CARD_FOUND_TEXT);
 
     public DiscordCardSearchService(ManaEmojiService manaEmojiService) {
         List<Card> cards = getCards()
@@ -54,7 +55,7 @@ public class DiscordCardSearchService {
                                 1
                         ) :
                         new DiscordCardSearchRequest(
-                                asList(query.split("\\P{Alpha}+")),
+                                asList(query.split(" ")),
                                 ANY_FORMAT,
                                 author,
                                 cardDataReturnType,
@@ -66,27 +67,18 @@ public class DiscordCardSearchService {
 
     public DiscordReturnPayload getSearchResult(DiscordCardSearchRequest searchRequest) {
         List<Card> cards = rawCardSearchService.getCardsWithOracleFallback(searchRequest);
-        Card card = cards.isEmpty() ?
-                null :
-                cards.get(
-                        (searchRequest.getPageNumber()-1+cards.size()) % cards.size()
-                );
-        EmbedBuilderBuilder embed = getEmbedForCard(card, searchRequest.getCardDataReturnType());
         if (cards.isEmpty()) {
-            return new DiscordReturnPayload(embed).setComponents(DELETE_ONLY_ROW);
+            return new DiscordReturnPayload(NO_CARD_FOUND_EMBED).setComponents(DELETE_ONLY_ROW);
         }
-        if (searchRequest.getCardSearchRequestType() == MATCH_TITLE) {
+        Card card = cards.get((searchRequest.getPageNumber()-1+cards.size()) % cards.size());
+        EmbedBuilderBuilder embed = getEmbedForCard(card, searchRequest.getCardDataReturnType());
+        if (searchRequest.getCardSearchRequestType() == MATCH_TITLE || cards.size() == 1) {
             return new DiscordReturnPayload(embed.setFooter(getFooter(searchRequest, cards.size()))).setComponents(CARD_ROW, DELETE_ONLY_ROW);
         }
-        return new DiscordReturnPayload(embed.setFooter(getFooter(searchRequest, cards.size()))).setComponents(CARD_ROW, CARD_PAGINATION_ROW, DELETE_ONLY_ROW);
+        return new DiscordReturnPayload(embed.setFooter(getFooter(searchRequest, cards.size()))).setComponents(CARD_ROW, CARD_PAGINATION_ROW);
     }
 
     private EmbedBuilderBuilder getEmbedForCard(Card card, CardDataReturnType cardDataReturnType) {
-        if (card == null) {
-            return new EmbedBuilderBuilder()
-                    .setAuthor(CARD_SEARCH_AUTHOR_TEXT)
-                    .setTitle(NO_CARD_FOUND_TEXT);
-        }
         if (cardDataReturnType == RULINGS) {
             return new EmbedBuilderBuilder()
                     .setAuthor(CARD_SEARCH_AUTHOR_TEXT)

@@ -65,8 +65,13 @@ public class HelpMessageSearchService {
             .addFields(
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
-                            "Last updated: 2021-08-10\n" +
+                            "Last updated: 2021-08-25\n" +
                                     "Rules version: Adventures in the Forgotten Realms"
+                    ),
+                    new DiscordEmbedField(
+                            "v1.12.3",
+                            "/price is now up (as an alias for /card <name> price)\n" +
+                                    "Some algorithm tweaks."
                     ),
                     new DiscordEmbedField(
                             "v1.12.2",

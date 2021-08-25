@@ -1,6 +1,5 @@
 package search;
 
-import contract.searchRequests.CardSearchRequestType;
 import init_utils.ManaEmojiService;
 import org.javacord.api.DiscordApiBuilder;
 import org.junit.Before;
@@ -73,7 +72,7 @@ public class DiscordCardSearchServiceTest {
 
         DiscordReturnPayload firstOutput = discordCardSearchService.getSearchResult(searchRequest);
 
-        assertThat(firstOutput.getComponents().length, is(3));
+        assertThat(firstOutput.getComponents().length, is(2));
         assertThat(firstOutput.getEmbed().getFooter(), is("Elaine | thalia | oracle | Page 1"));
         assertThat(firstOutput.getEmbed().getTitle().startsWith("Thalia, Guardian of Thraben"), is(true));
 
