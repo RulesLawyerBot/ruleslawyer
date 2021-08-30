@@ -23,9 +23,10 @@ import static java.util.stream.IntStream.range;
 
 public abstract class AbstractRule implements Searchable {
     protected static Integer ruleCount = 0;
-    protected static final Integer MULTIPLE_OCCURANCE_RELEVANCY_MODIFIER = -200000;
+    protected static final Integer MULTIPLE_OCCURRENCE_RELEVANCY_MODIFIER = -200000;
     protected static final Integer SUBRULE_RELEVANCY_MODIFIER = 10000;
     protected static final Integer EXACT_MATCH_RELEVANCY_MODIFIER = -50000;
+    protected static final Integer KEYWORD_AS_WORD_MODIFIER = -200000;
 
     protected Integer index;
     protected AbstractRule parentRule;
@@ -176,16 +177,18 @@ public abstract class AbstractRule implements Searchable {
                 .map(this::getRelevancyForKeyword)
                 .mapToInt(OptionalInt::getAsInt) //should all exist
                 .sum();
-        return containsKeywordsExactMatch(keywords) ?
-                relevancy + (keywords.size() * EXACT_MATCH_RELEVANCY_MODIFIER) :
-                relevancy;
+        if (containsKeywordsExactMatch(keywords)) {
+            relevancy += (keywords.size() * EXACT_MATCH_RELEVANCY_MODIFIER);
+        }
+        relevancy += countKeywordsAsWords(keywords) * KEYWORD_AS_WORD_MODIFIER;
+        return relevancy;
     }
 
     private OptionalInt getRelevancyForKeyword(String keyword) {
         if (getParentText().toLowerCase().contains(keyword)) {
             return OptionalInt.of(
                     getParentText().toLowerCase().indexOf(keyword) +
-                            (getKeywordCount(keyword) * MULTIPLE_OCCURANCE_RELEVANCY_MODIFIER / this.getLength())
+                            (getKeywordCount(keyword) * MULTIPLE_OCCURRENCE_RELEVANCY_MODIFIER / this.getLength())
             );
         }
         if (getRuleSource().toString().contains(keyword.toUpperCase())) {
@@ -212,6 +215,19 @@ public abstract class AbstractRule implements Searchable {
                         this.subRules != null && this.subRules.size() > 0 &&
                                 this.subRules.stream().anyMatch(subRule -> subRule.containsKeywordsExactMatch(keywords))
                 );
+    }
+
+    private Integer countKeywordsAsWords(List<String> keywords) {
+        return (int)keywords.stream().map(String::toLowerCase).filter(this::containsKeywordAsWord).count();
+    }
+
+    private boolean containsKeywordAsWord(String keyword) {
+        return
+                stream(this.text.toLowerCase().split(" "))
+                    .map(word -> word.replaceAll("^[^a-zA-Z0-9\\s]+|[^a-zA-Z0-9\\s]+$", ""))
+                    .anyMatch(word -> word.equals(keyword))
+                || this.getSubRules().stream()
+                        .anyMatch(subRule -> subRule.containsKeywordAsWord(keyword));
     }
 
     /* Fuzzy relevancy */

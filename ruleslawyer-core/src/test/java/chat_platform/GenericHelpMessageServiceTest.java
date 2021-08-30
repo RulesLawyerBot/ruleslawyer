@@ -1,6 +1,7 @@
 package chat_platform;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static chat_platform.GenericHelpMessageService.MAIN_HELP_STRING;
@@ -9,7 +10,7 @@ import static chat_platform.GenericHelpMessageService.HELP_NOT_FOUND_STRING;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-
+@Ignore //deprecated
 public class GenericHelpMessageServiceTest {
 
     GenericHelpMessageService genericHelpMessageService;

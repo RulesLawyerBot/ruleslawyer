@@ -39,7 +39,7 @@ def main():
         if len(line) == 0: # make rule
             if len(rule_builder) != 0:
                 print(rule_builder)
-                header.subrules[0].subrules.append(Rule(rule_builder.strip()))
+                header.subrules.append(Rule(rule_builder.strip()))
                 rule_builder = ""
 
         citation = line.split(" ")[0]
@@ -48,10 +48,10 @@ def main():
         if len(citation) == 4: # superheader
             if superheader:
                 output.append(superheader)
-            superheader = RuleSuperHeader(line, [])
+            superheader = RuleHeader(line, [])
         elif is_int(citation[4:-1]) and citation[-1] == ".": # header/subheader
             subheader_text = line[line.index(" ")+1:]
-            header = RuleHeader(citation, [RuleSubHeader(subheader_text, [])])
+            header = RuleSubHeader(line, [])
             if superheader:
                 superheader.subrules.append(header)
         else: # base rule

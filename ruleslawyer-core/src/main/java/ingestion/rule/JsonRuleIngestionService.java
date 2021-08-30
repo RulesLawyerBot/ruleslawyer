@@ -15,10 +15,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static contract.rules.enums.RuleSource.*;
 import static java.lang.String.valueOf;
 import static java.nio.charset.StandardCharsets.*;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
@@ -28,7 +30,7 @@ public class JsonRuleIngestionService {
     public static List<AbstractRule> getRawRulesData() {
         try {
             List<AbstractRule> rules = new ArrayList<>();
-            rules.addAll(getFlattenedRules("/CR-parsed.json", CR));
+            rules.addAll(getRawRulesData("/CR-parsed.json", CR));
             rules.addAll(getRawRulesData("/CRG-parsed.json", CR));
             rules.addAll(getRawRulesData("/JAR-parsed.json", JAR));
             rules.addAll(getRawRulesData("/IPG-parsed.json", IPG));
@@ -64,7 +66,11 @@ public class JsonRuleIngestionService {
     private static List<AbstractRule> getFlattenedRules(String filename, RuleSource ruleSource) throws IOException {
         List<JsonMappedRule> rawRules = getJsonMappedRules(filename);
         return rawRules.stream()
-                .map(rule -> convertToRuleHeaders(rule.getSubRules(), ruleSource))
+                .map(rule ->
+                        Stream.of(getCRRuleHeader(rule, ruleSource), convertToRuleHeaders(rule.getSubRules(), ruleSource))
+                                .flatMap(Collection::stream)
+                                .collect(toList())
+                )
                 .flatMap(Collection::stream)
                 .collect(toList());
     }
@@ -77,6 +83,10 @@ public class JsonRuleIngestionService {
         in.close();
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(valueOf(buffer), new TypeReference<List<JsonMappedRule>>() {});
+    }
+
+    private static List<AbstractRule> getCRRuleHeader(JsonMappedRule rule, RuleSource ruleSource) {
+        return singletonList(new RuleHeader(rule.getText(), ruleSource));
     }
 
     private static List<AbstractRule> convertToRuleHeaders(List<JsonMappedRule> rules, RuleSource ruleSource) {

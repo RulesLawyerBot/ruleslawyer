@@ -1,16 +1,16 @@
 package chat_platform.rule_output;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import contract.rules.AbstractRule;
 import contract.rules.PrintableRule;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Stream.concat;
 
 public class OutputFieldSplitService {
 
@@ -41,31 +41,17 @@ public class OutputFieldSplitService {
             fieldHeader = fieldHeader.substring(0, splitIndex);
         }
 
-        String finalFieldHeader = fieldHeader;//are you kidding me java compiler
-        if (finalFieldHeader.length() < 128)
-            return splitFieldText(fieldText).stream()
-                .map(text -> new GenericRuleOutputField(finalFieldHeader, text))
-                .collect(toList());
-        else {
-            List<String> splitFieldText = splitFieldText(fieldText);
-            if (splitFieldText.size() == 2) {
-                return singletonList(new GenericRuleOutputField(finalFieldHeader, splitFieldText.get(0)));
-            } else {
-                List<GenericRuleOutputField> output = splitFieldText.stream()
-                        .map(text ->
-                                new GenericRuleOutputField(finalFieldHeader.substring(0, 9), text)
-                        )
-                        .collect(toList());
-                output.add(0,
-                        new GenericRuleOutputField(
-                            finalFieldHeader,
-                            splitFieldText.get(0)
-                        )
-                );
-                output.remove(1);
-                return output;
-            }
-        }
+        String shortenedFieldHeader =
+                fieldHeader.lastIndexOf(". ") == -1 ?
+                fieldHeader :
+                fieldHeader.substring(0, fieldHeader.lastIndexOf(". ")+1);
+        List<String> splitFieldText = splitFieldText(fieldText);
+
+        return concat(
+                Stream.of(new GenericRuleOutputField(fieldHeader, splitFieldText.get(0))),
+                splitFieldText.subList(1, splitFieldText.size()).stream()
+                        .map(text -> new GenericRuleOutputField(shortenedFieldHeader, text))
+        ).collect(toList());
     }
 
     private List<String> splitFieldText(String rawFieldText) {

@@ -5,6 +5,7 @@ import contract.rules.enums.RuleSource;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
 
@@ -45,12 +46,25 @@ public class RuleSubheader extends AbstractRule {
                     )
             );
         } else {
-            return singletonList(
-                    new PrintableRule(
-                            this.getRuleSource() + " " + this.getHeader().getText() + " " + this.getText(),
-                            this.getSubRules().stream().map(AbstractRule::getText).collect(joining("\n"))
-                    )
-            );
+            if (this.getHeader().getText().contains(" ")) {
+                return asList(
+                        new PrintableRule(
+                                this.getRuleSource() + " " + this.getHeader().getText().substring(0, this.getHeader().getText().indexOf(" ")),
+                                this.getHeader().getText().substring(this.getHeader().getText().indexOf(" "))
+                        ),
+                        new PrintableRule(
+                                this.getRuleSource() + " " + this.getText(),
+                                this.getSubRules().stream().map(AbstractRule::getText).collect(joining("\n"))
+                        )
+                );
+            } else {
+                return singletonList(
+                        new PrintableRule(
+                                this.getRuleSource() + " " + this.getHeader().getText() + " " + this.getText(),
+                                this.getSubRules().stream().map(AbstractRule::getText).collect(joining("\n"))
+                        )
+                );
+            }
         }
     }
 }

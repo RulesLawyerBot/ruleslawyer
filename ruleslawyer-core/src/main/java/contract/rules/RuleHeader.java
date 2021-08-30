@@ -36,13 +36,19 @@ public class RuleHeader extends AbstractRule {
                 )
             );
         }
-        return this.getSubRules().stream().map(
+        List<PrintableRule> subRuleList = this.getSubRules().stream().map(
                 subrule -> new PrintableRule(
-                        this.getRuleSource() + " " + this.getText() + " " + subrule.getText(),
+                        this.getRuleSource() + " " + subrule.getText(),
                         subrule.getSubRules().stream().map(AbstractRule::getText).collect(joining("\n"))
                 )
         )
                 .collect(toList());
+        subRuleList.add(0,
+                new PrintableRule(
+                        this.getRuleSource() + " " + this.getText().substring(0, this.getText().indexOf(" ")),
+                        this.getText().substring(this.getText().indexOf(" "))
+                )
+        );
+        return subRuleList;
     }
-
 }
