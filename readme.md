@@ -8,7 +8,9 @@ The application will not run locally without an API key with access to my person
 
 **Installation**
 
-Discord: https://discordapp.com/oauth2/authorize?client_id=590184543684788253&scope=bot&permissions=346112
+Website: www.ruleslawyer.app
+
+Discord: https://discordapp.com/oauth2/authorize?client_id=590184543684788253&scope=bot&permissions=2147838016&scope=applications.commands%20bot
 
 Slack: Closed alpha (for now, feel free to contact me for access)
 
