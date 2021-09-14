@@ -52,21 +52,29 @@ public class HelpMessageSearchService {
                                     "RulesLawyer uses material that is copyrighted to Wizards of the Coast and is used under fair use doctrine. Feel free to do whatever with it as long as you credit me.\n" +
                                     "\n" +
                                     "Contact me with bugs, feedback, and other inquiries at @ RulesLawyerBot on Twitter or Oritart#0001 on Discord."
+                    ),
+                    new DiscordEmbedField(
+                            "Support us!",
+                            "RulesLawyer has a Patreon, located at https://patreon.com/ruleslawyer. This helps us pay for server costs."
                     )
             );
     public static final EmbedBuilderBuilder HELP_ADD_EMBED = new EmbedBuilderBuilder()
             .addFields(
                     new DiscordEmbedField(
                             "Add RulesLawyer to your own server",
-                            "Add **RulesLawyer** to your own server by using this link: https://discordapp.com/oauth2/authorize?client_id=590184543684788253&scope=bot&permissions=2147838016"
+                            "Add **RulesLawyer** to your own server by using this link: https://discordapp.com/oauth2/authorize?client_id=590184543684788253&scope=bot&permissions=2147838016&scope=applications.commands%20bot"
                     )
             );
     public static final EmbedBuilderBuilder HELP_DEV_EMBED = new EmbedBuilderBuilder()
             .addFields(
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
-                            "Last updated: 2021-08-30\n" +
+                            "Last updated: 2021-09-04\n" +
                                     "Rules version: Adventures in the Forgotten Realms"
+                    ),
+                    new DiscordEmbedField(
+                            "v1.12.5",
+                            "Updated bot invite link (with /help add) for new Discord permissions setup. ."
                     ),
                     new DiscordEmbedField(
                             "v1.12.4",

@@ -22,6 +22,6 @@ public class CardPriceSearchServiceTest {
     @Test
     public void testStuff() throws IOException {
         Map<String, String> elem = cardPriceSearchService.getPrice(TEST_URL);
-        assertThat(elem.size(), is(5));
+        assertThat(elem.size(), is(6));
     }
 }
