@@ -70,7 +70,12 @@ public class HelpMessageSearchService {
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
                             "Last updated: 2021-09-04\n" +
-                                    "Rules version: Adventures in the Forgotten Realms"
+                                    "Rules version: Adventures in the Forgotten Realms\n" +
+                                    "Cards version: Innistrad Midnight Hunt"
+                    ),
+                    new DiscordEmbedField(
+                            "v1.12.6",
+                            "Updated cards to MID. Rules will be in a separate update once we have them."
                     ),
                     new DiscordEmbedField(
                             "v1.12.5",
@@ -103,7 +108,8 @@ public class HelpMessageSearchService {
                     new DiscordEmbedField(
                             "Future Development",
                             "Slack is being worked on, but still in progress.\n" +
-                                    "Android version is on hold for now, though its one of the Patreon goals (www.patreon.com/ruleslawyer)"
+                                    "Android version is on hold for now, though its one of the Patreon goals (www.patreon.com/ruleslawyer)\n" +
+                                    "There is some known weirdness with card search. I'm working on it."
                     )
             );
     public static final EmbedBuilderBuilder HELP_NOT_FOUND_EMBED = new EmbedBuilderBuilder()
