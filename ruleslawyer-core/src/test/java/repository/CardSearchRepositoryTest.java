@@ -8,7 +8,7 @@ import utils.CardTestUtils;
 
 import java.util.List;
 
-import static contract.cards.FormatLegality.ANY_FORMAT;
+import static contract.cards.GameFormat.ANY_FORMAT;
 import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;

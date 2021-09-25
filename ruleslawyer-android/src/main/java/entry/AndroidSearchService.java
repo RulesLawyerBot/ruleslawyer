@@ -11,7 +11,7 @@ import repository.SearchRepository;
 
 import java.util.List;
 
-import static contract.cards.FormatLegality.ANY_FORMAT;
+import static contract.cards.GameFormat.ANY_FORMAT;
 import static contract.rules.enums.RuleRequestCategory.ANY_RULE_TYPE;
 import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
 import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;

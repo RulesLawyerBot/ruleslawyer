@@ -5,7 +5,6 @@ from utils.simple_io import clear
 from utils.simple_io import open_file
 from utils.filedata import FileData
 from utils.unprintable_remover import replace_unprintable
-from contract.rules import RuleSuperHeader
 from contract.rules import RuleHeader
 from contract.rules import RuleSubHeader
 from contract.rules import Rule

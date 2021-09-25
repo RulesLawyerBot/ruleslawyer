@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import static contract.cards.FormatLegality.ANY_FORMAT;
+import static contract.cards.GameFormat.ANY_FORMAT;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.joining;
 

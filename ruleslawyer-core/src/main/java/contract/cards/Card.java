@@ -6,16 +6,19 @@ import contract.searchRequests.CardSearchRequest;
 import contract.searchRequests.SearchRequest;
 import exception.NotYetImplementedException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static contract.cards.CardSetType.*;
-import static contract.cards.FormatLegality.ANY_FORMAT;
+import static contract.cards.GameFormat.ANY_FORMAT;
+import static contract.cards.LegalityStatus.LEGAL;
+import static contract.cards.LegalityStatus.NOT_LEGAL;
 import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
 import static contract.searchRequests.CardSearchRequestType.MATCH_TITLE;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
 
 public class Card implements Searchable {
 
@@ -25,7 +28,7 @@ public class Card implements Searchable {
     private String oracleText;
     private List<String> rulings;
     private List<CardSet> sets;
-    private List<FormatLegality> formatLegalities;
+    private Map<GameFormat, LegalityStatus> formatLegalities;
     private Integer edhrecRank;
     private List<String> image_urls;
 
@@ -36,7 +39,7 @@ public class Card implements Searchable {
             @JsonProperty("oracleText") String oracleText,
             @JsonProperty("rulings") List<String> rulings,
             @JsonProperty("sets") List<CardSet> sets,
-            @JsonProperty("legalities") List<String> formatLegalities,
+            @JsonProperty("legalities") Map<String, String> formatLegalities,
             @JsonProperty("edhrec_rank") Integer edhrecRank,
             @JsonProperty("image_url") List<String> image_urls
     ) {
@@ -46,11 +49,27 @@ public class Card implements Searchable {
         this.oracleText = oracleText;
         this.rulings = rulings;
         this.sets = sets;
-        this.formatLegalities = formatLegalities.stream()
-                .map(str -> FormatLegality.valueOf(str.toUpperCase()))
-                .collect(toList());
+        this.formatLegalities = new HashMap<>();
+        formatLegalities.keySet().forEach(key ->
+            this.formatLegalities.put(
+                    GameFormat.valueOf(key.toUpperCase()),
+                    LegalityStatus.valueOf(formatLegalities.get(key).toUpperCase())
+            )
+        );
         this.edhrecRank = edhrecRank;
         this.image_urls = image_urls;
+    }
+
+    public Card(Card previousCard, String newManaCost, String newOracleText) {
+        this.cardName = previousCard.getCardName();
+        this.manaCost = newManaCost;
+        this.typeLine = previousCard.getTypeLine();
+        this.oracleText = newOracleText;
+        this.rulings = previousCard.getRulings();
+        this.sets = previousCard.getSets();
+        this.formatLegalities = previousCard.getFormatLegalities();
+        this.edhrecRank = previousCard.edhrecRank;
+        this.image_urls = previousCard.getImage_urls();
     }
 
     public String getCardName() {
@@ -77,7 +96,7 @@ public class Card implements Searchable {
         return sets;
     }
 
-    public List<FormatLegality> getFormatLegalities() {
+    public Map<GameFormat, LegalityStatus> getFormatLegalities() {
         return formatLegalities;
     }
 
@@ -92,7 +111,7 @@ public class Card implements Searchable {
     @Override
     public List<? extends Searchable> searchForKeywords(SearchRequest searchRequest) {
         CardSearchRequest cardSearchRequest = (CardSearchRequest)searchRequest;
-        if (cardSearchRequest.getFormatLegality() != ANY_FORMAT && !this.formatLegalities.contains(cardSearchRequest.getFormatLegality()))
+        if (cardSearchRequest.getFormats() != ANY_FORMAT && !(this.formatLegalities.getOrDefault(cardSearchRequest.getFormats(), NOT_LEGAL) == LEGAL))
             return emptyList();
         return cardSearchRequest.getKeywords().stream()
                 .map(String::toLowerCase)
@@ -141,10 +160,13 @@ public class Card implements Searchable {
         Integer normalSets = (int)this.sets.stream().filter(set->set.getCardSetType()==NORMAL_SET).count();
         Integer foilSets = (int)this.sets.stream().filter(set->set.getCardSetType()==FOIL_ONLY_SET).count();
         relevancy -= (normalSets * 2500 + foilSets * 5000);
+        if (keywords.stream().allMatch(keyword -> this.cardName.toLowerCase().contains(keyword.toLowerCase()))) {
+            relevancy -= 100000;
+        }
         Boolean nameStartsWithKeyword = keywords.stream()
                 .anyMatch(keyword -> cardName.toLowerCase().startsWith(keyword.toLowerCase()));
         if (typeLine.contains("Legendary") && nameStartsWithKeyword) {
-            relevancy-=100000;
+            relevancy -= 100000;
         }
         Boolean matchesName = keywords.stream()
                 .allMatch(keyword -> cardName.toLowerCase().contains(keyword.toLowerCase()));

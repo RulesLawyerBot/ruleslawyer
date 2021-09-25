@@ -1,7 +1,7 @@
 package search.contract.request;
 
 import contract.cards.Card;
-import contract.cards.FormatLegality;
+import contract.cards.GameFormat;
 import contract.searchRequests.CardSearchRequest;
 import contract.searchRequests.CardSearchRequestType;
 import search.interaction_pagination.pagination_enum.CardDataReturnType;
@@ -18,13 +18,13 @@ public class DiscordCardSearchRequest extends CardSearchRequest implements Disco
 
     public DiscordCardSearchRequest(
             List<String> keywords,
-            FormatLegality formatLegality,
+            GameFormat formats,
             String requester,
             CardDataReturnType cardDataReturnType,
             CardSearchRequestType cardSearchRequestType,
             Integer pageNumber
     ) {
-        super(keywords, formatLegality, pageNumber, cardSearchRequestType);
+        super(keywords, formats, pageNumber, cardSearchRequestType);
         this.requester = requester;
         this.cardDataReturnType = cardDataReturnType;
     }

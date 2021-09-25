@@ -69,9 +69,14 @@ public class HelpMessageSearchService {
             .addFields(
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
-                            "Last updated: 2021-09-04\n" +
-                                    "Rules version: Adventures in the Forgotten Realms\n" +
-                                    "Cards version: Innistrad Midnight Hunt"
+                            "Last updated: 2021-09-24\n" +
+                                    "Rules and cards version: Innistrad: Midnight Hunt"
+                    ),
+                    new DiscordEmbedField(
+                            "v1.12.7",
+                            "Updated rules to MID.\n" +
+                                    "Slightly improved card searching.\n" +
+                                    "Now displays more granular legality instead of just legal/not legal."
                     ),
                     new DiscordEmbedField(
                             "v1.12.6",
@@ -79,7 +84,7 @@ public class HelpMessageSearchService {
                     ),
                     new DiscordEmbedField(
                             "v1.12.5",
-                            "Updated bot invite link (with /help add) for new Discord permissions setup. ."
+                            "Updated bot invite link (with /help add) for new Discord permissions setup."
                     ),
                     new DiscordEmbedField(
                             "v1.12.4",
@@ -109,7 +114,8 @@ public class HelpMessageSearchService {
                             "Future Development",
                             "Slack is being worked on, but still in progress.\n" +
                                     "Android version is on hold for now, though its one of the Patreon goals (www.patreon.com/ruleslawyer)\n" +
-                                    "There is some known weirdness with card search. I'm working on it."
+                                    "There is some known weirdness with card search. I'm working on it.\n" +
+                                    "Known issues: Some foil prices not displaying, displaying foil set art instead of normal art"
                     )
             );
     public static final EmbedBuilderBuilder HELP_NOT_FOUND_EMBED = new EmbedBuilderBuilder()

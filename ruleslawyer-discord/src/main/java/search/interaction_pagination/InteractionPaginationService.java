@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static contract.cards.FormatLegality.ANY_FORMAT;
+import static contract.cards.GameFormat.ANY_FORMAT;
 import static contract.rules.enums.RuleRequestCategory.DIGITAL;
 import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
 import static contract.searchRequests.CardSearchRequestType.MATCH_TITLE;

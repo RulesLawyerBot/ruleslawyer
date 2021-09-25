@@ -2,7 +2,6 @@ package init_utils;
 
 import app.DiscordApplicationMain;
 import contract.cards.Card;
-import contract.cards.FormatLegality;
 import contract.rules.AbstractRule;
 import contract.rules.Rule;
 import contract.rules.RuleHeader;
@@ -78,15 +77,9 @@ public class ManaEmojiService {
 
     public Card replaceManaSymbols(Card card) {
         return new Card(
-                card.getCardName(),
+                card,
                 replaceManaSymbols(card.getManaCost()),
-                card.getTypeLine(),
-                replaceManaSymbols(card.getOracleText()),
-                card.getRulings().stream().map(ruling -> replaceManaSymbols(ruling)).collect(toList()),
-                card.getSets(),
-                card.getFormatLegalities().stream().map(String::valueOf).collect(toList()),
-                card.getEdhrecRank(),
-                card.getImage_urls()
+                replaceManaSymbols(card.getOracleText())
         );
     }
 

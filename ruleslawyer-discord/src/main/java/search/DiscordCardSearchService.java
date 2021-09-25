@@ -1,7 +1,6 @@
 package search;
 
 import contract.cards.Card;
-import contract.cards.FormatLegality;
 import init_utils.ManaEmojiService;
 import search.contract.DiscordEmbedField;
 import search.contract.DiscordReturnPayload;
@@ -14,7 +13,7 @@ import search.interaction_pagination.pagination_enum.CardDataReturnType;
 
 import java.util.List;
 
-import static contract.cards.FormatLegality.ANY_FORMAT;
+import static contract.cards.GameFormat.ANY_FORMAT;
 import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
 import static contract.searchRequests.CardSearchRequestType.MATCH_TITLE;
 import static ingestion.card.JsonCardIngestionService.getCards;
@@ -97,15 +96,12 @@ public class DiscordCardSearchService {
                     .setAuthor(CARD_SEARCH_AUTHOR_TEXT)
                     .setTitle(card.getCardName())
                     .addFields(
-                            stream(FormatLegality.values())
-                                    .filter(format -> format != ANY_FORMAT)
-                                    .map(
-                                            format ->
-                                                    new DiscordEmbedField(
-                                                            format.name().substring(0, 1) + format.name().substring(1).toLowerCase(),
-                                                            card.getFormatLegalities().contains(format) ?
-                                                                    "Legal" : "Not legal"
-                                                    )
+                            card.getFormatLegalities().entrySet().stream()
+                                    .map(entry ->
+                                            new DiscordEmbedField(
+                                                    prettifyEnumString(entry.getKey().toString()),
+                                                    prettifyEnumString(entry.getValue().toString())
+                                            )
                                     )
                                     .collect(toList())
                     )
@@ -141,6 +137,10 @@ public class DiscordCardSearchService {
                 .setTitle(card.getCardName() + card.getManaCost())
                 .addFields(new DiscordEmbedField(card.getTypeLine(), card.getOracleText()))
                 .setThumbnail(card.getImage_urls().get(0));
+    }
+
+    private String prettifyEnumString(String input) {
+        return (input.substring(0, 1) + input.substring(1).toLowerCase()).replace("_", " ");
     }
 
     private String getFooter(DiscordCardSearchRequest searchRequest, Integer cardListSize) {

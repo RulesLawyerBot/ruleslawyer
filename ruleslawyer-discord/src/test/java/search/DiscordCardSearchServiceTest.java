@@ -7,7 +7,7 @@ import org.junit.Test;
 import search.contract.DiscordReturnPayload;
 import search.contract.request.DiscordCardSearchRequest;
 
-import static contract.cards.FormatLegality.ANY_FORMAT;
+import static contract.cards.GameFormat.ANY_FORMAT;
 import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
 import static java.util.Collections.singletonList;
 import static search.interaction_pagination.pagination_enum.CardDataReturnType.ORACLE;

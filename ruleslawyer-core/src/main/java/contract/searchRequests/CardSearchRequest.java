@@ -1,22 +1,19 @@
 package contract.searchRequests;
 
 import contract.cards.Card;
-import contract.cards.FormatLegality;
+import contract.cards.GameFormat;
 
 import java.util.List;
-
-import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
-import static contract.searchRequests.CardSearchRequestType.MATCH_TITLE;
 
 public class CardSearchRequest extends SearchRequest<Card> {
 
     private CardSearchRequestType cardSearchRequestType;
-    private FormatLegality formatLegality;
+    private GameFormat formats;
     private boolean isFuzzy;
 
-    public CardSearchRequest(List<String> keywords, FormatLegality formatLegality, Integer pageNumber, CardSearchRequestType cardSearchRequestType) {
+    public CardSearchRequest(List<String> keywords, GameFormat formats, Integer pageNumber, CardSearchRequestType cardSearchRequestType) {
         this.keywords = keywords;
-        this.formatLegality = formatLegality;
+        this.formats = formats;
         this.cardSearchRequestType = cardSearchRequestType;
         this.isFuzzy = false;
         this.pageNumber = pageNumber;
@@ -26,8 +23,8 @@ public class CardSearchRequest extends SearchRequest<Card> {
         return cardSearchRequestType;
     }
 
-    public FormatLegality getFormatLegality() {
-        return formatLegality;
+    public GameFormat getFormats() {
+        return formats;
     }
 
     public boolean isFuzzy() {

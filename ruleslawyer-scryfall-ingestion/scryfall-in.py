@@ -53,7 +53,10 @@ def parse_card(card_json):
         mana_cost = card_json["mana_cost"] if "mana_cost" in card_json else card_json["card_faces"][0]["mana_cost"]
         type_line = card_json["type_line"].replace("—", "-")
         oracle = parse_card_oracle(card_json).replace('"', "'")
-        legalities = [k for k in card_json["legalities"] if card_json["legalities"][k] == "legal" and k in FORMATS]
+        legalities = {}
+        for k in card_json["legalities"]:
+            if k in FORMATS:
+                legalities[k] = card_json["legalities"][k]
         edhrec_rank = card_json["edhrec_rank"] if "edhrec_rank" in card_json else 9999999
         image_url = get_image_urls(card_json)
         image_age = datetime.datetime.strptime(card_json["released_at"], "%Y-%m-%d")
