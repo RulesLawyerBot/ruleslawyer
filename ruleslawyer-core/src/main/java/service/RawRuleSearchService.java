@@ -14,7 +14,10 @@ import static contract.rules.enums.RuleRequestCategory.DIGITAL;
 import static contract.rules.enums.RuleRequestCategory.PAPER;
 import static ingestion.rule.JsonRuleIngestionService.getRawDigitalRulesData;
 import static ingestion.rule.JsonRuleIngestionService.getRawRulesData;
+import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Stream.concat;
 
 public class RawRuleSearchService {
 
@@ -95,6 +98,10 @@ public class RawRuleSearchService {
     }
 
     public List<AbstractRule> getSearchSpace() {
-        return ruleSearchRepository.getSearchSpace();
+        return concat(
+                ruleSearchRepository.getSearchSpace().stream(),
+                digitalRuleSearchRepository.getSearchSpace().stream()
+        )
+                .collect(toList());
     }
 }

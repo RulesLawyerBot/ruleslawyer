@@ -145,13 +145,11 @@ public class DiscordCardSearchService {
 
     private String getFooter(DiscordCardSearchRequest searchRequest, Integer cardListSize) {
         if (searchRequest.getCardSearchRequestType() == MATCH_TITLE) {
-            return searchRequest.getRequester() +
-                    " | " + "\"" + searchRequest.getKeywords().get(0) + "\"" +
+            return "\"" + searchRequest.getKeywords().get(0) + "\"" +
                     " | " + searchRequest.getCardDataReturnType().toString().toLowerCase() +
                     " | " + "exact match query";
         }
-        return searchRequest.getRequester() +
-                " | " + join(" ", searchRequest.getKeywords()) +
+        return join(" ", searchRequest.getKeywords()) +
                 " | " + searchRequest.getCardDataReturnType().toString().toLowerCase() +
                 " | Page " + (((searchRequest.getPageNumber() + cardListSize - 1) % cardListSize) + 1);
     }

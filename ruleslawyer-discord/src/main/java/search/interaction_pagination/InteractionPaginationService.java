@@ -104,8 +104,7 @@ public class InteractionPaginationService {
         );
 
         List<String> footerParts = asList(footer.split(" \\| "));
-        discordSearchRequest.setRequester(footerParts.get(0).substring("Requested by: ".length()));
-        discordSearchRequest.setPageNumber(parseInt(asList(footerParts.get(1).split(" ")).get(1))-1);
+        discordSearchRequest.setPageNumber(parseInt(asList(footerParts.get(0).split(" ")).get(1))-1);
         return discordSearchRequest
                 .build();
     }
@@ -147,7 +146,7 @@ public class InteractionPaginationService {
     private Optional<DiscordReturnPayload> paginateCardDataReturnType(MessageComponentCreateEvent event, CardDataReturnType cardDataReturnType) {
         if (cardDataReturnType == PRICE) {
             event.getMessageComponentInteraction().createImmediateResponder().respond(); //TODO remove this in a future javacord version
-            DiscordCardSearchRequest searchRequest = getSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0));
+            DiscordCardSearchRequest searchRequest = getCardSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0));
             searchRequest.setCardDataReturnType(cardDataReturnType);
             event.getMessageComponentInteraction().getMessage().get().edit(
                     new EmbedBuilderBuilder()
@@ -160,14 +159,14 @@ public class InteractionPaginationService {
             return Optional.of(discordCardSearchService.getSearchResult(searchRequest));
         } else {
             event.getMessageComponentInteraction().createImmediateResponder().respond();
-            DiscordCardSearchRequest searchRequest = getSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0));
+            DiscordCardSearchRequest searchRequest = getCardSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0));
             searchRequest.setCardDataReturnType(cardDataReturnType);
             return Optional.of(discordCardSearchService.getSearchResult(searchRequest));
         }
     }
 
     private Optional<DiscordReturnPayload> paginateCardNumber(MessageComponentCreateEvent event, CardPageDirection cardPageDirection) {
-        DiscordCardSearchRequest searchRequest = getSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0));
+        DiscordCardSearchRequest searchRequest = getCardSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0));
         searchRequest.paginateSearchRequest(cardPageDirection);
         event.getMessageComponentInteraction().createImmediateResponder().respond();
         return Optional.of(discordCardSearchService.getSearchResult(searchRequest));
@@ -189,25 +188,25 @@ public class InteractionPaginationService {
         return embedFooterOptional.map(footer -> footer.getText().isPresent()).orElse(false);
     }
 
-    private DiscordCardSearchRequest getSearchRequestFromFooter(Embed embed) {
+    private DiscordCardSearchRequest getCardSearchRequestFromFooter(Embed embed) {
         List<String> footerParts = asList(embed.getFooter().get().getText().get().split(" \\| "));
         if (footerParts.get(1).startsWith("\"")) {
             return new DiscordCardSearchRequest(
-                    singletonList(footerParts.get(1).substring(1, footerParts.get(1).length()-1).toLowerCase()),
+                    singletonList(footerParts.get(0).substring(0, footerParts.get(0).length()-1).toLowerCase()),
                     ANY_FORMAT,
-                    footerParts.get(0),
-                    CardDataReturnType.valueOf(footerParts.get(2).toUpperCase()),
+                    null,
+                    CardDataReturnType.valueOf(footerParts.get(1).toUpperCase()),
                     MATCH_TITLE,
                     1
             );
         }
         return new DiscordCardSearchRequest(
-                asList(footerParts.get(1).split(" ")),
+                asList(footerParts.get(0).split(" ")),
                 ANY_FORMAT,
-                footerParts.get(0),
-                CardDataReturnType.valueOf(footerParts.get(2).toUpperCase()),
+                null,
+                CardDataReturnType.valueOf(footerParts.get(1).toUpperCase()),
                 INCLUDE_ORACLE,
-                parseInt(footerParts.get(3).substring(5))
+                parseInt(footerParts.get(2).substring(5))
         );
     }
 

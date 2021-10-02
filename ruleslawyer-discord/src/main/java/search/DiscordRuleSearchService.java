@@ -118,7 +118,6 @@ public class DiscordRuleSearchService {
         result.addFields(pages.get(moddedPageNumber));
 
         String footer = getFooter(
-                discordRuleSearchRequest.getRequester(),
                 moddedPageNumber+1,
                 pages.size(),
                 rawResults.isFuzzy()
@@ -139,17 +138,15 @@ public class DiscordRuleSearchService {
     }
 
     private String getWebappURL(List<String> query) {
-        return "https://www.ruleslawyer.app/search?q=" + join("+", query);
+        return "https://www.ruleslawyer.app/search?q=" + join("+", query).replace(" ", "+");
     }
 
     private String getFooter(
-            String requester,
             Integer pageNumber,
             Integer pageSize,
             boolean isFuzzy
     ) {
-        String baseFooter = format("Requested by: %s | page %s of %s",
-                    requester, pageNumber, pageSize);
+        String baseFooter = format("page %s of %s", pageNumber, pageSize);
         return isFuzzy ?
                 baseFooter + " | No exact match found. Automatically using experimental fuzzy search" :
                 baseFooter;

@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static contract.rules.enums.RuleRequestCategory.ANY_RULE_TYPE;
 import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -35,7 +37,13 @@ public class ApiSearchController {
             @RequestParam(value="ruleSource", required = false) RuleSource ruleSource,
             @RequestParam(value="ruleRequestCategory", required = false) RuleRequestCategory ruleRequestCategory
     ) {
-        RuleSearchRequest ruleSearchRequest = getRuleSearchRequest(keywords, ruleSource, ruleRequestCategory);
+        RuleSearchRequest ruleSearchRequest = getRuleSearchRequest(
+                keywords.stream()
+                    .map(String::toLowerCase)
+                    .collect(toList()),
+                ruleSource,
+                ruleRequestCategory
+        );
         return apiSearchService.getRuleSearchResults(ruleSearchRequest);
     }
 
