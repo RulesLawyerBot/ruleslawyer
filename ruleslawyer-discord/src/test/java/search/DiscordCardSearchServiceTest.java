@@ -73,14 +73,14 @@ public class DiscordCardSearchServiceTest {
         DiscordReturnPayload firstOutput = discordCardSearchService.getSearchResult(searchRequest);
 
         assertThat(firstOutput.getComponents().length, is(2));
-        assertThat(firstOutput.getEmbed().getFooter(), is("Elaine | thalia | oracle | Page 1"));
+        assertThat(firstOutput.getEmbed().getFooter(), is("thalia | oracle | Page 1"));
         assertThat(firstOutput.getEmbed().getTitle().startsWith("Thalia, Guardian of Thraben"), is(true));
 
         searchRequest.setCardDataReturnType(RULINGS);
 
         DiscordReturnPayload rulingsPageOutput = discordCardSearchService.getSearchResult(searchRequest);
 
-        assertThat(rulingsPageOutput.getEmbed().getFooter(), is("Elaine | thalia | rulings | Page 1"));
+        assertThat(rulingsPageOutput.getEmbed().getFooter(), is("thalia | rulings | Page 1"));
         assertThat(rulingsPageOutput.getEmbed().getTitle(), is("Thalia, Guardian of Thraben"));
         assertThat(rulingsPageOutput.getEmbed().getFields().get(0).getFieldName(), is("Ruling"));
 
@@ -88,7 +88,7 @@ public class DiscordCardSearchServiceTest {
 
         DiscordReturnPayload paginatedOutput = discordCardSearchService.getSearchResult(searchRequest);
 
-        assertThat(paginatedOutput.getEmbed().getFooter(), is("Elaine | thalia | rulings | Page 2"));
+        assertThat(paginatedOutput.getEmbed().getFooter(), is("thalia | rulings | Page 2"));
         assertThat(paginatedOutput.getEmbed().getTitle(), is("Thalia, Heretic Cathar"));
     }
 }

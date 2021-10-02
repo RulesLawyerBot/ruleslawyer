@@ -69,8 +69,14 @@ public class HelpMessageSearchService {
             .addFields(
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
-                            "Last updated: 2021-09-24\n" +
+                            "Last updated: 2021-10-01\n" +
                                     "Rules and cards version: Innistrad: Midnight Hunt"
+                    ),
+                    new DiscordEmbedField(
+                            "v1.12.8",
+                            "Fixed a bug where certain rules searches didn't display properly.\n" +
+                                    "Fixed a bug where certain card prices did not display.\n" +
+                                    "Removed names from embed footers. (Don't need for metadata anymore)"
                     ),
                     new DiscordEmbedField(
                             "v1.12.7",
