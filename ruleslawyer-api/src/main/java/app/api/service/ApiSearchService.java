@@ -45,7 +45,13 @@ public class ApiSearchService {
                         .map(SearchResult::getEntry)
                         .collect(toList());
         if (rawRuleSearchResult.getRawResults().size() == 0) {
-            return null;
+            return new ApiRulesPayload(
+                    emptyList(),
+                    ruleSearchRequest,
+                    ruleSearchRequest.getRuleRequestCategory() == DIGITAL ? DIGITAL : PAPER,
+                    false,
+                    false
+            );
         }
         return new ApiRulesPayload(
                 normalizeRules(abstractRules),
@@ -68,7 +74,7 @@ public class ApiSearchService {
 
     private ApiNormalizedRule normalizeRule(AbstractRule rule) {
         return new ApiNormalizedRule(
-                getParentText(rule).orElse(null),
+                getParentText(rule),
                 getParentIndices(rule),
                 rule.getText(),
                 normalizeRules(rule.getSubRules()),
@@ -79,18 +85,14 @@ public class ApiSearchService {
         );
     }
 
-    private Optional<String> getParentText(AbstractRule rule) {
+    private List<String> getParentText(AbstractRule rule) {
         if (rule.getParentRule() == null) {
-            return empty();
+            return emptyList();
         }
-
-        return Optional.of(
-                getParentText(rule.getParentRule())
-                        .map(parentRule ->
-                                parentRule + " " + rule.getParentRule().getText()
-                        )
-                        .orElse(rule.getParentRule().getText())
-        );
+        if (rule.getParentRule().getParentRule() == null) {
+            return singletonList(rule.getParentRule().getText());
+        }
+        return asList(rule.getParentRule().getParentRule().getText(), rule.getParentRule().getText());
     }
 
     private List<Integer> getParentIndices(AbstractRule rule) {

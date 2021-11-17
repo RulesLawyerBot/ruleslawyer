@@ -1,4 +1,5 @@
 import json
+import requests
 from simple_io import write
 from simple_io import clear
 from contract.cards import Card
@@ -8,6 +9,8 @@ import datetime
 
 FORMATS = ["standard", "brawl", "historic", "pioneer", "modern", "legacy", "vintage", "commander", "pauper"]
 all_cards = {}
+
+SCRYFALL_ENDPOINT = "https://api.scryfall.com/cards/search?q=*&unique=prints&page="
 
 
 def get_set_type(card_json):
@@ -65,21 +68,30 @@ def parse_card(card_json):
         print(card)
 
 
+def read_file_chunk(file_object):
+    while True:
+        data = file_object.read(1048576)
+        if not data:
+            break
+        yield data
+
+
 def main():
-    cards_file = open("default-cards.json", "r", encoding="utf-8")
-    cards_raw = cards_file.read()
-    raw_data = json.loads(cards_raw)
     skipped_cards = []
-
-    for (count, card_json) in enumerate(raw_data):
-        if not card_json["lang"] == "en" or card_json["set_type"] in ["token", "memorabilia"]:
-            continue
-
-        if not card_json["prices"]["usd"] and not card_json["prices"]["usd_foil"]:  # means its not a paper product
-            skipped_cards.append(card_json)
-            continue
-
-        parse_card(card_json)
+    page_number = 1
+    while True:
+        page = requests.get(SCRYFALL_ENDPOINT + str(page_number)).json()
+        for (count, card_json) in enumerate(page["data"]):
+            if not card_json["lang"] == "en" or card_json["set_type"] in ["token", "memorabilia"]:
+                continue
+            if not card_json["prices"]["usd"] and not card_json["prices"]["usd_foil"]:  # means its not a paper product
+                skipped_cards.append(card_json)
+                continue
+            parse_card(card_json)
+        if not page["has_more"]:
+            break
+        page_number = page_number + 1
+        print(page_number)
 
     for card_json in skipped_cards:
         scryfall_uri = card_json["uri"]

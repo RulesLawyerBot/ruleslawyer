@@ -69,8 +69,13 @@ public class HelpMessageSearchService {
             .addFields(
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
-                            "Last updated: 2021-10-01\n" +
-                                    "Rules and cards version: Innistrad: Midnight Hunt"
+                            "Last updated: 2021-11-14\n" +
+                                    "Rules and cards version: Innistrad: Crimson Vow"
+                    ),
+                    new DiscordEmbedField(
+                            "v1.12.9",
+                            "Updated rules to VOW.\n" +
+                                    "Slight API changes in preparation for www.ruleslawyer.app upgrades. Go check out the site!"
                     ),
                     new DiscordEmbedField(
                             "v1.12.8",

@@ -32,14 +32,14 @@ def main():
     for line in normalized_text:
         print(line)
 
-    start_index = normalized_text.index("1. GENERAL PHILOSOPHY")
+    start_index = normalized_text.index("1. General Philosophy")
     output = []
     current_header = None
     current_subheader = None
     penalties = ["No Penalty", "Warning", "Game Loss", "Match Loss", "Disqualification"]
     for i in range(start_index, len(normalized_text)):
         line = normalized_text[i].replace("  ", " ").strip()
-        if line.startswith("Appendix A-Changes From Previous Versions"):
+        if line.startswith("Appendix"):
             break
         if len(line) < 2:
             continue
