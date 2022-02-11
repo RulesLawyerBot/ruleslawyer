@@ -65,7 +65,6 @@ def parse_card(card_json):
         image_age = datetime.datetime.strptime(card_json["released_at"], "%Y-%m-%d")
         card = Card(card_name, mana_cost, type_line, oracle, [], card_set, legalities, edhrec_rank, image_url, image_age)
         all_cards[oracle_id] = card
-        print(card)
 
 
 def read_file_chunk(file_object):
@@ -87,7 +86,10 @@ def main():
             if not card_json["prices"]["usd"] and not card_json["prices"]["usd_foil"]:  # means its not a paper product
                 skipped_cards.append(card_json)
                 continue
-            parse_card(card_json)
+            try: #I don't feel like dealing with this today
+                parse_card(card_json)
+            except:
+                print("Error: " + card_json["name"].replace('"', "'"))
         if not page["has_more"]:
             break
         page_number = page_number + 1
