@@ -11,10 +11,11 @@ import static java.util.stream.Collectors.joining;
 
 public class RuleSubheader extends AbstractRule {
 
-    public RuleSubheader(String text) {
+    public RuleSubheader(String text, List<String> inboundCitations) {
         this.text = text;
         this.subRules = new ArrayList<>();
         this.index = ++ruleCount;
+        this.inboundCitations = inboundCitations;
     }
 
     @Override

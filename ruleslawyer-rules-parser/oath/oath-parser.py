@@ -9,6 +9,7 @@ from contract.rules import RuleSubHeader
 from contract.rules import Rule
 
 
+# TODO have to fix this parser to stop using RuleSuperHeader
 def main():
     raw_lines = open_file("oathbreaker.txt")
     output = RuleSuperHeader("906. Oathbreaker", [])

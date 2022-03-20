@@ -17,7 +17,28 @@ def clear(filename):
     open(filename, "w").close()
 
 
-def getPDF(filename):
+def read_csv(filename):
+    import csv
+    output = []
+    with open(filename, newline='') as csvfile:
+        csvreader = csv.reader(csvfile, dialect="excel", delimiter=',', quotechar='"')
+        for row in csvreader:
+            try:
+                output.append(row)
+            except Error:
+                errors = errors + 1
+    return output
+
+
+def write_csv(filename, content):
+    import csv
+    with open(filename, "w", newline='') as output:
+        writer = csv.writer(output, dialect="excel", delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        for line in content:
+            writer.writerow(line)
+
+
+def get_PDF(filename):
     import tika
     tika.initVM()
     from tika import parser

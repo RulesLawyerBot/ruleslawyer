@@ -36,9 +36,14 @@ public class DiscordApplicationMain {
     private static InteractionPaginationService interactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.12.10 | NEO | \"/help\"";
+    private static final String CURRENT_VERSION = "Version 1.13.0-SNAPSHOT | NEO | \"/help\"";
 
     public static void main(String[] args) {
+        // STILL TODO FOR 1.13:
+        // Investigate slash command autocomplete
+        // Move to admin bot api in preparation for losing message intent
+        // Clean up Mana emoji service
+        // Add additional citations for non-CR things (maybe push this to 1.13.1)
         if (!args[0].equals("prod")) {
             FallbackLoggerConfiguration.setDebug(true);
         }
@@ -51,7 +56,7 @@ public class DiscordApplicationMain {
                 .login()
                 .join();
 
-        System.out.println("Loading rules amd cards...");
+        System.out.println("Loading rules and cards...");
         ManaEmojiService manaEmojiService = new ManaEmojiService(api);
         discordRuleSearchService = new DiscordRuleSearchService(manaEmojiService);
         discordCardSearchService = new DiscordCardSearchService(manaEmojiService);

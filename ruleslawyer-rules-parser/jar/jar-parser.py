@@ -1,8 +1,8 @@
 import sys
 sys.path.append("..")
-from utils.simple_io import getPDF
-from utils.simple_io import write
+from utils.simple_io import get_PDF
 from utils.simple_io import clear
+from utils.simple_io import write_csv
 from utils.filedata import FileData
 from utils.unprintable_remover import replace_unprintable
 from contract.rules import RuleHeader
@@ -10,7 +10,7 @@ from contract.rules import RuleSubHeader
 
 
 def main():
-    file = FileData(getPDF("JAR.pdf"))
+    file = FileData(get_PDF("JAR.pdf"))
     normalized_text = []
     line_builder = ""
     emptyline_flag = True
@@ -33,18 +33,22 @@ def main():
     normalized_text.append(line_builder)
 
     rules = []
-    last_header = RuleHeader("Introduction", [])
+    last_header = RuleHeader("Introduction", [], [])
     for line in normalized_text:
         if len(line) < 30 and not line[0].startswith("Updated"):
             rules.append(last_header)
-            last_header = RuleHeader(line, [])
+            last_header = RuleHeader(line, [], [])
         else:
-            last_header.subrules.append(RuleSubHeader(line, []))
+            last_header.subrules.append(RuleSubHeader(line, [], []))
 
     rules.append(last_header)
 
-    clear("JAR-parsed.json")
-    write("JAR-parsed.json", rules)
+    csv_output = []
+    for rule in rules:
+        csv_output = csv_output + rule.toArray()
+
+    clear("JAR-parsed.csv")
+    write_csv("JAR-parsed.csv", csv_output)
 
 
 if __name__ == "__main__":

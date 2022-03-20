@@ -49,7 +49,8 @@ public class ManaEmojiService {
 
     public AbstractRule replaceManaSymbols(AbstractRule rule) {
         if (rule.getClass() == RuleHeader.class) {
-            RuleHeader outputRule = new RuleHeader(replaceManaSymbols(rule.getText()), rule.getRuleSource());
+            RuleHeader outputRule = new RuleHeader(replaceManaSymbols(rule.getText()), rule.getRuleSource(), rule.getInboundCitations());
+            outputRule.setOutboundCitations(rule.getOutboundCitations());
             outputRule.addAll(
               rule.getSubRules().stream()
                       .map(this::replaceManaSymbols)
@@ -58,7 +59,8 @@ public class ManaEmojiService {
             return outputRule;
         }
         if (rule.getClass() == RuleSubheader.class) {
-            RuleSubheader outputRule = new RuleSubheader(replaceManaSymbols(rule.getText()));
+            RuleSubheader outputRule = new RuleSubheader(replaceManaSymbols(rule.getText()), rule.getInboundCitations());
+            outputRule.setOutboundCitations(rule.getOutboundCitations());
             outputRule.addAll(
                     rule.getSubRules().stream()
                             .map(this::replaceManaSymbols)
@@ -66,7 +68,8 @@ public class ManaEmojiService {
             );
             return outputRule;
         }
-        Rule outputRule = new Rule(replaceManaSymbols(rule.getText()));
+        Rule outputRule = new Rule(replaceManaSymbols(rule.getText()), rule.getInboundCitations());
+        outputRule.setOutboundCitations(rule.getOutboundCitations());
         outputRule.addAll(
                 rule.getSubRules().stream()
                         .map(this::replaceManaSymbols)
@@ -95,5 +98,4 @@ public class ManaEmojiService {
         matcher.appendTail(sb);
         return sb.toString();
     }
-
 }

@@ -1,8 +1,8 @@
 import sys
 sys.path.append("..")
-from utils.simple_io import getPDF
-from utils.simple_io import write
+from utils.simple_io import get_PDF
 from utils.simple_io import clear
+from utils.simple_io import write_csv
 from utils.filedata import FileData
 from utils.unprintable_remover import replace_unprintable
 from contract.rules import RuleHeader
@@ -11,7 +11,7 @@ from contract.rules import Rule
 
 
 def main():
-    file = FileData(getPDF("IPG.pdf"))
+    file = FileData(get_PDF("IPG.pdf"))
 
     normalized_text = []
     line_builder = ""
@@ -53,31 +53,35 @@ def main():
             for penalty in penalties:
                 ind = line.find(penalty)
                 if ind != -1:
-                    current_header = RuleHeader(line[:ind], [])
-                    current_header.subrules.append(RuleSubHeader("Penalty", [Rule(penalty)]))
+                    current_header = RuleHeader(line[:ind], [], [])
+                    current_header.subrules.append(RuleSubHeader("Penalty", [Rule(penalty, [])], []))
                     flag = True
                     break
             if not flag:
-                current_header = RuleHeader(line, [])
+                current_header = RuleHeader(line, [], [])
             current_subheader = None
             continue
 
         if not current_subheader:  # if just made a header
             if len(line) > 30:  # is not a section header
-                current_header.subrules.append(RuleSubHeader(line, []))
+                current_header.subrules.append(RuleSubHeader(line, [], []))
             else:
-                current_subheader = RuleSubHeader(line, [])
+                current_subheader = RuleSubHeader(line, [], [])
         else:
             if len(line) < 30:  # is a section header
                 current_header.subrules.append(current_subheader)
-                current_subheader = RuleSubHeader(line, [])
+                current_subheader = RuleSubHeader(line, [], [])
             else:
-                current_subheader.subrules.append(Rule(line))
+                current_subheader.subrules.append(Rule(line, []))
     current_header.subrules.append(current_subheader)
     output.append(current_header)
 
-    clear("IPG-parsed.json")
-    write("IPG-parsed.json", output)
+    csv_output = []
+    for rule in output:
+        csv_output = csv_output + rule.toArray()
+
+    clear("IPG-parsed.csv")
+    write_csv("IPG-parsed.csv", csv_output)
 
     # TODO maybe the appendix too?
 

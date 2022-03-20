@@ -10,10 +10,11 @@ import static java.util.Collections.singletonList;
 
 public class Rule extends AbstractRule {
 
-    public Rule(String text) {
+    public Rule(String text, List<String> inboundCitations) {
         this.text = text;
         this.subRules = emptyList();
         this.index = ++ruleCount;
+        this.inboundCitations = inboundCitations;
     }
 
     @Override

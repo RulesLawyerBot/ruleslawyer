@@ -9,13 +9,16 @@ public class JsonMappedRule {
 
     private String text;
     private List<JsonMappedRule> subRules;
+    private List<String> citations;
 
     public JsonMappedRule(
             @JsonProperty("text") String text,
-            @JsonProperty("subRules") List<JsonMappedRule> subRules
+            @JsonProperty("subRules") List<JsonMappedRule> subRules,
+            @JsonProperty("keywords") List<String> citations
     ) {
         this.text = text.replace(" EOL ", "\n");
         this.subRules = subRules;
+        this.citations = citations;
     }
 
     public String getText() {
@@ -24,6 +27,10 @@ public class JsonMappedRule {
 
     public List<JsonMappedRule> getSubRules() {
         return subRules;
+    }
+
+    public List<String> getCitations() {
+        return this.citations;
     }
 
     @Override

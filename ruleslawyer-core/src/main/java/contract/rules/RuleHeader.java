@@ -13,12 +13,13 @@ public class RuleHeader extends AbstractRule {
 
     private RuleSource ruleSource;
 
-    public RuleHeader(String text, RuleSource ruleSource) {
+    public RuleHeader(String text, RuleSource ruleSource, List<String> citations) {
         this.text = text;
         this.parentRule = null;
         this.subRules = new ArrayList<>();
         this.index = ++ruleCount;
         this.ruleSource = ruleSource;
+        this.inboundCitations = citations;
     }
 
     @Override

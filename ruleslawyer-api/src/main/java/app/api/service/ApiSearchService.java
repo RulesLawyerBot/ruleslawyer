@@ -1,8 +1,10 @@
 package app.api.service;
 
+import app.api.pojo.ApiCitation;
 import app.api.pojo.ApiNormalizedRule;
 import app.api.pojo.ApiRulesPayload;
 import contract.rules.AbstractRule;
+import contract.rules.citation.Citation;
 import contract.rules.enums.RuleSource;
 import contract.searchRequests.RuleSearchRequest;
 import contract.searchResults.RawRuleSearchResult;
@@ -81,7 +83,8 @@ public class ApiSearchService {
                 rule.getRuleSource(),
                 rule.getIndex(),
                 getPreviousRule(rule),
-                getNextRule(rule)
+                getNextRule(rule),
+                getApiCitationsFromCitations(rule.getOutboundCitations())
         );
     }
 
@@ -167,15 +170,22 @@ public class ApiSearchService {
         return rawRuleSearchService.getSearchSpace().stream()
                 .map(abstractRule ->
                                 new ApiNormalizedRule(
-                                    null,
-                                    emptyList(),
-                                    abstractRule.getText(),
-                                    null,
-                                    abstractRule.getRuleSource(),
-                                    abstractRule.getIndex(),
-                                    getPreviousRule(abstractRule),
-                                    getNextRule(abstractRule)
+                                        null,
+                                        emptyList(),
+                                        abstractRule.getText(),
+                                        null,
+                                        abstractRule.getRuleSource(),
+                                        abstractRule.getIndex(),
+                                        getPreviousRule(abstractRule),
+                                        getNextRule(abstractRule),
+                                        getApiCitationsFromCitations(abstractRule.getOutboundCitations())
                                 )
                 );
+    }
+
+    private List<ApiCitation> getApiCitationsFromCitations(List<Citation> citations) {
+        return citations.stream()
+                .map(ApiCitation::new)
+                .collect(toList());
     }
 }

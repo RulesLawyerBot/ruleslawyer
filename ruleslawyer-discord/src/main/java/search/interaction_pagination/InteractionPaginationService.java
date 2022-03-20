@@ -65,7 +65,7 @@ public class InteractionPaginationService {
 
     private void paginate(MessageComponentCreateEvent event) {
         try {
-            Message message = event.getMessageComponentInteraction().getMessage().get();
+            Message message = event.getMessageComponentInteraction().getMessage();
             String authorText = message.getEmbeds().get(0).getAuthor().get().getName();
 
             Optional<DiscordReturnPayload> output = empty();
@@ -83,7 +83,7 @@ public class InteractionPaginationService {
     }
 
     private Optional<DiscordReturnPayload> paginateRules(MessageComponentCreateEvent event) {
-        Message message = event.getMessageComponentInteraction().getMessage().get();
+        Message message = event.getMessageComponentInteraction().getMessage();
         Embed embed = message.getEmbeds().get(0);
         DiscordRuleSearchRequest searchRequest = getRuleSearchRequestFromEmbed(
                 embed.getTitle().get(),
@@ -146,9 +146,9 @@ public class InteractionPaginationService {
     private Optional<DiscordReturnPayload> paginateCardDataReturnType(MessageComponentCreateEvent event, CardDataReturnType cardDataReturnType) {
         if (cardDataReturnType == PRICE) {
             event.getMessageComponentInteraction().createImmediateResponder().respond(); //TODO remove this in a future javacord version
-            DiscordCardSearchRequest searchRequest = getCardSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0));
+            DiscordCardSearchRequest searchRequest = getCardSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().getEmbeds().get(0));
             searchRequest.setCardDataReturnType(cardDataReturnType);
-            event.getMessageComponentInteraction().getMessage().get().edit(
+            event.getMessageComponentInteraction().getMessage().edit(
                     new EmbedBuilderBuilder()
                             .setAuthor(CARD_SEARCH_AUTHOR_TEXT)
                             .setTitle("Thinking...")
@@ -159,25 +159,22 @@ public class InteractionPaginationService {
             return Optional.of(discordCardSearchService.getSearchResult(searchRequest));
         } else {
             event.getMessageComponentInteraction().createImmediateResponder().respond();
-            DiscordCardSearchRequest searchRequest = getCardSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0));
+            DiscordCardSearchRequest searchRequest = getCardSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().getEmbeds().get(0));
             searchRequest.setCardDataReturnType(cardDataReturnType);
             return Optional.of(discordCardSearchService.getSearchResult(searchRequest));
         }
     }
 
     private Optional<DiscordReturnPayload> paginateCardNumber(MessageComponentCreateEvent event, CardPageDirection cardPageDirection) {
-        DiscordCardSearchRequest searchRequest = getCardSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().get().getEmbeds().get(0));
+        DiscordCardSearchRequest searchRequest = getCardSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().getEmbeds().get(0));
         searchRequest.paginateSearchRequest(cardPageDirection);
         event.getMessageComponentInteraction().createImmediateResponder().respond();
         return Optional.of(discordCardSearchService.getSearchResult(searchRequest));
     }
 
     private boolean hasFooter(MessageComponentCreateEvent event) {
-        Optional<Message> messageOptional = event.getMessageComponentInteraction().getMessage();
-        if (!messageOptional.isPresent()) {
-            return false;
-        }
-        List<Embed> embeds = messageOptional.get().getEmbeds();
+        Message message = event.getMessageComponentInteraction().getMessage();
+        List<Embed> embeds = message.getEmbeds();
         if (embeds.size() < 1) {
             return false;
         }
@@ -211,6 +208,6 @@ public class InteractionPaginationService {
     }
 
     private void deleteMessage(MessageComponentCreateEvent event) {
-        event.getMessageComponentInteraction().getMessage().map(Message::delete);
+        event.getMessageComponentInteraction().getMessage().delete();
     }
 }

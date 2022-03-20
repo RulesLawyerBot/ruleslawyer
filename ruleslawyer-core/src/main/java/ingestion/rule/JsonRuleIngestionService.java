@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static contract.rules.enums.RuleSource.*;
+import static ingestion.rule.CitationFinderService.setOutboundCitations;
 import static java.lang.String.valueOf;
 import static java.nio.charset.StandardCharsets.*;
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
@@ -35,7 +35,8 @@ public class JsonRuleIngestionService {
             rules.addAll(getRawRulesData("/JAR-parsed.json", JAR));
             rules.addAll(getRawRulesData("/IPG-parsed.json", IPG));
             rules.addAll(getRawRulesData("/MTR-parsed.json", MTR));
-            rules.addAll(getFlattenedRules("/oath-parsed.json", OATH));
+            // rules.addAll(getFlattenedRules("/oath-parsed.json", OATH)); TODO bring this back after fixing the parser
+            setOutboundCitations(rules);
             return rules;
         } catch (IOException ignored) {
             System.exit(-1);
@@ -86,13 +87,13 @@ public class JsonRuleIngestionService {
     }
 
     private static List<AbstractRule> getCRRuleHeader(JsonMappedRule rule, RuleSource ruleSource) {
-        return singletonList(new RuleHeader(rule.getText(), ruleSource));
+        return singletonList(new RuleHeader(rule.getText(), ruleSource, rule.getCitations()));
     }
 
     private static List<AbstractRule> convertToRuleHeaders(List<JsonMappedRule> rules, RuleSource ruleSource) {
         return rules.stream()
                 .map(rule -> {
-                    RuleHeader ruleHeader = new RuleHeader(rule.getText(), ruleSource);
+                    RuleHeader ruleHeader = new RuleHeader(rule.getText(), ruleSource, rule.getCitations());
                     ruleHeader.addAll(convertToRuleSubheaders(rule.getSubRules()));
                     return ruleHeader;
                 }
@@ -103,7 +104,7 @@ public class JsonRuleIngestionService {
     private static List<AbstractRule> convertToRuleSubheaders(List<JsonMappedRule> rules) {
         return rules.stream()
                 .map(rule -> {
-                    RuleSubheader ruleSubheader = new RuleSubheader(rule.getText());
+                    RuleSubheader ruleSubheader = new RuleSubheader(rule.getText(), rule.getCitations());
                     ruleSubheader.addAll(convertToBaseRules(rule.getSubRules()));
                     return ruleSubheader;
                 }
@@ -113,7 +114,7 @@ public class JsonRuleIngestionService {
 
     private static List<AbstractRule> convertToBaseRules(List<JsonMappedRule> rules) {
         return rules.stream()
-                .map(rule -> new Rule(rule.getText()))
+                .map(rule -> new Rule(rule.getText(), rule.getCitations()))
                 .collect(toList());
     }
 }

@@ -1,5 +1,6 @@
 package contract.rules;
 
+import contract.rules.citation.Citation;
 import contract.rules.enums.RuleSource;
 import contract.Searchable;
 import contract.searchRequests.RuleSearchRequest;
@@ -19,6 +20,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.*;
+import static java.util.stream.IntStream.empty;
 import static java.util.stream.IntStream.range;
 
 public abstract class AbstractRule implements Searchable {
@@ -32,6 +34,8 @@ public abstract class AbstractRule implements Searchable {
     protected AbstractRule parentRule;
     protected String text;
     protected List<AbstractRule> subRules;
+    protected List<Citation> outboundCitations = emptyList();
+    protected List<String> inboundCitations = emptyList();
 
     public void addAll(List<AbstractRule> rules) {
         subRules.addAll(rules);
@@ -56,6 +60,18 @@ public abstract class AbstractRule implements Searchable {
 
     public Integer getIndex() {
         return this.index;
+    }
+
+    public List<Citation> getOutboundCitations() {
+        return this.outboundCitations;
+    }
+
+    public List<String> getInboundCitations() {
+        return this.inboundCitations;
+    }
+
+    public void setOutboundCitations(List<Citation> citations) {
+        this.outboundCitations = citations;
     }
 
     /* Normal searching starts here */

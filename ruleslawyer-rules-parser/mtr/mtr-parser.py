@@ -1,8 +1,8 @@
 import sys
 sys.path.append("..")
-from utils.simple_io import getPDF
-from utils.simple_io import write
+from utils.simple_io import get_PDF
 from utils.simple_io import clear
+from utils.simple_io import write_csv
 from utils.filedata import FileData
 from utils.unprintable_remover import replace_unprintable
 from contract.rules import RuleHeader
@@ -13,7 +13,7 @@ LINE_ENDINGS = [".", ")", '"']
 
 
 def main():
-    file = FileData(getPDF("MTR.pdf"))
+    file = FileData(get_PDF("MTR.pdf"))
     normalized_text = []
     line_builder = ""
     emptyline_flag = True
@@ -39,7 +39,7 @@ def main():
 
     start_index = normalized_text.index("Introduction")
     rules = []
-    current_header = RuleHeader("Introduction", [])
+    current_header = RuleHeader("Introduction", [], [])
     current_subheader = None
     for i in range(start_index, len(normalized_text)):
         line = normalized_text[i]
@@ -53,19 +53,23 @@ def main():
                 current_subheader = None
             if current_header:
                 rules.append(current_header)
-            current_header = RuleHeader(line, [])
+            current_header = RuleHeader(line, [], [])
         elif line[0].isnumeric() or line[0] == "*":  # subsection
             if not current_subheader:
-                current_subheader = RuleSubHeader(line, [])
-            current_subheader.subrules.append(Rule(line))
+                current_subheader = RuleSubHeader(line, [], [])
+            current_subheader.subrules.append(Rule(line, []))
         else:  # subheader
             if current_subheader:
                 current_header.subrules.append(current_subheader)
-            current_subheader = RuleSubHeader(line, [])
+            current_subheader = RuleSubHeader(line, [], [])
     rules.append(current_header)
 
-    clear("MTR-parsed.json")
-    write("MTR-parsed.json", rules)
+    csv_output = []
+    for rule in rules:
+        csv_output = csv_output + rule.toArray()
+
+    clear("MTR-parsed.csv")
+    write_csv("MTR-parsed.csv", csv_output)
 
 
 def verify_header(previous_header, line):

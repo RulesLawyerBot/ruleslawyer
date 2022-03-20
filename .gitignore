@@ -1,6 +1,7 @@
 /ruleslawyer-rules-parser/*/*.json
 /ruleslawyer-rules-parser/*/*.txt
 /ruleslawyer-rules-parser/*/*.pdf
+/ruleslawyer-rules-parser/*/*.csv
 /ruleslawyer-scryfall-ingestion/*.json
 /.idea/
 */target/

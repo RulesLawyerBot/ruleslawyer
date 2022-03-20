@@ -19,8 +19,9 @@ public class ApiNormalizedRule {
     private Integer ruleIndex;
     private Integer previousIndex;
     private Integer nextIndex;
+    private List<ApiCitation> citations;
 
-    public ApiNormalizedRule(List<String> parentText, List<Integer> parentIndices, String text, List<ApiNormalizedRule> subRules, RuleSource ruleSource, Integer ruleIndex, Integer previousIndex, Integer nextIndex) {
+    public ApiNormalizedRule(List<String> parentText, List<Integer> parentIndices, String text, List<ApiNormalizedRule> subRules, RuleSource ruleSource, Integer ruleIndex, Integer previousIndex, Integer nextIndex, List<ApiCitation> citations) {
         this.parentText = parentText;
         this.parentIndices = parentIndices;
         this.text = text;
@@ -29,6 +30,7 @@ public class ApiNormalizedRule {
         this.ruleIndex = ruleIndex;
         this.previousIndex = previousIndex;
         this.nextIndex = nextIndex;
+        this.citations = citations;
     }
 
     public List<String> getParentText() {
@@ -61,5 +63,9 @@ public class ApiNormalizedRule {
 
     public Integer getNextIndex() {
         return nextIndex;
+    }
+
+    public List<ApiCitation> getCitations() {
+        return citations;
     }
 }
