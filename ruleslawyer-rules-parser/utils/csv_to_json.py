@@ -31,4 +31,4 @@ class CitationArray:
         self.data = data
 
     def __repr__(self):
-        return "[" + ",".join(['"' + keyword + '"' for keyword in self.data.strip("'][").replace('"', "").split(', ')]) + "]"
+        return "[" + ",".join(['"' + keyword.strip("'\"") + '"' for keyword in self.data.strip("][").split("', '")]) + "]"

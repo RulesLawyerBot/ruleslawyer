@@ -29,6 +29,7 @@ public class JsonRuleIngestionService {
 
     public static List<AbstractRule> getRawRulesData() {
         try {
+            System.out.println("Loading rules...");
             List<AbstractRule> rules = new ArrayList<>();
             rules.addAll(getRawRulesData("/CR-parsed.json", CR));
             rules.addAll(getRawRulesData("/CRG-parsed.json", CR));
@@ -36,6 +37,7 @@ public class JsonRuleIngestionService {
             rules.addAll(getRawRulesData("/IPG-parsed.json", IPG));
             rules.addAll(getRawRulesData("/MTR-parsed.json", MTR));
             // rules.addAll(getFlattenedRules("/oath-parsed.json", OATH)); TODO bring this back after fixing the parser
+            System.out.println("Setting citations...");
             setOutboundCitations(rules);
             return rules;
         } catch (IOException ignored) {
@@ -46,6 +48,7 @@ public class JsonRuleIngestionService {
 
     public static List<AbstractRule> getRawDigitalRulesData() {
         try {
+            System.out.println("Loading digital rules...");
             List<AbstractRule> rules = new ArrayList<>();
             rules.addAll(getRawRulesData("/DIPG-parsed.json", DIPG));
             rules.addAll(getRawRulesData("/DMTR-parsed.json", DMTR));

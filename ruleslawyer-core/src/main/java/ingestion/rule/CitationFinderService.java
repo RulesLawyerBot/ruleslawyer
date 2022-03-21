@@ -22,8 +22,9 @@ public class CitationFinderService {
 
     public static void setOutboundCitations(List<AbstractRule> rules) {
         if (citations == null) {
-            setCitations(rules);
+            getCitations(rules);
             trie = builder()
+                    .onlyWholeWords()
                     .ignoreOverlaps()
                     .ignoreCase()
                     .addKeywords(citations.keySet())
@@ -37,7 +38,7 @@ public class CitationFinderService {
         return citations.keySet();
     }
 
-    private static void setCitations(List<AbstractRule> rules) {
+    private static void getCitations(List<AbstractRule> rules) {
         citations = rules.stream()
                 .flatMap(CitationFinderService::getInboundCitationsForRule)
                 .filter(citation -> citation.getCitationText().length() > 0)
@@ -62,6 +63,7 @@ public class CitationFinderService {
         rule.setOutboundCitations(
                 trie.parseText(rule.getText()).stream()
                         .map(Emit::getKeyword)
+                        .distinct()
                         .map(keyword -> citations.get(keyword))
                         .collect(toList())
         );
