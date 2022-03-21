@@ -74,6 +74,12 @@ public abstract class AbstractRule implements Searchable {
         this.outboundCitations = citations;
     }
 
+    /* Mana emoji stuff */
+
+    public void modifyRuleText(String newRuleText) {
+        this.text = newRuleText;
+    }
+
     /* Normal searching starts here */
 
     @Override

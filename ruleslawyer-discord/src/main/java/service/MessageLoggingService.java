@@ -44,27 +44,6 @@ public class MessageLoggingService {
                 .get();
     }
 
-    public void logInput(MessageCreateEvent event) {
-        Optional<User> user = event.getMessageAuthor().asUser();
-        if (!user.isPresent()) {
-            return;
-        }
-        String username = user.get().getName();
-        String displayname = event.getServer()
-                .map(server -> user.get().getDisplayName(server))
-                .orElse(username);
-        if (event.getServer().isPresent()) {
-            displayname = user.get().getDisplayName(event.getServer().get());
-        }
-        String query = event.getMessage().getContent();
-        String output = format("**%s (%s) asked for: %s**", username, displayname, query);
-        loggingChannel.sendMessage(output);
-    }
-
-    public void logOutput(MessageBuilder message) {
-        message.send(loggingChannel);
-    }
-
     @Deprecated
     public void logOutput(EmbedBuilder message) {
         loggingChannel.sendMessage(message);
@@ -73,11 +52,6 @@ public class MessageLoggingService {
     @Deprecated
     public void logOutput(String message) {
         loggingChannel.sendMessage(message);
-    }
-
-    public void logEditInput(PageDirection pageDirection, Embed embed) {
-        String output = format("**Edit: %s\n%s\n%s**", pageDirection.name(), embed.getTitle().get(), embed.getFooter().get().getText().get());
-        loggingChannel.sendMessage(output);
     }
 
     public void logJoin(Server server) {

@@ -13,10 +13,12 @@ import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 public class AdministratorCommandsService {
 
     DiscordApi api;
+    DiscordApi adminApi;
     SlashCommandSearchService slashCommandSearchService;
 
-    public AdministratorCommandsService(DiscordApi api, SlashCommandSearchService slashCommandSearchService) {
+    public AdministratorCommandsService(DiscordApi api, DiscordApi adminApi, SlashCommandSearchService slashCommandSearchService) {
         this.api = api;
+        this.adminApi = api;
         this.slashCommandSearchService = slashCommandSearchService;
     }
 
@@ -24,6 +26,7 @@ public class AdministratorCommandsService {
         if(message.equalsIgnoreCase("shut down ruleslawyer")) {
             channel.sendMessage("shutting down");
             api.disconnect();
+            adminApi.disconnect();
             System.exit(0);
         }
         if(message.equalsIgnoreCase("ruleslawyer status")) {

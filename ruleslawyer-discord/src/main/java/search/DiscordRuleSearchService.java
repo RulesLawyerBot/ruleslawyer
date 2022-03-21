@@ -19,10 +19,13 @@ import service.RawRuleSearchService;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static contract.rules.enums.RuleRequestCategory.*;
 import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
+import static ingestion.rule.CitationFinderService.getCitationStrings;
 import static ingestion.rule.JsonRuleIngestionService.getRawDigitalRulesData;
 import static ingestion.rule.JsonRuleIngestionService.getRawRulesData;
 import static java.lang.Integer.parseInt;
@@ -30,8 +33,8 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static search.contract.request.builder.DiscordSearchRequestBuilder.aDiscordSearchRequest;
 import static search.interaction_pagination.InteractionPaginationStatics.*;
@@ -51,20 +54,13 @@ public class DiscordRuleSearchService {
             "For additional help, do /help.";
 
     public DiscordRuleSearchService(ManaEmojiService manaEmojiService) {
-        List<AbstractRule> rules = getRawRulesData().stream()
-                .map(manaEmojiService::replaceManaSymbols)
-                .collect(toList());
-        List<AbstractRule> digitalRules = getRawDigitalRulesData().stream()
-                .map(manaEmojiService::replaceManaSymbols)
-                .collect(toList());
+        List<AbstractRule> rules = getRawRulesData();
+        rules.forEach(manaEmojiService::replaceManaSymbols);
+        List<AbstractRule> digitalRules = getRawDigitalRulesData();
+        digitalRules.forEach(manaEmojiService::replaceManaSymbols);
         this.helpMessageSearchService = new HelpMessageSearchService();
         this.rawRuleSearchService = new RawRuleSearchService(rules, digitalRules);
         this.outputFieldSplitService = new OutputFieldSplitService(MAX_FIELD_NAME_SIZE, MAX_FIELD_VALUE_SIZE);
-    }
-
-    public DiscordReturnPayload getSearchResult(String author, String text) {
-        String query = getQuery(text);
-        return getSearchResultFromPlainQuery(author, query);
     }
 
     public DiscordReturnPayload getSearchResultFromPlainQuery(String author, String query) {
@@ -79,14 +75,6 @@ public class DiscordRuleSearchService {
 
         DiscordRuleSearchRequest discordRuleSearchRequest = getSearchRequest(author, query);
         return getSearchResult(discordRuleSearchRequest);
-    }
-
-    private String getQuery(String message) {
-        int indexLeft = message.indexOf("{{");
-        int indexRight = message.indexOf("}}");
-        if (indexLeft == -1 || indexRight == -1 || indexRight < indexLeft)
-            return "";
-        return message.substring(indexLeft+2, indexRight).toLowerCase();
     }
 
     public DiscordReturnPayload getSearchResult(DiscordRuleSearchRequest discordRuleSearchRequest) {
@@ -239,5 +227,25 @@ public class DiscordRuleSearchService {
         pages.add(currentPage);
 
         return pages;
+    }
+
+    public List<String> getAutocompleteSuggestions(String query) {
+        if (query.length() == 0) {
+            return emptyList();
+        }
+        List<String> rawCitations = getCitationStrings().stream()
+                .filter(citationString -> citationString.contains(query.toLowerCase()))
+                .sorted(
+                        (a, b) ->
+                                a.length() != b.length() ?
+                                        a.length() - b.length() :
+                                        a.compareTo(b)
+                        )
+                .limit(10)
+                .collect(toList());
+        if (rawCitations.stream().noneMatch(elem -> elem.equals(query.toLowerCase()))) {
+            rawCitations.add(0, query);
+        }
+        return rawCitations;
     }
 }

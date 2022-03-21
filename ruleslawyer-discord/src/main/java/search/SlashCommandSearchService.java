@@ -2,6 +2,7 @@ package search;
 
 import exception.NotYetImplementedException;
 import org.javacord.api.DiscordApi;
+import org.javacord.api.event.interaction.AutocompleteCreateEvent;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.SlashCommand;
 import org.javacord.api.interaction.SlashCommandOptionChoice;
@@ -16,6 +17,7 @@ import static contract.rules.enums.RuleSource.*;
 import static java.lang.String.valueOf;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static org.javacord.api.interaction.SlashCommandOption.*;
 import static org.javacord.api.interaction.SlashCommandOptionType.STRING;
 import static service.HelpMessageSearchService.*;
@@ -48,10 +50,10 @@ public class SlashCommandSearchService {
                 RULE_SLASH_COMMAND_IDENTIFIER,
                 "search RulesLawyer for a rule",
                 asList(
-                        create(
-                                STRING,
+                        createStringOption(
                                 "query",
                                 "Query parameters (surround with \"quotes\" for exact match) - tab twice for additional parameters",
+                                true,
                                 true
                         ),
                         createWithChoices(
@@ -65,7 +67,7 @@ public class SlashCommandSearchService {
                                         SlashCommandOptionChoice.create("Infraction Procedure Guide", valueOf(IPG)),
                                         SlashCommandOptionChoice.create("Magic Tournament Rules", valueOf(MTR)),
                                         SlashCommandOptionChoice.create("Judging At Regular", valueOf(JAR)),
-                                        SlashCommandOptionChoice.create("Oathbreaker", valueOf(OATH)),
+                                        //SlashCommandOptionChoice.create("Oathbreaker", valueOf(OATH)), TODO BRING THIS BACK
                                         SlashCommandOptionChoice.create("Digital Infraction Procedure Guide", valueOf(DIPG)),
                                         SlashCommandOptionChoice.create("Digital Magic Tournament Rules", valueOf(DMTR))
                                 )
@@ -78,11 +80,11 @@ public class SlashCommandSearchService {
                 CARD_SLASH_COMMAND_IDENTIFIER,
                 "search RulesLawyer for a card",
                 asList(
-                        create(
-                                STRING,
+                        createStringOption(
                                 "card_name",
                                 "Search name or oracle (\"quotes\" for exact name match) - tab twice for additional parameters",
-                                true
+                                true,
+                                false
                         ),
                         createWithChoices(
                                 STRING,
@@ -205,5 +207,19 @@ public class SlashCommandSearchService {
                 .addEmbed(helpFile.build())
                 .addComponents(DELETE_ONLY_ROW)
                 .respond();
+    }
+
+    public void respondToAutocomplete(AutocompleteCreateEvent event) {
+        String commandName = event.getAutocompleteInteraction().getCommandName();
+        if (commandName.equals(RULE_SLASH_COMMAND_IDENTIFIER)) {
+            event.getAutocompleteInteraction().respondWithChoices(
+                    discordRuleSearchService.getAutocompleteSuggestions(
+                                    event.getAutocompleteInteraction().getOptionByIndex(0).get().getStringValue().get()
+                            )
+                            .stream()
+                            .map(suggestion -> SlashCommandOptionChoice.create(suggestion, suggestion))
+                            .collect(toList())
+            );
+        }
     }
 }

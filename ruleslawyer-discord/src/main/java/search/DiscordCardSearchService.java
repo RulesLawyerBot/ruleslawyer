@@ -34,10 +34,8 @@ public class DiscordCardSearchService {
     private static final EmbedBuilderBuilder NO_CARD_FOUND_EMBED = new EmbedBuilderBuilder().setAuthor(CARD_SEARCH_AUTHOR_TEXT).setTitle(NO_CARD_FOUND_TEXT);
 
     public DiscordCardSearchService(ManaEmojiService manaEmojiService) {
-        List<Card> cards = getCards()
-                .stream()
-                .map(manaEmojiService::replaceManaSymbols)
-                .collect(toList());
+        List<Card> cards = getCards();
+        cards.forEach(manaEmojiService::replaceManaSymbols);
         this.rawCardSearchService = new RawCardSearchService(cards);
         this.cardPriceSearchService = new CardPriceSearchService();
     }

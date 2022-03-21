@@ -28,6 +28,7 @@ import static org.javacord.api.entity.user.UserStatus.ONLINE;
 import static service.MessageDeletionService.DELETE_EMOTE_ID;
 import static utils.StaticEmojis.RIGHT_EMOJI;
 
+@Ignore
 public class DiscordIntegrationTest {
 
     private Thread testThread;

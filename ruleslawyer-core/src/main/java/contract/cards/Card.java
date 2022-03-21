@@ -60,16 +60,9 @@ public class Card implements Searchable {
         this.image_urls = image_urls;
     }
 
-    public Card(Card previousCard, String newManaCost, String newOracleText) {
-        this.cardName = previousCard.getCardName();
+    public void modifyCard(String newManaCost, String newOracleText) {
         this.manaCost = newManaCost;
-        this.typeLine = previousCard.getTypeLine();
         this.oracleText = newOracleText;
-        this.rulings = previousCard.getRulings();
-        this.sets = previousCard.getSets();
-        this.formatLegalities = previousCard.getFormatLegalities();
-        this.edhrecRank = previousCard.edhrecRank;
-        this.image_urls = previousCard.getImage_urls();
     }
 
     public String getCardName() {

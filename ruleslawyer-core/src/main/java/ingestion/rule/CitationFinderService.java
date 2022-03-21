@@ -5,9 +5,9 @@ import contract.rules.citation.Citation;
 import org.ahocorasick.trie.Emit;
 import org.ahocorasick.trie.Trie;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.function.Function.identity;
@@ -31,6 +31,10 @@ public class CitationFinderService {
         }
 
         rules.forEach(CitationFinderService::setOutboundCitationsForRule);
+    }
+
+    public static Set<String> getCitationStrings() {
+        return citations.keySet();
     }
 
     private static void setCitations(List<AbstractRule> rules) {

@@ -3,6 +3,7 @@ package app;
 import init_utils.ManaEmojiService;
 import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.message.MessageBuilder;
+import org.javacord.api.event.interaction.AutocompleteCreateEvent;
 import org.javacord.api.event.interaction.MessageComponentCreateEvent;
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.event.server.ServerJoinEvent;
@@ -10,7 +11,6 @@ import org.javacord.api.util.logging.FallbackLoggerConfiguration;
 import search.DiscordCardSearchService;
 import search.DiscordRuleSearchService;
 import search.SlashCommandSearchService;
-import search.contract.DiscordReturnPayload;
 import service.*;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
@@ -18,6 +18,7 @@ import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
 import search.interaction_pagination.InteractionPaginationService;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -36,23 +37,26 @@ public class DiscordApplicationMain {
     private static InteractionPaginationService interactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.13.0-SNAPSHOT | NEO | \"/help\"";
+    private static final String CURRENT_VERSION = "Version 1.13.0 | NEO | \"/help\"";
 
     public static void main(String[] args) {
-        // STILL TODO FOR 1.13:
-        // Investigate slash command autocomplete
-        // Move to admin bot api in preparation for losing message intent
-        // Clean up Mana emoji service
-        // Add additional citations for non-CR things (maybe push this to 1.13.1)
+        // TODO FOR 1.13.1: Add additional citations for non-CR things
         if (!args[0].equals("prod")) {
             FallbackLoggerConfiguration.setDebug(true);
         }
-        String discordToken = getDiscordKey(args[0]);
+        List<String> discordToken = getDiscordKeys(args);
 
-        System.out.println("Logging in with " + discordToken);
+        System.out.println("API token: \"" + discordToken.get(0) + "\"");
+        System.out.println("Admin token: \"" + discordToken.get(1) + "\"");
         DiscordApi api = new DiscordApiBuilder()
-                .setToken(discordToken)
+                .setToken(discordToken.get(0))
                 .setAllIntentsExcept(GUILD_PRESENCES)
+                .login()
+                .join();
+
+        DiscordApi adminApi = new DiscordApiBuilder()
+                .setToken(discordToken.get(1))
+                .setAllIntents()
                 .login()
                 .join();
 
@@ -67,13 +71,15 @@ public class DiscordApplicationMain {
         api.addServerJoinListener(DiscordApplicationMain::handleServerJoinEvent);
         api.addSlashCommandCreateListener(DiscordApplicationMain::handleSlashCommandCreateEvent);
         api.addMessageComponentCreateListener(DiscordApplicationMain::handleMessageComponentCreateEvent);
+        api.addAutocompleteCreateListener(DiscordApplicationMain::handleAutoCompleteCreateEvent);
+        adminApi.addMessageCreateListener(DiscordApplicationMain::handleAdminMessageCreateEvent);
 
         System.out.println("Final setup...");
         try {
             messageLoggingService = new MessageLoggingService(api);
             slashCommandSearchService = new SlashCommandSearchService(api, discordRuleSearchService, discordCardSearchService);
             interactionPaginationService = new InteractionPaginationService(discordRuleSearchService, discordCardSearchService);
-            administratorCommandsService = new AdministratorCommandsService(api, slashCommandSearchService);
+            administratorCommandsService = new AdministratorCommandsService(api, adminApi, slashCommandSearchService);
 
         } catch (NoSuchElementException e) {
             System.out.println("Error in initialization");
@@ -99,22 +105,6 @@ public class DiscordApplicationMain {
     }
 
     private static void handleMessageCreateEvent(MessageCreateEvent event) {
-        if (isLoggingChannel(event) || !event.getMessageAuthor().isUser()) {
-            return;
-        }
-        DiscordReturnPayload result = discordRuleSearchService.getSearchResult(
-                getUsernameForMessageCreateEvent(event).get(),
-                event.getMessageContent()
-        );
-        if (result != null) {
-            messageLoggingService.logInput(event);
-            result.getMessage().replyTo(event.getMessage()).send(event.getChannel());
-            messageLoggingService.logOutput(result.getMessageWithoutButtons());
-        }
-        if (event.getMessageAuthor().asUser().map(User::isBotOwner).orElse(false)) {
-            administratorCommandsService.processCommand(event.getMessage().getContent(), event.getChannel());
-        }
-
         if (event.getMessage().getMentionedUsers().stream().anyMatch(User::isYourself)) {
             new MessageBuilder().setEmbed(MAIN_HELP_EMBED.build()).addComponents(DELETE_ONLY_ROW).send(event.getChannel());
         }
@@ -122,11 +112,23 @@ public class DiscordApplicationMain {
         event.getApi().updateActivity(CURRENT_VERSION);
     }
 
+    private static void handleAdminMessageCreateEvent(MessageCreateEvent event) {
+        if (event.getMessageAuthor().asUser().map(User::isBotOwner).orElse(false)) {
+            administratorCommandsService.processCommand(event.getMessage().getContent(), event.getChannel());
+        }
+    }
+
     private static void handleSlashCommandCreateEvent(SlashCommandCreateEvent event) {
         slashCommandSearchService.respondToSlashCommand(event);
+
+        event.getApi().updateActivity(CURRENT_VERSION);
     }
 
     private static void handleMessageComponentCreateEvent(MessageComponentCreateEvent event) {
         interactionPaginationService.respondToInteractionCommand(event);
+    }
+
+    private static void handleAutoCompleteCreateEvent(AutocompleteCreateEvent event) {
+        slashCommandSearchService.respondToAutocomplete(event);
     }
 }

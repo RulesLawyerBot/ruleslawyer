@@ -20,13 +20,15 @@ public class HelpMessageSearchService {
                                     "\n" +
                                     "RulesLawyer is a Discord bot that helps judges and players answer rules questions related to Magic: The Gathering. After reading this post, feel free to delete it by pressing the button. You can bring this up again by doing /help (and selecting the command associated with RulesLawyer, if there's other options associated with other bots on this server).\n" +
                                     "\n" +
-                                    "RulesLawyer is designed to be used like a search engine, where you can not only call it with specific citations, but with search terms. You can still call it with curly braces {{like this}}, roughly analogous to Scryfall, but it is recommended that you use the fancy new /rule command. You can also call up cards with /card."
-                            ),
+                                    "RulesLawyer is designed to be used like a search engine, where you can not only call it with specific citations, but with search terms. You can query rules with \"/rule\" and cards with \"/card\"."
+                    ),
                     new DiscordEmbedField(
                             "About the search algorithm",
                             "RulesLawyer Rule Search not only searches the Comprehensive Rules (CR), but also the Infraction Procedure Guide (IPG), Magic Tournament Rules (MTR), and many other documents. However, it will only find search terms that use words that are actually in the rules documents, so its recommended to not use extra \"filler\" words while searching. Card Search searches for card name and card oracle in any combination.\n" +
                                     "\n" +
-                                    "RulesLawyer uses fuzzy searching and relevancy heuristics so that the result you most likely want appears first, but this is an inexact science and not a guarantee. If there are too many results, it is suggested that you re-run the search with additional paramters."
+                                    "RulesLawyer uses fuzzy searching and relevancy heuristics so that the result you most likely want appears first, but this is an inexact science and not a guarantee. If there are too many results, it is suggested that you re-run the search with additional parameters.\n" +
+                                    "\n" +
+                                    "RulesLawyer will sometimes try to autocomplete your query, but this is experimental and may sometimes result in weirdness. Much like a traditional search engine, you do not have to select the autocomplete suggestions and should feel free to submit whatever query you want."
                     ),
                     new DiscordEmbedField(
                             "For example, try the following searches:",
@@ -38,9 +40,19 @@ public class HelpMessageSearchService {
                                     "/card thalia\n" +
                                     "/card cryptic (should bring up cryptic command instead of a random card with cryptic in the name)\n" +
                                     "\n" +
-                                    "More help files are at \"/help add\" to add this to your own server, \"/help about\" for contact information, or \"/help dev\" for the latest patch notes.\n" +
+                                    "More help files are at \"/help add\" to add this to your own server, \"/help about\" for contact information, or \"/help dev\" for the latest patch notes.\n"
+                    ),
+                    new DiscordEmbedField(
+                            "About RulesLawyer",
+                            "RulesLawyer is written by Elaine Cao, Level 2 from Calgary, Alberta.\n" +
                                     "\n" +
-                                    "Card search is still fairly new and I would appreciate bugs being reported with \"/help about\""
+                                    "RulesLawyer uses material that is copyrighted to Wizards of the Coast and is used under fair use doctrine. Feel free to do whatever with it as long as you credit me.\n" +
+                                    "\n" +
+                                    "Contact me with bugs, feedback, and other inquiries at @ RulesLawyerBot on Twitter or Oritart#0001 on Discord."
+                    ),
+                    new DiscordEmbedField(
+                            "Support us!",
+                            "RulesLawyer has a Patreon, located at https://patreon.com/ruleslawyer. This helps us pay for server costs."
                     )
             );
     public static final EmbedBuilderBuilder HELP_ABOUT_EMBED = new EmbedBuilderBuilder()
@@ -69,67 +81,20 @@ public class HelpMessageSearchService {
             .addFields(
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
-                            "Last updated: 2022-02-11\n" +
+                            "Last updated: 2022-03-20\n" +
                                     "Rules and cards version: Kamigawa Neon Dynasty"
                     ),
                     new DiscordEmbedField(
-                            "v1.12.10",
-                            "Updated rules to NEO."
-                    ),
-                    new DiscordEmbedField(
-                            "v1.12.9",
-                            "Updated rules to VOW.\n" +
-                                    "Slight API changes in preparation for www.ruleslawyer.app upgrades. Go check out the site!"
-                    ),
-                    new DiscordEmbedField(
-                            "v1.12.8",
-                            "Fixed a bug where certain rules searches didn't display properly.\n" +
-                                    "Fixed a bug where certain card prices did not display.\n" +
-                                    "Removed names from embed footers. (Don't need for metadata anymore)"
-                    ),
-                    new DiscordEmbedField(
-                            "v1.12.7",
-                            "Updated rules to MID.\n" +
-                                    "Slightly improved card searching.\n" +
-                                    "Now displays more granular legality instead of just legal/not legal."
-                    ),
-                    new DiscordEmbedField(
-                            "v1.12.6",
-                            "Updated cards to MID. Rules will be in a separate update once we have them."
-                    ),
-                    new DiscordEmbedField(
-                            "v1.12.5",
-                            "Updated bot invite link (with /help add) for new Discord permissions setup."
-                    ),
-                    new DiscordEmbedField(
-                            "v1.12.4",
-                            "Some more search tweaks."
-                    ),
-                    new DiscordEmbedField(
-                            "v1.12.3",
-                            "/price is now up (as an alias for /card <name> price)\n" +
-                                    "Some algorithm tweaks."
-                    ),
-                    new DiscordEmbedField(
-                            "v1.12.2",
-                            "Some card relevancy algorithm changes."
-                    ),
-                    new DiscordEmbedField(
-                            "v1.12.1",
-                            "Fixed some bugs and confusion in card searching.\n" +
-                                    "Updated: /card now supports pagination and exact matches (use \"quotation marks\" to exact match the title)"
-                    ),
-                    new DiscordEmbedField(
-                            "v1.12.0",
-                            "Card searching! /card is available.\n" +
-                                    "www.ruleslawyer.app is now available! Search using the core RulesLawyer engine in a webapp with greater clarity.\n" +
-                                    "Updated: /rule now supports rule source filtering (or skip the second argument to search everything)"
+                            "v1.13.0",
+                            "Autocompletion! RulesLawyer will give you autocomplete possibilities for CR citations and keyword terms.\n" +
+                                    "{{rule}} endpoint removed in preparation for message intent removal. (Blame Discord)\n" +
+                                    "Internal linking for ruleslawyer.app\n" +
+                                    "Various backend improvements."
                     ),
                     new DiscordEmbedField(
                             "Future Development",
-                            "Slack is being worked on, but still in progress.\n" +
-                                    "Android version is on hold for now, though its one of the Patreon goals (www.patreon.com/ruleslawyer)\n" +
-                                    "There is some known weirdness with card search. I'm working on it.\n" +
+                            "Autocompletion for non-CR rules (likely) and cards (less likely).\n" +
+                                    "Slack and Android versions on hold for now, though its one of the Patreon goals (www.patreon.com/ruleslawyer)\n" +
                                     "Known issues: Some foil prices not displaying, displaying foil set art instead of normal art"
                     )
             );

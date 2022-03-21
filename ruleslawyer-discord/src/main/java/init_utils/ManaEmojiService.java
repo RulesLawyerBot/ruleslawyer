@@ -47,40 +47,13 @@ public class ManaEmojiService {
         return manaSymbolEmojis;
     }
 
-    public AbstractRule replaceManaSymbols(AbstractRule rule) {
-        if (rule.getClass() == RuleHeader.class) {
-            RuleHeader outputRule = new RuleHeader(replaceManaSymbols(rule.getText()), rule.getRuleSource(), rule.getInboundCitations());
-            outputRule.setOutboundCitations(rule.getOutboundCitations());
-            outputRule.addAll(
-              rule.getSubRules().stream()
-                      .map(this::replaceManaSymbols)
-                      .collect(toList())
-            );
-            return outputRule;
-        }
-        if (rule.getClass() == RuleSubheader.class) {
-            RuleSubheader outputRule = new RuleSubheader(replaceManaSymbols(rule.getText()), rule.getInboundCitations());
-            outputRule.setOutboundCitations(rule.getOutboundCitations());
-            outputRule.addAll(
-                    rule.getSubRules().stream()
-                            .map(this::replaceManaSymbols)
-                            .collect(toList())
-            );
-            return outputRule;
-        }
-        Rule outputRule = new Rule(replaceManaSymbols(rule.getText()), rule.getInboundCitations());
-        outputRule.setOutboundCitations(rule.getOutboundCitations());
-        outputRule.addAll(
-                rule.getSubRules().stream()
-                        .map(this::replaceManaSymbols)
-                        .collect(toList())
-        );
-        return outputRule;
+    public void replaceManaSymbols(AbstractRule rule) {
+        rule.modifyRuleText(replaceManaSymbols(rule.getText()));
+        rule.getSubRules().forEach(this::replaceManaSymbols);
     }
 
-    public Card replaceManaSymbols(Card card) {
-        return new Card(
-                card,
+    public void replaceManaSymbols(Card card) {
+        card.modifyCard(
                 replaceManaSymbols(card.getManaCost()),
                 replaceManaSymbols(card.getOracleText())
         );
