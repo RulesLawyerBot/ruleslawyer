@@ -1,20 +1,18 @@
 package app.api.pojo;
 
 import contract.rules.citation.Citation;
+import contract.rules.enums.RuleSource;
 
 public class ApiCitation {
 
     private String citationText;
     private Integer ruleIndex;
-
-    public ApiCitation(String citationText, Integer ruleIndex) {
-        this.citationText = citationText;
-        this.ruleIndex = ruleIndex;
-    }
+    private RuleSource ruleSource;
 
     public ApiCitation(Citation citation) {
         this.citationText = citation.getCitationText();
         this.ruleIndex = citation.getCitedRule().getIndex();
+        this.ruleSource = citation.getCitedRule().getRuleSource();
     }
 
     public String getCitationText() {
@@ -23,5 +21,9 @@ public class ApiCitation {
 
     public Integer getRuleIndex() {
         return ruleIndex;
+    }
+
+    public RuleSource getRuleSource() {
+        return ruleSource;
     }
 }
