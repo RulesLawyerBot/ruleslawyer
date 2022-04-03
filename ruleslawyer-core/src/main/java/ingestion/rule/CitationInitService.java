@@ -65,6 +65,7 @@ public class CitationInitService {
                         .map(Emit::getKeyword)
                         .map(keyword -> citations.get(keyword))
                         .flatMap(Collection::stream)
+                        .distinct()
                         .filter(citation -> AllowedCitationLink.isAllowed(citation.getCitedRule().getRuleSource(), rule.getRuleSource()))
                         .collect(toList())
         );
