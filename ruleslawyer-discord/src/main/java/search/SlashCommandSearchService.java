@@ -64,6 +64,7 @@ public class SlashCommandSearchService {
                                 asList(
                                         SlashCommandOptionChoice.create("Any document (default)", valueOf(ANY_DOCUMENT)),
                                         SlashCommandOptionChoice.create("Comprehensive Rules", valueOf(CR)),
+                                        SlashCommandOptionChoice.create("CR Glossary", valueOf(CRG)),
                                         SlashCommandOptionChoice.create("Infraction Procedure Guide", valueOf(IPG)),
                                         SlashCommandOptionChoice.create("Magic Tournament Rules", valueOf(MTR)),
                                         SlashCommandOptionChoice.create("Judging At Regular", valueOf(JAR)),
@@ -84,7 +85,7 @@ public class SlashCommandSearchService {
                                 "card_name",
                                 "Search name or oracle (\"quotes\" for exact name match) - tab twice for additional parameters",
                                 true,
-                                false
+                                true
                         ),
                         createWithChoices(
                                 STRING,
@@ -155,6 +156,7 @@ public class SlashCommandSearchService {
     }
 
     public void respondToRuleCommand(SlashCommandCreateEvent event) {
+        //TODO this is super hacky. Gotta rewrite this.
         DiscordReturnPayload searchResult =
                 discordRuleSearchService.getSearchResultFromPlainQuery(
                         event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
@@ -214,7 +216,17 @@ public class SlashCommandSearchService {
         if (commandName.equals(RULE_SLASH_COMMAND_IDENTIFIER)) {
             event.getAutocompleteInteraction().respondWithChoices(
                     discordRuleSearchService.getAutocompleteSuggestions(
-                                    event.getAutocompleteInteraction().getOptionByIndex(0).get().getStringValue().get()
+                            event.getAutocompleteInteraction().getOptionByIndex(0).get().getStringValue().get()
+                            )
+                            .stream()
+                            .map(suggestion -> SlashCommandOptionChoice.create(suggestion, suggestion))
+                            .collect(toList())
+            );
+        }
+        if (commandName.equals(CARD_SLASH_COMMAND_IDENTIFIER)) {
+            event.getAutocompleteInteraction().respondWithChoices(
+                    discordCardSearchService.getAutocompleteSugestions(
+                            event.getAutocompleteInteraction().getOptionByIndex(0).get().getStringValue().get()
                             )
                             .stream()
                             .map(suggestion -> SlashCommandOptionChoice.create(suggestion, suggestion))

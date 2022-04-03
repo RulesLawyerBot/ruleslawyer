@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static contract.rules.enums.RuleSource.*;
-import static ingestion.rule.CitationFinderService.setOutboundCitations;
+import static ingestion.rule.CitationInitService.setOutboundCitations;
 import static java.lang.String.valueOf;
 import static java.nio.charset.StandardCharsets.*;
 import static java.util.Collections.emptyList;
@@ -32,7 +32,7 @@ public class JsonRuleIngestionService {
             System.out.println("Loading rules...");
             List<AbstractRule> rules = new ArrayList<>();
             rules.addAll(getRawRulesData("/CR-parsed.json", CR));
-            rules.addAll(getRawRulesData("/CRG-parsed.json", CR));
+            rules.addAll(getRawRulesData("/CRG-parsed.json", CRG));
             rules.addAll(getRawRulesData("/JAR-parsed.json", JAR));
             rules.addAll(getRawRulesData("/IPG-parsed.json", IPG));
             rules.addAll(getRawRulesData("/MTR-parsed.json", MTR));

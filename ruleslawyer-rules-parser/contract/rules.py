@@ -8,7 +8,7 @@ class RuleHeader:
     def __repr__(self):
         return f'{{"keywords":{self.keywords},"text":"{self.text}","subRules":{self.subrules}}}'
 
-    # used to make jsons
+    # used to make csvs
     def toArray(self):
         return [[self.keywords, self.text]] + join_subrules(self.subrules)
 

@@ -1,5 +1,5 @@
 package contract.searchRequests;
 
 public enum CardSearchRequestType {
-    MATCH_TITLE, INCLUDE_ORACLE, INCLUDE_RULINGS
+    MATCH_TITLE, TITLE_ONLY, INCLUDE_ORACLE, INCLUDE_RULINGS
 }

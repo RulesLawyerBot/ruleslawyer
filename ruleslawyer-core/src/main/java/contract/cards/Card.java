@@ -15,8 +15,7 @@ import static contract.cards.CardSetType.*;
 import static contract.cards.GameFormat.ANY_FORMAT;
 import static contract.cards.LegalityStatus.LEGAL;
 import static contract.cards.LegalityStatus.NOT_LEGAL;
-import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
-import static contract.searchRequests.CardSearchRequestType.MATCH_TITLE;
+import static contract.searchRequests.CardSearchRequestType.*;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
@@ -111,6 +110,8 @@ public class Card implements Searchable {
                 .allMatch(searchElement -> {
                     if (cardSearchRequest.getCardSearchRequestType() == MATCH_TITLE) {
                         return keywordMatchesTitle(searchElement);
+                    } else if (cardSearchRequest.getCardSearchRequestType() == TITLE_ONLY) {
+                        return keywordExistsInTitle(searchElement);
                     } else if (cardSearchRequest.getCardSearchRequestType() == INCLUDE_ORACLE) {
                         return keywordExistsInOracle(searchElement);
                     } else {
@@ -132,7 +133,7 @@ public class Card implements Searchable {
     }
 
     private boolean keywordMatchesTitle(String keyword) {
-        return this.cardName.toLowerCase().equals(keyword.toLowerCase());
+        return this.cardName.equalsIgnoreCase(keyword);
     }
 
     private boolean keywordExistsInTitle(String keyword) {

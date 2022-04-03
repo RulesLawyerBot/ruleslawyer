@@ -19,13 +19,11 @@ import service.RawRuleSearchService;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static contract.rules.enums.RuleRequestCategory.*;
 import static contract.rules.enums.RuleSource.ANY_DOCUMENT;
-import static ingestion.rule.CitationFinderService.getCitationStrings;
+import static ingestion.rule.CitationInitService.getCitationStrings;
 import static ingestion.rule.JsonRuleIngestionService.getRawDigitalRulesData;
 import static ingestion.rule.JsonRuleIngestionService.getRawRulesData;
 import static java.lang.Integer.parseInt;
@@ -234,7 +232,7 @@ public class DiscordRuleSearchService {
             return emptyList();
         }
         List<String> rawCitations = getCitationStrings().stream()
-                .filter(citationString -> citationString.contains(query.toLowerCase()))
+                .filter(citationString -> stream(query.split(" ")).allMatch(citationString::contains))
                 .sorted(
                         (a, b) ->
                                 a.length() != b.length() ?

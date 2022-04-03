@@ -1,6 +1,7 @@
 package search;
 
 import contract.cards.Card;
+import contract.searchRequests.CardSearchRequest;
 import init_utils.ManaEmojiService;
 import search.contract.DiscordEmbedField;
 import search.contract.DiscordReturnPayload;
@@ -14,12 +15,12 @@ import search.interaction_pagination.pagination_enum.CardDataReturnType;
 import java.util.List;
 
 import static contract.cards.GameFormat.ANY_FORMAT;
-import static contract.searchRequests.CardSearchRequestType.INCLUDE_ORACLE;
-import static contract.searchRequests.CardSearchRequestType.MATCH_TITLE;
+import static contract.searchRequests.CardSearchRequestType.*;
 import static ingestion.card.JsonCardIngestionService.getCards;
 import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static search.interaction_pagination.InteractionPaginationStatics.*;
@@ -150,5 +151,23 @@ public class DiscordCardSearchService {
         return join(" ", searchRequest.getKeywords()) +
                 " | " + searchRequest.getCardDataReturnType().toString().toLowerCase() +
                 " | Page " + (((searchRequest.getPageNumber() + cardListSize - 1) % cardListSize) + 1);
+    }
+
+    public List<String> getAutocompleteSugestions(String query) {
+        if (query.length() == 0) {
+            return emptyList();
+        }
+        CardSearchRequest searchRequest = new CardSearchRequest(
+                asList(query.split(" ")),
+                ANY_FORMAT,
+                1,
+                TITLE_ONLY
+        );
+        List<String> rawCards = rawCardSearchService.getCardsWithOracleFallback(searchRequest).stream()
+                .limit(10)
+                .map(Card::getCardName)
+                .collect(toList());
+        rawCards.add(0, query);
+        return rawCards;
     }
 }

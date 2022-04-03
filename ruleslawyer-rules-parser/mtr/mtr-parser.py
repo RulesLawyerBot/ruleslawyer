@@ -53,7 +53,11 @@ def main():
                 current_subheader = None
             if current_header:
                 rules.append(current_header)
-            current_header = RuleHeader(line, [], [])
+            try:
+                citation_split_index = line.index(" ")
+                current_header = RuleHeader(line, [], ["MTR " + line[:citation_split_index].strip(), "MTR " + line[citation_split_index:].strip()])
+            except ValueError:
+                current_header = RuleHeader(line, [], [])
         elif line[0].isnumeric() or line[0] == "*":  # subsection
             if not current_subheader:
                 current_subheader = RuleSubHeader(line, [], [])

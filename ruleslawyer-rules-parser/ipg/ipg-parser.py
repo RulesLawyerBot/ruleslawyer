@@ -53,7 +53,12 @@ def main():
             for penalty in penalties:
                 ind = line.find(penalty)
                 if ind != -1:
-                    current_header = RuleHeader(line[:ind], [], [])
+                    try:
+                        citation_number_index = line[:ind].index(" ")
+                        citation_name_index = line[:ind].index("-")
+                        current_header = RuleHeader(line[:ind], [], ["IPG " + line[:citation_number_index], "IPG " + line[citation_name_index+1:ind].strip()])
+                    except ValueError:
+                        current_header = RuleHeader(line[:ind], [], [])
                     current_header.subrules.append(RuleSubHeader("Penalty", [Rule(penalty, [])], []))
                     flag = True
                     break

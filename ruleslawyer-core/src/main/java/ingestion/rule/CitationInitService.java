@@ -1,23 +1,23 @@
 package ingestion.rule;
 
 import contract.rules.AbstractRule;
+import contract.rules.citation.AllowedCitationLink;
 import contract.rules.citation.Citation;
 import org.ahocorasick.trie.Emit;
 import org.ahocorasick.trie.Trie;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.*;
 import static java.util.stream.Stream.concat;
 import static org.ahocorasick.trie.Trie.builder;
 
-public class CitationFinderService {
-    private static Map<String, Citation> citations = null;
+public class CitationInitService {
+    private static Map<String, List<Citation>> citations = null;
     private static Trie trie = null;
 
     public static void setOutboundCitations(List<AbstractRule> rules) {
@@ -31,7 +31,7 @@ public class CitationFinderService {
                     .build();
         }
 
-        rules.forEach(CitationFinderService::setOutboundCitationsForRule);
+        rules.forEach(CitationInitService::setOutboundCitationsForRule);
     }
 
     public static Set<String> getCitationStrings() {
@@ -40,12 +40,12 @@ public class CitationFinderService {
 
     private static void getCitations(List<AbstractRule> rules) {
         citations = rules.stream()
-                .flatMap(CitationFinderService::getInboundCitationsForRule)
+                .flatMap(CitationInitService::getInboundCitationsForRule)
                 .filter(citation -> citation.getCitationText().length() > 0)
                 .collect(
-                        toMap(
+                        groupingBy(
                                 Citation::getCitationText,
-                                identity()
+                                toList()
                         )
                 );
     }
@@ -55,7 +55,7 @@ public class CitationFinderService {
                 rule.getInboundCitations().stream()
                         .map(citation -> new Citation(citation.toLowerCase(), rule)),
                 rule.getSubRules().stream()
-                        .flatMap(CitationFinderService::getInboundCitationsForRule)
+                        .flatMap(CitationInitService::getInboundCitationsForRule)
         );
     }
 
@@ -63,10 +63,11 @@ public class CitationFinderService {
         rule.setOutboundCitations(
                 trie.parseText(rule.getText()).stream()
                         .map(Emit::getKeyword)
-                        .distinct()
                         .map(keyword -> citations.get(keyword))
+                        .flatMap(Collection::stream)
+                        .filter(citation -> AllowedCitationLink.isAllowed(citation.getCitedRule().getRuleSource(), rule.getRuleSource()))
                         .collect(toList())
         );
-        rule.getSubRules().forEach(CitationFinderService::setOutboundCitationsForRule);
+        rule.getSubRules().forEach(CitationInitService::setOutboundCitationsForRule);
     }
 }
