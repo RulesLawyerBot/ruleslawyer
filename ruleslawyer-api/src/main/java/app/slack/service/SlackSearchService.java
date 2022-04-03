@@ -35,7 +35,7 @@ public class SlackSearchService {
     private OutputFieldSplitService outputFieldSplitService;
 
     public SlackSearchService() {
-        rawRuleSearchService = new RawRuleSearchService();
+        rawRuleSearchService = RawRuleSearchService.get();
         outputFieldSplitService = new OutputFieldSplitService(MAX_HEADER_LENGTH, MAX_TEXT_LENGTH);
     }
 

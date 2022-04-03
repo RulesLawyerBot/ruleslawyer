@@ -36,7 +36,7 @@ public class ApiSearchService {
     private RawRuleSearchService rawRuleSearchService;
 
     public ApiSearchService() {
-        this.rawRuleSearchService = new RawRuleSearchService();
+        this.rawRuleSearchService = RawRuleSearchService.get();
     }
 
     public ApiRulesPayload getRuleSearchResults(RuleSearchRequest ruleSearchRequest) {

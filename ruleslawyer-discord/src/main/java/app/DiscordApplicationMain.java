@@ -40,7 +40,6 @@ public class DiscordApplicationMain {
     private static final String CURRENT_VERSION = "Version 1.13.0 | NEO | \"/help\"";
 
     public static void main(String[] args) {
-        // TODO FOR 1.13.1: Add additional citations for non-CR things
         if (!args[0].equals("prod")) {
             FallbackLoggerConfiguration.setDebug(true);
         }

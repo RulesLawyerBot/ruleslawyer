@@ -24,6 +24,15 @@ public class RawRuleSearchService {
     SearchRepository<AbstractRule> ruleSearchRepository;
     SearchRepository<AbstractRule> digitalRuleSearchRepository;
 
+    private static RawRuleSearchService singletonRawRuleSearchService = null;
+
+    public static RawRuleSearchService get() {
+        if (singletonRawRuleSearchService == null) {
+            singletonRawRuleSearchService = new RawRuleSearchService();
+        }
+        return singletonRawRuleSearchService;
+    }
+
     public RawRuleSearchService() {
         ruleSearchRepository = new SearchRepository<>(getRawRulesData());
         digitalRuleSearchRepository = new SearchRepository<>(getRawDigitalRulesData());
