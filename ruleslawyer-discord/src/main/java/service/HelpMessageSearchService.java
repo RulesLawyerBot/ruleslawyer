@@ -85,6 +85,11 @@ public class HelpMessageSearchService {
                                     "Rules and cards version: Kamigawa Neon Dynasty"
                     ),
                     new DiscordEmbedField(
+                            "v1.13.1",
+                            "Upgraded rules and cards to SNC.\n" +
+                                    "A lot of improvements to ruleslawyer.app, including semantic linking! Check it out!"
+                    ),
+                    new DiscordEmbedField(
                             "v1.13.0",
                             "Autocompletion! RulesLawyer will give you autocomplete possibilities for CR citations and keyword terms.\n" +
                                     "{{rule}} endpoint removed in preparation for message intent removal. (Blame Discord)\n" +
