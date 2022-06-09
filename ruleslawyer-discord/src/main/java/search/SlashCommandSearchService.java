@@ -156,7 +156,6 @@ public class SlashCommandSearchService {
     }
 
     public void respondToRuleCommand(SlashCommandCreateEvent event) {
-        //TODO this is super hacky. Gotta rewrite this.
         DiscordReturnPayload searchResult =
                 discordRuleSearchService.getSearchResultFromPlainQuery(
                         event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
@@ -225,12 +224,9 @@ public class SlashCommandSearchService {
         }
         if (commandName.equals(CARD_SLASH_COMMAND_IDENTIFIER)) {
             event.getAutocompleteInteraction().respondWithChoices(
-                    discordCardSearchService.getAutocompleteSugestions(
+                    discordCardSearchService.getAutocompleteSuggestions(
                             event.getAutocompleteInteraction().getOptionByIndex(0).get().getStringValue().get()
                             )
-                            .stream()
-                            .map(suggestion -> SlashCommandOptionChoice.create(suggestion, suggestion))
-                            .collect(toList())
             );
         }
     }

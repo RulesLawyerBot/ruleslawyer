@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-from utils.simple_io import getPDF
+from utils.simple_io import get_PDF
 from utils.simple_io import write
 from utils.simple_io import clear
 from utils.filedata import FileData
@@ -11,7 +11,7 @@ from contract.rules import Rule
 
 
 def main():
-    file = FileData(getPDF("dipg.pdf"))
+    file = FileData(get_PDF("dipg.pdf"))
     normalized_text = []
     line_builder = ""
     emptyline_flag = True
@@ -29,15 +29,13 @@ def main():
         line_builder = line if len(line_builder) == 0 else line_builder + " " + line
         emptyline_flag = False
 
-    for line in normalized_text:
-        print(line)
-
     start_index = normalized_text.index("1. General Philosophy")
     output = []
     current_header = None
     current_subheader = None
     penalties = ["No Penalty", "Warning", "Game Loss", "Match Loss", "Disqualification"]
     for i in range(start_index, len(normalized_text)):
+        print(line)
         line = normalized_text[i].replace("  ", " ").strip()
         if line.startswith("Appendix"):
             break
@@ -54,26 +52,26 @@ def main():
             for penalty in penalties:
                 ind = line.find(penalty)
                 if ind != -1:
-                    current_header = RuleHeader(line[:ind], [])
-                    current_header.subrules.append(RuleSubHeader("Penalty", [Rule(penalty)]))
+                    current_header = RuleHeader(line[:ind-1].strip(), [], [])
+                    current_header.subrules.append(RuleSubHeader("Penalty", [Rule(penalty, [])], []))
                     flag = True
                     break
             if not flag:
-                current_header = RuleHeader(line, [])
+                current_header = RuleHeader(line, [], [])
             current_subheader = None
             continue
 
         if not current_subheader:  # if just made a header
             if len(line) > 30:  # is not a section header
-                current_header.subrules.append(RuleSubHeader(line, []))
+                current_header.subrules.append(RuleSubHeader(line, [], []))
             else:
-                current_subheader = RuleSubHeader(line, [])
+                current_subheader = RuleSubHeader(line, [], [])
         else:
             if len(line) < 30:  # is a section header
                 current_header.subrules.append(current_subheader)
-                current_subheader = RuleSubHeader(line, [])
+                current_subheader = RuleSubHeader(line, [], [])
             else:
-                current_subheader.subrules.append(Rule(line))
+                current_subheader.subrules.append(Rule(line, []))
     output.append(current_header)
 
     clear("DIPG-parsed.json")
