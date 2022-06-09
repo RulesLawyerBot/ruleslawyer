@@ -3,6 +3,7 @@ package search;
 import contract.cards.Card;
 import contract.searchRequests.CardSearchRequest;
 import init_utils.ManaEmojiService;
+import org.javacord.api.interaction.SlashCommandOptionChoice;
 import search.contract.DiscordEmbedField;
 import search.contract.DiscordReturnPayload;
 import search.contract.EmbedBuilderBuilder;
@@ -153,7 +154,7 @@ public class DiscordCardSearchService {
                 " | Page " + (((searchRequest.getPageNumber() + cardListSize - 1) % cardListSize) + 1);
     }
 
-    public List<String> getAutocompleteSugestions(String query) {
+    public List<SlashCommandOptionChoice> getAutocompleteSuggestions(String query) {
         if (query.length() == 0) {
             return emptyList();
         }
@@ -163,11 +164,12 @@ public class DiscordCardSearchService {
                 1,
                 TITLE_ONLY
         );
-        List<String> rawCards = rawCardSearchService.getCardsWithOracleFallback(searchRequest).stream()
+        List<SlashCommandOptionChoice> rawCards = rawCardSearchService.getCardsWithOracleFallback(searchRequest).stream()
                 .limit(10)
                 .map(Card::getCardName)
+                .map(card -> SlashCommandOptionChoice.create(card, "\"" + card + "\""))
                 .collect(toList());
-        rawCards.add(0, query);
+        rawCards.add(0, SlashCommandOptionChoice.create(query, query));
         return rawCards;
     }
 }
