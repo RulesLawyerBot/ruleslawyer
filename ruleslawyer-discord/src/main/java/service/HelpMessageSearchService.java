@@ -81,13 +81,16 @@ public class HelpMessageSearchService {
             .addFields(
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
-                            "Last updated: 2022-06-08\n" +
+                            "Last updated: 2022-06-14\n" +
                                     "Rules and cards version: Battle for Baldur's Gate"
+                    ),
+                    new DiscordEmbedField(
+                            "v1.13.3",
+                            "Fixed a bug relating to exact match card searching."
                     ),
                     new DiscordEmbedField(
                             "v1.13.2",
                             "Upgraded rules and cards to CLB.\n" +
-                                    "Upgraded rules and cards to SNC.\n" +
                                     "Some parsing improvements.\n" +
                                     "Some improvements to card search."
                     ),

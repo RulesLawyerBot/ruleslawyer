@@ -187,9 +187,9 @@ public class InteractionPaginationService {
 
     private DiscordCardSearchRequest getCardSearchRequestFromFooter(Embed embed) {
         List<String> footerParts = asList(embed.getFooter().get().getText().get().split(" \\| "));
-        if (footerParts.get(1).startsWith("\"")) {
+        if (footerParts.get(0).startsWith("\"")) {
             return new DiscordCardSearchRequest(
-                    singletonList(footerParts.get(0).substring(0, footerParts.get(0).length()-1).toLowerCase()),
+                    singletonList(footerParts.get(0).substring(1, footerParts.get(0).length()-1).toLowerCase()),
                     ANY_FORMAT,
                     null,
                     CardDataReturnType.valueOf(footerParts.get(1).toUpperCase()),
