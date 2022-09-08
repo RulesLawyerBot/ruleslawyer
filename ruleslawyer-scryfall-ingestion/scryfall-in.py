@@ -42,7 +42,7 @@ def get_image_urls(card_json):
 
 
 def parse_card(card_json):
-    card_name = card_json["name"].replace('"', "'")
+    card_name = card_json["name"].replace('"', "'").replace("ü", "u") # TODO rewrite this bandaid
     scryfall_uri = card_json["uri"]
     card_set = CardSet(scryfall_uri, get_set_type(card_json), card_json["set_name"])
     oracle_id = card_json["oracle_id"]
@@ -65,14 +65,6 @@ def parse_card(card_json):
         image_age = datetime.datetime.strptime(card_json["released_at"], "%Y-%m-%d")
         card = Card(card_name, mana_cost, type_line, oracle, [], card_set, legalities, edhrec_rank, image_url, image_age)
         all_cards[oracle_id] = card
-
-
-def read_file_chunk(file_object):
-    while True:
-        data = file_object.read(1048576)
-        if not data:
-            break
-        yield data
 
 
 def main():

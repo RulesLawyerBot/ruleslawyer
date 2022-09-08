@@ -37,7 +37,7 @@ public class DiscordApplicationMain {
     private static InteractionPaginationService interactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.13.3 | CLB | \"/help\"";
+    private static final String CURRENT_VERSION = "Version 1.13.4 | DMU | \"/help\"";
 
     public static void main(String[] args) {
         if (!args[0].equals("prod")) {

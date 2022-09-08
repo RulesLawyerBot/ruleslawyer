@@ -11,7 +11,7 @@ public class DiscordEmbedField {
         this.fieldName = fieldName;
         this.fieldText = fieldText;
         if (fieldText.length() == 0)
-            this.fieldText = ".";
+            this.fieldText = "\u200b";
         this.relevancy = 0;
     }
 

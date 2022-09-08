@@ -25,7 +25,7 @@ public class JsonCardIngestionService {
             in.close();
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(valueOf(buffer), new TypeReference<List<Card>>() {});
-        } catch (Exception ignored) {
+        } catch (IOException ignored) {
             ignored.printStackTrace();
         }
         return emptyList();

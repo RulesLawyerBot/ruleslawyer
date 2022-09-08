@@ -159,7 +159,7 @@ public class SlashCommandSearchService {
         DiscordReturnPayload searchResult =
                 discordRuleSearchService.getSearchResultFromPlainQuery(
                         event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
-                        event.getSlashCommandInteraction().getFirstOptionStringValue().orElse("") + "|" + event.getSlashCommandInteraction().getSecondOptionStringValue().orElse("")
+                        event.getSlashCommandInteraction().getOptionStringRepresentationValueByIndex(0).orElse("") + "|" + event.getSlashCommandInteraction().getOptionStringRepresentationValueByIndex(1).orElse("")
                 );
         event.getSlashCommandInteraction().createImmediateResponder()
                 .addEmbed(searchResult.getEmbed().build())
@@ -169,13 +169,13 @@ public class SlashCommandSearchService {
     }
 
     private void respondToCardCommand(SlashCommandCreateEvent event) {
-        CardDataReturnType cardDataReturnType = event.getSlashCommandInteraction().getSecondOptionStringValue().map(CardDataReturnType::valueOf).orElse(ORACLE);
+        CardDataReturnType cardDataReturnType = event.getSlashCommandInteraction().getOptionStringRepresentationValueByIndex(1).map(CardDataReturnType::valueOf).orElse(ORACLE);
         if (cardDataReturnType == PRICE) {
             respondToPriceCommand(event);
         } else {
             DiscordReturnPayload discordReturnPayload = discordCardSearchService.getSearchResult(
                     event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
-                    event.getSlashCommandInteraction().getFirstOptionStringValue().orElse(""),
+                    event.getSlashCommandInteraction().getOptionStringRepresentationValueByIndex(0).orElse(""),
                     cardDataReturnType
             );
             event.getSlashCommandInteraction().createImmediateResponder()
@@ -189,7 +189,7 @@ public class SlashCommandSearchService {
         event.getSlashCommandInteraction().respondLater();
         DiscordReturnPayload discordReturnPayload = discordCardSearchService.getSearchResult(
                 event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
-                event.getSlashCommandInteraction().getFirstOptionStringValue().orElse(""),
+                event.getSlashCommandInteraction().getOptionStringRepresentationValueByIndex(0).orElse(""),
                 PRICE
         );
         event.getSlashCommandInteraction().createFollowupMessageBuilder()
@@ -200,7 +200,7 @@ public class SlashCommandSearchService {
 
     private void respondToHelpCommand(SlashCommandCreateEvent event) {
         EmbedBuilderBuilder helpFile = event.getSlashCommandInteraction()
-                .getFirstOptionStringValue()
+                .getOptionStringRepresentationValueByIndex(0)
                 .map(value -> helpMessageSearchService.getHelpFile(value))
                 .orElse(helpMessageSearchService.getHelpFile());
         event.getSlashCommandInteraction()

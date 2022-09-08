@@ -59,7 +59,7 @@ public class HelpMessageSearchService {
             .addFields(
                     new DiscordEmbedField(
                             "About RulesLawyer",
-                            "RulesLawyer is written by Elaine Cao, Level 2 from Calgary, Alberta.\n" +
+                            "RulesLawyer is written by Elaine Cao, Level 2 from Montreal, Quebec.\n" +
                                     "\n" +
                                     "RulesLawyer uses material that is copyrighted to Wizards of the Coast and is used under fair use doctrine. Feel free to do whatever with it as long as you credit me.\n" +
                                     "\n" +
@@ -81,8 +81,12 @@ public class HelpMessageSearchService {
             .addFields(
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
-                            "Last updated: 2022-06-14\n" +
+                            "Last updated: 2022-09-07\n" +
                                     "Rules and cards version: Battle for Baldur's Gate"
+                    ),
+                    new DiscordEmbedField(
+                            "v1.13.4",
+                            "Upgraded rules and cards to DMU."
                     ),
                     new DiscordEmbedField(
                             "v1.13.3",
@@ -108,7 +112,9 @@ public class HelpMessageSearchService {
                     ),
                     new DiscordEmbedField(
                             "Future Development",
-                            "Autocompletion for non-CR rules (likely) and cards (less likely).\n" +
+                            "Better display UX (hopefully?)\n" +
+                                    "Autocompletion for non-CR rules.\n" +
+                                    "Localization of slash commands into non-English languages, and support for non-English characters.\n" +
                                     "Slack and Android versions on hold for now, though its one of the Patreon goals (www.patreon.com/ruleslawyer)\n" +
                                     "Known issues: Some foil prices not displaying, displaying foil set art instead of normal art"
                     )

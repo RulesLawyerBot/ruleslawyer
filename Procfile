@@ -1,1 +1,1 @@
-web: java -jar -Dserver.port=$PORT ruleslawyer-api/target/ruleslawyer-api-0.13.2.jar
+web: java -jar -Dserver.port=$PORT ruleslawyer-api/target/ruleslawyer-api-0.13.4.jar
