@@ -54,7 +54,7 @@ public class RuleSubheader extends AbstractRule {
                                 this.getHeader().getText().substring(this.getHeader().getText().indexOf(" "))
                         ),
                         new PrintableRule(
-                                this.getRuleSource() + " " + this.getText(),
+                                "- " + this.getText(),
                                 this.getSubRules().stream().map(AbstractRule::getText).collect(joining("\n"))
                         )
                 );

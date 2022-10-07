@@ -145,9 +145,7 @@ public class DiscordCardSearchService {
 
     private String getFooter(DiscordCardSearchRequest searchRequest, Integer cardListSize) {
         if (searchRequest.getCardSearchRequestType() == MATCH_TITLE) {
-            return "\"" + searchRequest.getKeywords().get(0) + "\"" +
-                    " | " + searchRequest.getCardDataReturnType().toString().toLowerCase() +
-                    " | " + "exact match query";
+            return "";
         }
         return join(" ", searchRequest.getKeywords()) +
                 " | " + searchRequest.getCardDataReturnType().toString().toLowerCase() +

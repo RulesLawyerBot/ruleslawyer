@@ -51,7 +51,7 @@ public class Rule extends AbstractRule {
     public List<PrintableRule> getPrintedRules() {
         return singletonList(
                 new PrintableRule(
-                    this.getRuleSource() + " " + this.getHeader().getText() + " " + this.getSubHeader().getText(),
+                    this.getRuleSource() + " " + this.getHeader().getText() + " | " + this.getSubHeader().getText(),
                     this.getText()
             )
         );

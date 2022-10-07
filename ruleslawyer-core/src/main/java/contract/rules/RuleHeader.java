@@ -39,7 +39,7 @@ public class RuleHeader extends AbstractRule {
         }
         List<PrintableRule> subRuleList = this.getSubRules().stream().map(
                 subrule -> new PrintableRule(
-                        this.getRuleSource() + " " + subrule.getText(),
+                        "- " + subrule.getText(),
                         subrule.getSubRules().stream().map(AbstractRule::getText).collect(joining("\n"))
                 )
         )
