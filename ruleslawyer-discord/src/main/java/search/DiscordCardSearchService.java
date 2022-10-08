@@ -129,12 +129,13 @@ public class DiscordCardSearchService {
                                                     price.getCardPrices()
                                             )
                                     )
+                                    .limit(25)
                                     .collect(toList())
                     );
         }
         return new EmbedBuilderBuilder()
                 .setAuthor(CARD_SEARCH_AUTHOR_TEXT)
-                .setTitle(card.getCardName() + card.getManaCost())
+                .setTitle(card.getCardName() + "  " + card.getManaCost())
                 .addFields(new DiscordEmbedField(card.getTypeLine(), card.getOracleText()))
                 .setThumbnail(card.getImage_urls().get(0));
     }

@@ -20,8 +20,8 @@ import static contract.searchRequests.CardSearchRequestType.MATCH_TITLE;
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static java.util.Optional.empty;
 import static search.DiscordCardSearchService.CARD_SEARCH_AUTHOR_TEXT;
+import static search.interaction_pagination.pagination_enum.CardDataReturnType.ORACLE;
 import static search.interaction_pagination.pagination_enum.CardDataReturnType.PRICE;
 import static search.interaction_pagination.pagination_enum.CardPageDirection.NEXT_CARD;
 
@@ -34,10 +34,6 @@ public class CardPaginationService {
     }
 
     protected Optional<DiscordReturnPayload> paginateCard(MessageComponentCreateEvent event) {
-        if (!hasFooter(event)) {
-            event.getMessageComponentInteraction().createImmediateResponder().respond();
-            return empty();
-        }
         try {
             CardDataReturnType cardDataReturnType = Optional.of(event.getMessageComponentInteraction().getCustomId()).map(CardDataReturnType::valueOf).orElse(null);
             return paginateCardDataReturnType(event, cardDataReturnType);
@@ -50,7 +46,7 @@ public class CardPaginationService {
     private Optional<DiscordReturnPayload> paginateCardDataReturnType(MessageComponentCreateEvent event, CardDataReturnType cardDataReturnType) {
         if (cardDataReturnType == PRICE) {
             event.getMessageComponentInteraction().createImmediateResponder().respond();
-            DiscordCardSearchRequest searchRequest = getCardSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().getEmbeds().get(0));
+            DiscordCardSearchRequest searchRequest = getCardSearchRequestFromEmbed(event.getMessageComponentInteraction().getMessage().getEmbeds().get(0));
             searchRequest.setCardDataReturnType(cardDataReturnType);
             event.getMessageComponentInteraction().getMessage().edit(
                     new EmbedBuilderBuilder()
@@ -61,51 +57,42 @@ public class CardPaginationService {
             return Optional.of(discordCardSearchService.getSearchResult(searchRequest));
         } else {
             event.getMessageComponentInteraction().createImmediateResponder().respond();
-            DiscordCardSearchRequest searchRequest = getCardSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().getEmbeds().get(0));
+            DiscordCardSearchRequest searchRequest = getCardSearchRequestFromEmbed(event.getMessageComponentInteraction().getMessage().getEmbeds().get(0));
             searchRequest.setCardDataReturnType(cardDataReturnType);
             return Optional.of(discordCardSearchService.getSearchResult(searchRequest));
         }
     }
 
     private Optional<DiscordReturnPayload> paginateCardNumber(MessageComponentCreateEvent event, CardPageDirection cardPageDirection) {
-        DiscordCardSearchRequest searchRequest = getCardSearchRequestFromFooter(event.getMessageComponentInteraction().getMessage().getEmbeds().get(0));
+        DiscordCardSearchRequest searchRequest = getCardSearchRequestFromEmbed(event.getMessageComponentInteraction().getMessage().getEmbeds().get(0));
         searchRequest.paginateSearchRequest(cardPageDirection);
         event.getMessageComponentInteraction().createImmediateResponder().respond();
         return Optional.of(discordCardSearchService.getSearchResult(searchRequest));
     }
 
-    private boolean hasFooter(MessageComponentCreateEvent event) {
-        Message message = event.getMessageComponentInteraction().getMessage();
-        List<Embed> embeds = message.getEmbeds();
-        if (embeds.size() < 1) {
-            return false;
-        }
-        Optional<EmbedFooter> embedFooterOptional = embeds.get(0).getFooter();
-        if (!embedFooterOptional.isPresent()) {
-            return false;
-        }
-        return embedFooterOptional.map(footer -> footer.getText().isPresent()).orElse(false);
-    }
-
-    private DiscordCardSearchRequest getCardSearchRequestFromFooter(Embed embed) {
-        List<String> footerParts = asList(embed.getFooter().get().getText().get().split(" \\| "));
-        if (footerParts.get(0).startsWith("\"")) {
+    private DiscordCardSearchRequest getCardSearchRequestFromEmbed(Embed embed) {
+        if (embed.getFooter().isPresent()) {
+            List<String> footerParts = asList(embed.getFooter().get().getText().get().split(" \\| "));
             return new DiscordCardSearchRequest(
-                    singletonList(footerParts.get(0).substring(1, footerParts.get(0).length()-1).toLowerCase()),
+                    asList(footerParts.get(0).split(" ")),
                     ANY_FORMAT,
                     null,
                     CardDataReturnType.valueOf(footerParts.get(1).toUpperCase()),
-                    MATCH_TITLE,
-                    1
+                    INCLUDE_ORACLE,
+                    parseInt(footerParts.get(2).substring(5))
             );
         }
+        String cardName = embed.getTitle().get();
+        if (cardName.contains("  ")) {
+            cardName = cardName.substring(0, cardName.indexOf("  "));
+        }
         return new DiscordCardSearchRequest(
-                asList(footerParts.get(0).split(" ")),
+                singletonList(cardName),
                 ANY_FORMAT,
                 null,
-                CardDataReturnType.valueOf(footerParts.get(1).toUpperCase()),
-                INCLUDE_ORACLE,
-                parseInt(footerParts.get(2).substring(5))
+                ORACLE,
+                MATCH_TITLE,
+                1
         );
     }
 }
