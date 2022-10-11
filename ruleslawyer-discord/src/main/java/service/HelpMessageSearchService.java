@@ -44,7 +44,7 @@ public class HelpMessageSearchService {
                     ),
                     new DiscordEmbedField(
                             "About RulesLawyer",
-                            "RulesLawyer is written by Elaine Cao, Level 2 from Calgary, Alberta.\n" +
+                            "RulesLawyer is written by Elaine Cao, Level 2 from Montreal, Quebec.\n" +
                                     "\n" +
                                     "RulesLawyer uses material that is copyrighted to Wizards of the Coast and is used under fair use doctrine. Feel free to do whatever with it as long as you credit me.\n" +
                                     "\n" +
@@ -81,39 +81,17 @@ public class HelpMessageSearchService {
             .addFields(
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
-                            "Last updated: 2022-09-07\n" +
+                            "Last updated: 2022-10-10\n" +
                                     "Rules and cards version: Battle for Baldur's Gate"
                     ),
                     new DiscordEmbedField(
-                            "v1.13.4",
-                            "Upgraded rules and cards to DMU."
-                    ),
-                    new DiscordEmbedField(
-                            "v1.13.3",
-                            "Fixed a bug relating to exact match card searching."
-                    ),
-                    new DiscordEmbedField(
-                            "v1.13.2",
-                            "Upgraded rules and cards to CLB.\n" +
-                                    "Some parsing improvements.\n" +
-                                    "Some improvements to card search."
-                    ),
-                    new DiscordEmbedField(
-                            "v1.13.1",
-                            "Upgraded rules and cards to SNC.\n" +
-                                    "A lot of improvements to ruleslawyer.app, including semantic linking! Check it out!"
-                    ),
-                    new DiscordEmbedField(
-                            "v1.13.0",
-                            "Autocompletion! RulesLawyer will give you autocomplete possibilities for CR citations and keyword terms.\n" +
-                                    "{{rule}} endpoint removed in preparation for message intent removal. (Blame Discord)\n" +
-                                    "Internal linking for ruleslawyer.app\n" +
-                                    "Various backend improvements."
+                            "v1.14.0",
+                            "Upgraded rules and cards to DMU.\n" +
+                                    "Display improvements! Hopefully results are less noisy now.\n" +
+                                    "Did a pass over digital rules and cleaned up parsing errors."
                     ),
                     new DiscordEmbedField(
                             "Future Development",
-                            "Better display UX (hopefully?)\n" +
-                                    "Autocompletion for non-CR rules.\n" +
                                     "Localization of slash commands into non-English languages, and support for non-English characters.\n" +
                                     "Slack and Android versions on hold for now, though its one of the Patreon goals (www.patreon.com/ruleslawyer)\n" +
                                     "Known issues: Some foil prices not displaying, displaying foil set art instead of normal art"
