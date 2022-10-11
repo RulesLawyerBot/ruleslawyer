@@ -1,7 +1,7 @@
 import sys
 sys.path.append("..")
 from utils.simple_io import get_PDF
-from utils.simple_io import write
+from utils.simple_io import write_csv
 from utils.simple_io import clear
 from utils.filedata import FileData
 from utils.unprintable_remover import replace_unprintable
@@ -35,7 +35,6 @@ def main():
     current_subheader = None
     penalties = ["No Penalty", "Warning", "Game Loss", "Match Loss", "Disqualification"]
     for i in range(start_index, len(normalized_text)):
-        print(line)
         line = normalized_text[i].replace("  ", " ").strip()
         if line.startswith("Appendix"):
             break
@@ -74,8 +73,13 @@ def main():
                 current_subheader.subrules.append(Rule(line, []))
     output.append(current_header)
 
-    clear("DIPG-parsed.json")
-    write("DIPG-parsed.json", output)
+    csv_output = []
+    for rule in output:
+        print(rule)
+        csv_output = csv_output + rule.toArray()
+
+    clear("DIPG-parsed.csv")
+    write_csv("DIPG-parsed.csv", csv_output)
 
 
 if __name__ == "__main__":

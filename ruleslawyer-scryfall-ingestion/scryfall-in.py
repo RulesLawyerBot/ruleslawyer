@@ -88,6 +88,9 @@ def main():
         print(page_number)
 
     for card_json in skipped_cards:
+        if "oracle_id" not in card_json:
+            print("Error: " + card_json["name"].replace('"', "'"))
+            continue
         scryfall_uri = card_json["uri"]
         card_set = CardSet(scryfall_uri, get_set_type(card_json), card_json["set_name"])
         oracle_id = card_json["oracle_id"]
@@ -107,10 +110,6 @@ def main():
         ruling = rulings_json["comment"]
         card = all_cards[rulings_json["oracle_id"]]
         card.rulings.append(ruling)
-        try:
-            print(ruling)
-        except:
-            pass
 
     output = [all_cards[k] for k in all_cards]
 

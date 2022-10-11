@@ -5,10 +5,11 @@ from utils.simple_io import write
 from utils.simple_io import clear
 from utils.simple_io import read_csv
 
+
 def main():
-    doc_raw = read_csv("JAR-parsed.csv")
-    clear("JAR-parsed.json")
-    write("JAR-parsed.json", csv_to_json(doc_raw))
+    doc_raw = read_csv("DIPG-parsed.csv")
+    clear("DIPG-parsed.json")
+    write("DIPG-parsed.json", csv_to_json(doc_raw))
 
 
 if __name__ == "__main__":

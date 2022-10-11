@@ -7,9 +7,9 @@ from utils.simple_io import read_csv
 
 
 def main():
-    cr_raw = read_csv("IPG-parsed.csv")
+    doc_raw = read_csv("IPG-parsed.csv")
     clear("IPG-parsed.json")
-    write("IPG-parsed.json", csv_to_json(cr_raw))
+    write("IPG-parsed.json", csv_to_json(doc_raw))
 
 
 if __name__ == "__main__":
