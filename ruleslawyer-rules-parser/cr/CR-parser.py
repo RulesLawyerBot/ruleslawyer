@@ -1,3 +1,5 @@
+# coding=windows-1252
+
 import sys
 sys.path.append("..")
 from utils.simple_io import clear
@@ -71,7 +73,7 @@ def main():
     line_builder = ""
     current_rule = None
     while True:
-        line = file.next_line().replace('“', '"').replace('”', '"').replace("’", "'")
+        line = file.next_line()
         if line == "Credits":
             break
         if len(line) == 0:

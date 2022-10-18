@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,7 +21,6 @@ import java.util.stream.Stream;
 import static contract.rules.enums.RuleSource.*;
 import static ingestion.rule.CitationInitService.setOutboundCitations;
 import static java.lang.String.valueOf;
-import static java.nio.charset.StandardCharsets.*;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
@@ -81,7 +81,7 @@ public class JsonRuleIngestionService {
 
     private static List<JsonMappedRule> getJsonMappedRules(String filename) throws IOException {
         InputStream in = JsonRuleIngestionService.class.getResourceAsStream(filename);
-        BufferedReader br = new BufferedReader(new InputStreamReader(in, UTF_8));
+        BufferedReader br = new BufferedReader(new InputStreamReader(in, Charset.forName("Windows-1252")));
         char[] buffer = new char[1000000];
         br.read(buffer);
         in.close();
