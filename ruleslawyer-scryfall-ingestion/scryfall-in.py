@@ -1,3 +1,5 @@
+# coding=windows-1252
+
 import json
 import requests
 from simple_io import write
@@ -42,7 +44,7 @@ def get_image_urls(card_json):
 
 
 def parse_card(card_json):
-    card_name = card_json["name"].replace('"', "'").replace("ü", "u") # TODO rewrite this bandaid
+    card_name = card_json["name"].replace('"', "'")
     scryfall_uri = card_json["uri"]
     card_set = CardSet(scryfall_uri, get_set_type(card_json), card_json["set_name"])
     oracle_id = card_json["oracle_id"]
@@ -54,7 +56,7 @@ def parse_card(card_json):
             all_cards[oracle_id].image_url = image_url
     else:
         mana_cost = card_json["mana_cost"] if "mana_cost" in card_json else card_json["card_faces"][0]["mana_cost"]
-        type_line = card_json["type_line"].replace("—", "-")
+        type_line = card_json["type_line"].replace("�", "-")
         oracle = parse_card_oracle(card_json).replace('"', "'")
         legalities = {}
         for k in card_json["legalities"]:
@@ -81,7 +83,7 @@ def main():
             try: #I don't feel like dealing with this today
                 parse_card(card_json)
             except:
-                print("Error: " + card_json["name"].replace('"', "'"))
+                print("Error: " + card_json["name"])
         if not page["has_more"]:
             break
         page_number = page_number + 1
