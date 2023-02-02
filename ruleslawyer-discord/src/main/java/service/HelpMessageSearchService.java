@@ -81,8 +81,18 @@ public class HelpMessageSearchService {
             .addFields(
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
-                            "Last updated: 2022-10-18\n" +
-                                    "Rules and cards version: Unfinity"
+                            "Last updated: 2023-02-01\n" +
+                                    "Rules and cards version: All Will Be One"
+                    ),
+                    new DiscordEmbedField(
+                            "v1.14.3",
+                            "Updated cards to include All Will Be One.\n" +
+                                    "CR updates for ONE will be out when WotC publishes them."
+                    ),
+                    new DiscordEmbedField(
+                            "v1.14.2",
+                            "Updated cards to include Brother's War.\n" +
+                                    "CR updates for Brother's War will be out when WotC publishes them."
                     ),
                     new DiscordEmbedField(
                             "v1.14.1",

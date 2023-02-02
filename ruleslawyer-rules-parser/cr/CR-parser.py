@@ -21,7 +21,7 @@ def is_int(val):
 
 
 def main():
-    file = FileData(open_file("CR-input.txt"))
+    file = FileData(open_file("CR-input.txt", encoding="UTF-16BE"))
     output = []
 
     while file.next_line() != "Credits":

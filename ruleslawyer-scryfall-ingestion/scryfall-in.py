@@ -28,8 +28,7 @@ def parse_card_oracle(card_json):
     if "oracle_text" in card_json:
         oracle = card_json["oracle_text"]
     else:
-        oracle = parse_card_oracle(card_json["card_faces"][0]) + "\n//\n" + parse_card_oracle(
-            card_json["card_faces"][1])
+        oracle = parse_card_oracle(card_json["card_faces"][0]) + "\n//\n" + parse_card_oracle(card_json["card_faces"][1])
     if "power" in card_json:
         oracle = oracle + "\n" + str(card_json["power"]) + "/" + str(card_json["toughness"])
     if "loyalty" in card_json:

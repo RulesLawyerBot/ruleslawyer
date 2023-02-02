@@ -31,16 +31,17 @@ public class JsonRuleIngestionService {
         try {
             System.out.println("Loading rules...");
             List<AbstractRule> rules = new ArrayList<>();
-            rules.addAll(getRawRulesData("/CR-parsed.json", CR));
-            rules.addAll(getRawRulesData("/CRG-parsed.json", CRG));
-            rules.addAll(getRawRulesData("/JAR-parsed.json", JAR));
-            rules.addAll(getRawRulesData("/IPG-parsed.json", IPG));
-            rules.addAll(getRawRulesData("/MTR-parsed.json", MTR));
+            rules.addAll(getRawRulesData("/CR-parsed.json", CR, Charset.forName("Windows-1252")));
+            rules.addAll(getRawRulesData("/CRG-parsed.json", CRG, Charset.forName("Windows-1252")));
+            rules.addAll(getRawRulesData("/JAR-parsed.json", JAR, Charset.forName("Windows-1252")));
+            rules.addAll(getRawRulesData("/IPG-parsed.json", IPG, Charset.forName("Windows-1252")));
+            rules.addAll(getRawRulesData("/MTR-parsed.json", MTR, Charset.forName("Windows-1252")));
             // rules.addAll(getFlattenedRules("/oath-parsed.json", OATH)); TODO bring this back after fixing the parser
             System.out.println("Setting citations...");
             setOutboundCitations(rules);
             return rules;
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            e.printStackTrace();
             System.exit(-1);
         }
         return emptyList();
@@ -50,8 +51,8 @@ public class JsonRuleIngestionService {
         try {
             System.out.println("Loading digital rules...");
             List<AbstractRule> rules = new ArrayList<>();
-            rules.addAll(getRawRulesData("/DIPG-parsed.json", DIPG));
-            rules.addAll(getRawRulesData("/DMTR-parsed.json", DMTR));
+            rules.addAll(getRawRulesData("/DIPG-parsed.json", DIPG, Charset.forName("Windows-1252")));
+            rules.addAll(getRawRulesData("/DMTR-parsed.json", DMTR, Charset.forName("Windows-1252")));
             return rules;
         } catch (IOException ignored) {
             System.exit(-1);
@@ -59,16 +60,16 @@ public class JsonRuleIngestionService {
         return emptyList();
     }
 
-    private static List<AbstractRule> getRawRulesData(String filename, RuleSource ruleSource) throws IOException {
-        List<JsonMappedRule> rawRules = getJsonMappedRules(filename);
+    private static List<AbstractRule> getRawRulesData(String filename, RuleSource ruleSource, Charset charset) throws IOException {
+        List<JsonMappedRule> rawRules = getJsonMappedRules(filename, charset);
         return rawRules.stream()
                 .map(rule -> convertToRuleHeaders(singletonList(rule), ruleSource))
                 .flatMap(Collection::stream)
                 .collect(toList());
     }
 
-    private static List<AbstractRule> getFlattenedRules(String filename, RuleSource ruleSource) throws IOException {
-        List<JsonMappedRule> rawRules = getJsonMappedRules(filename);
+    private static List<AbstractRule> getFlattenedRules(String filename, RuleSource ruleSource, Charset charset) throws IOException {
+        List<JsonMappedRule> rawRules = getJsonMappedRules(filename, charset);
         return rawRules.stream()
                 .map(rule ->
                         Stream.of(getCRRuleHeader(rule, ruleSource), convertToRuleHeaders(rule.getSubRules(), ruleSource))
@@ -79,9 +80,9 @@ public class JsonRuleIngestionService {
                 .collect(toList());
     }
 
-    private static List<JsonMappedRule> getJsonMappedRules(String filename) throws IOException {
+    private static List<JsonMappedRule> getJsonMappedRules(String filename, Charset charset) throws IOException {
         InputStream in = JsonRuleIngestionService.class.getResourceAsStream(filename);
-        BufferedReader br = new BufferedReader(new InputStreamReader(in, Charset.forName("Windows-1252")));
+        BufferedReader br = new BufferedReader(new InputStreamReader(in, charset));
         char[] buffer = new char[1000000];
         br.read(buffer);
         in.close();

@@ -1,8 +1,8 @@
 # coding=windows-1252
 
-def open_file(filename):
+def open_file(filename, encoding="windows-1252"):
     """Returns the contents of the file as a list of strings."""
-    f = open(filename, "r", encoding="windows-1252")
+    f = open(filename, "r", encoding=encoding)
     data = f.read().split("\n")
     f.close()
     return data
