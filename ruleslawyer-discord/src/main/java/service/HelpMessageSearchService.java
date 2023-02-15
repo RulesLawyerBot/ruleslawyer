@@ -79,10 +79,15 @@ public class HelpMessageSearchService {
             );
     public static final EmbedBuilderBuilder HELP_DEV_EMBED = new EmbedBuilderBuilder()
             .addFields(
+
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
                             "Last updated: 2023-02-01\n" +
                                     "Rules and cards version: All Will Be One"
+                    ),
+                    new DiscordEmbedField(
+                            "v1.14.4",
+                            "CR updates for ONE."
                     ),
                     new DiscordEmbedField(
                             "v1.14.3",
