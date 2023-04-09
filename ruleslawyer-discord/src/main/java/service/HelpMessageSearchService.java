@@ -82,8 +82,12 @@ public class HelpMessageSearchService {
 
                     new DiscordEmbedField(
                             "RulesLawyer patch notes",
-                            "Last updated: 2023-02-01\n" +
-                                    "Rules and cards version: All Will Be One"
+                            "Last updated: 2023-04-09\n" +
+                                    "Rules and cards version: March of Marchines"
+                    ),
+                    new DiscordEmbedField(
+                            "v1.14.5",
+                            "CR and card updates for MOM."
                     ),
                     new DiscordEmbedField(
                             "v1.14.4",
