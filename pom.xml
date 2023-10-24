@@ -6,7 +6,7 @@
 
     <groupId>com.github.elainecao93</groupId>
     <artifactId>ruleslawyer</artifactId>
-    <version>0.14.6</version>
+    <version>0.14.8</version>
 
     <packaging>pom</packaging>
     <modules>

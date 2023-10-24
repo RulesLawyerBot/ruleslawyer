@@ -5,12 +5,12 @@
     <parent>
         <artifactId>ruleslawyer</artifactId>
         <groupId>com.github.elainecao93</groupId>
-        <version>0.14.6</version>
+        <version>0.14.8</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>ruleslawyer-api</artifactId>
-    <version>0.14.6</version>
+    <version>0.14.8</version>
 
     <dependencyManagement>
         <dependencies>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.github.elainecao93</groupId>
             <artifactId>ruleslawyer-core</artifactId>
-            <version>0.14.6</version>
+            <version>0.14.8</version>
         </dependency>
     </dependencies>
 
