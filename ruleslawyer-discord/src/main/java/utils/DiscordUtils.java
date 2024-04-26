@@ -81,7 +81,7 @@ public class DiscordUtils {
     }
 
     public static boolean isOwnMessage(MessageEditEvent event) {
-        return event.getMessageAuthor().map(MessageAuthor::isYourself).orElse(false);
+        return event.getMessageAuthor().isYourself();
     }
 
     public static boolean isOwnReaction(SingleReactionEvent event) {

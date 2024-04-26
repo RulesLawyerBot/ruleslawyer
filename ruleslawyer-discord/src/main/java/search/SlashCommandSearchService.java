@@ -12,11 +12,14 @@ import service.HelpMessageSearchService;
 import search.interaction_pagination.pagination_enum.CardDataReturnType;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static contract.rules.enums.RuleSource.*;
 import static java.lang.String.valueOf;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.javacord.api.interaction.SlashCommandOption.*;
 import static org.javacord.api.interaction.SlashCommandOptionType.STRING;
@@ -44,7 +47,7 @@ public class SlashCommandSearchService {
     }
 
     public void setCommands() {
-        List<SlashCommand> commands = api.getGlobalSlashCommands().join();
+        Set<SlashCommand> commands = api.getGlobalSlashCommands().join();
         commands.forEach(SlashCommand::deleteGlobal);
         SlashCommand.with(
                 RULE_SLASH_COMMAND_IDENTIFIER,
@@ -159,7 +162,8 @@ public class SlashCommandSearchService {
         DiscordReturnPayload searchResult =
                 discordRuleSearchService.getSearchResultFromPlainQuery(
                         event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
-                        event.getSlashCommandInteraction().getOptionStringRepresentationValueByIndex(0).orElse("") + "|" + event.getSlashCommandInteraction().getOptionStringRepresentationValueByIndex(1).orElse("")
+                        event.getSlashCommandInteraction().getOptions()
+                                .stream().map(scio -> scio.getStringValue().orElse("")).collect(joining("|"))
                 );
         event.getSlashCommandInteraction().createImmediateResponder()
                 .addEmbed(searchResult.getEmbed().build())
@@ -169,13 +173,17 @@ public class SlashCommandSearchService {
     }
 
     private void respondToCardCommand(SlashCommandCreateEvent event) {
-        CardDataReturnType cardDataReturnType = event.getSlashCommandInteraction().getOptionStringRepresentationValueByIndex(1).map(CardDataReturnType::valueOf).orElse(ORACLE);
+        CardDataReturnType cardDataReturnType = event.getSlashCommandInteraction().getOptionByIndex(1).isPresent() ?
+                CardDataReturnType.valueOf(event.getSlashCommandInteraction().getOptionByIndex(1).get().getStringValue().orElse("ORACLE")) :
+                ORACLE;
         if (cardDataReturnType == PRICE) {
             respondToPriceCommand(event);
         } else {
             DiscordReturnPayload discordReturnPayload = discordCardSearchService.getSearchResult(
                     event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
-                    event.getSlashCommandInteraction().getOptionStringRepresentationValueByIndex(0).orElse(""),
+                    event.getSlashCommandInteraction().getOptionByIndex(0).isPresent() ?
+                            event.getSlashCommandInteraction().getOptionByIndex(0).get().getStringValue().orElse("") :
+                            "",
                     cardDataReturnType
             );
             event.getSlashCommandInteraction().createImmediateResponder()
@@ -189,7 +197,9 @@ public class SlashCommandSearchService {
         event.getSlashCommandInteraction().respondLater();
         DiscordReturnPayload discordReturnPayload = discordCardSearchService.getSearchResult(
                 event.getSlashCommandInteraction().getUser().getDiscriminatedName(),
-                event.getSlashCommandInteraction().getOptionStringRepresentationValueByIndex(0).orElse(""),
+                event.getSlashCommandInteraction().getOptionByIndex(0).isPresent() ?
+                        event.getSlashCommandInteraction().getOptionByIndex(0).get().getStringValue().orElse("") :
+                        "",
                 PRICE
         );
         event.getSlashCommandInteraction().createFollowupMessageBuilder()
@@ -199,10 +209,9 @@ public class SlashCommandSearchService {
     }
 
     private void respondToHelpCommand(SlashCommandCreateEvent event) {
-        EmbedBuilderBuilder helpFile = event.getSlashCommandInteraction()
-                .getOptionStringRepresentationValueByIndex(0)
-                .map(value -> helpMessageSearchService.getHelpFile(value))
-                .orElse(helpMessageSearchService.getHelpFile());
+        EmbedBuilderBuilder helpFile = event.getSlashCommandInteraction().getOptionByIndex(0).isPresent() ?
+                event.getSlashCommandInteraction().getOptionByIndex(0).get().getStringValue().map(value -> helpMessageSearchService.getHelpFile(value)).orElse(helpMessageSearchService.getHelpFile()) :
+                helpMessageSearchService.getHelpFile();
         event.getSlashCommandInteraction()
                 .createImmediateResponder()
                 .addEmbed(helpFile.build())

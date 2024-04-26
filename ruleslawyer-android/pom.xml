@@ -5,7 +5,7 @@
     <parent>
         <artifactId>ruleslawyer</artifactId>
         <groupId>com.github.elainecao93</groupId>
-        <version>0.14.9</version>
+        <version>0.14.11</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -31,7 +31,7 @@
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
-                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.SF</exclude>W
                                 <exclude>META-INF/*.DSA</exclude>
                                 <exclude>META-INF/*.RSA</exclude>
                             </excludes>
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>com.github.elainecao93</groupId>
             <artifactId>ruleslawyer-core</artifactId>
-            <version>0.14.9</version>
+            <version>0.14.11</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

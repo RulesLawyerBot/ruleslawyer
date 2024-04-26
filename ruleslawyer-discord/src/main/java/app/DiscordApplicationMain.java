@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import static org.javacord.api.entity.intent.Intent.GUILD_PRESENCES;
+import static org.javacord.api.entity.intent.Intent.*;
 import static search.interaction_pagination.InteractionPaginationStatics.DELETE_ONLY_ROW;
 import static service.HelpMessageSearchService.MAIN_HELP_EMBED;
 import static utils.DiscordUtils.*;
@@ -37,7 +37,7 @@ public class DiscordApplicationMain {
     private static InteractionPaginationService interactionPaginationService;
     public static final Long DEV_SERVER_ID = 590180833118388255L;
 
-    private static final String CURRENT_VERSION = "Version 1.14.9 | WOE | \"/help\"";
+    private static final String CURRENT_VERSION = "Version 1.14.11 | OTJ | \"/help\"";
 
     public static void main(String[] args) {
         if (!args[0].equals("prod")) {
@@ -49,7 +49,7 @@ public class DiscordApplicationMain {
         System.out.println("Admin token: \"" + discordToken.get(1) + "\"");
         DiscordApi api = new DiscordApiBuilder()
                 .setToken(discordToken.get(0))
-                .setAllIntentsExcept(GUILD_PRESENCES)
+                .setAllNonPrivilegedIntentsAnd(GUILD_MEMBERS)
                 .login()
                 .join();
 

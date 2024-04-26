@@ -112,12 +112,12 @@ public class ReactionPaginationService {
             return;
         }
         if (reaction.get().equals(PAPER_EMOJI)) {
-            event.getMessage().get().removeReactionByEmoji(DIGITAL_EMOJI);
-            event.getMessage().get().addReaction(PAPER_EMOJI);
+            event.getMessage().removeReactionByEmoji(DIGITAL_EMOJI);
+            event.getMessage().addReaction(PAPER_EMOJI);
         }
         if (reaction.get().equals(DIGITAL_EMOJI)) {
-            event.getMessage().get().removeReactionByEmoji(PAPER_EMOJI);
-            event.getMessage().get().addReaction(DIGITAL_EMOJI);
+            event.getMessage().removeReactionByEmoji(PAPER_EMOJI);
+            event.getMessage().addReaction(DIGITAL_EMOJI);
         }
     }
 
@@ -128,8 +128,8 @@ public class ReactionPaginationService {
     }
 
     private Optional<String> getSourceChangeReaction(MessageEditEvent event) {
-        return event.getMessage().map(this::messageHasFooter).orElse(false) ?
-                getSourceChangeReaction(event.getMessage().get().getEmbeds().get(0)) :
+        return messageHasFooter(event.getMessage()) ?
+                getSourceChangeReaction(event.getMessage().getEmbeds().get(0)) :
                 empty();
     }
 
